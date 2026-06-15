@@ -1,0 +1,83 @@
+import type { RecurringRule } from '../types/recurring';
+
+export const mockRecurringRules: RecurringRule[] = [
+  {
+    id: 'rec-salary',
+    title: 'Monthly Salary',
+    type: 'income',
+    walletName: 'Bank BCA',
+    categoryName: 'Salary',
+    amount: 14500000,
+    frequency: 'monthly',
+    startDate: '2026-01-25',
+    nextRunDate: '2026-06-25',
+    lastRunDate: '2026-05-25',
+    status: 'active',
+    note: 'Auto-post salary income every 25th.',
+    runHistory: [
+      { id: 'run-sal-0525', scheduledAt: '2026-05-25 09:00', executedAt: '2026-05-25 09:00', status: 'success', transactionId: 'TX-20260525-001', message: 'Salary posted to Bank BCA.' },
+      { id: 'run-sal-0425', scheduledAt: '2026-04-25 09:00', executedAt: '2026-04-25 09:00', status: 'success', transactionId: 'TX-20260425-001', message: 'Salary posted to Bank BCA.' },
+    ],
+  },
+  {
+    id: 'rec-rent',
+    title: 'Monthly Rent',
+    type: 'expense',
+    walletName: 'Bank BCA',
+    categoryName: 'Rent',
+    amount: 3500000,
+    frequency: 'monthly',
+    startDate: '2026-01-05',
+    nextRunDate: '2026-07-05',
+    lastRunDate: '2026-06-05',
+    status: 'active',
+    note: 'Auto-create rent expense after confirmation.',
+    runHistory: [
+      { id: 'run-rent-0605', scheduledAt: '2026-06-05 08:00', executedAt: '2026-06-05 08:03', status: 'success', transactionId: 'TX-20260605-003', message: 'Rent expense created.' },
+      { id: 'run-rent-0505', scheduledAt: '2026-05-05 08:00', executedAt: '2026-05-05 08:02', status: 'success', transactionId: 'TX-20260505-003', message: 'Rent expense created.' },
+    ],
+  },
+  {
+    id: 'rec-savings-transfer',
+    title: 'Auto Savings Transfer',
+    type: 'transfer',
+    walletName: 'Bank BCA',
+    destinationWalletName: 'Emergency Fund',
+    amount: 1000000,
+    frequency: 'monthly',
+    startDate: '2026-01-28',
+    nextRunDate: '2026-06-28',
+    lastRunDate: '2026-05-28',
+    status: 'paused',
+    note: 'Paused while cashflow is reviewed.',
+    runHistory: [
+      { id: 'run-save-0528', scheduledAt: '2026-05-28 10:00', executedAt: '2026-05-28 10:01', status: 'success', transactionId: 'TX-20260528-010', message: 'Transfer completed.' },
+      { id: 'run-save-0628', scheduledAt: '2026-06-28 10:00', executedAt: '-', status: 'skipped', message: 'Rule paused before scheduled date.' },
+    ],
+  },
+  {
+    id: 'rec-old-membership',
+    title: 'Old Gym Membership',
+    type: 'expense',
+    walletName: 'Jenius',
+    categoryName: 'Health',
+    amount: 250000,
+    frequency: 'monthly',
+    startDate: '2025-01-10',
+    nextRunDate: '-',
+    lastRunDate: '2026-04-10',
+    status: 'cancelled',
+    note: 'Cancelled after membership ended.',
+    runHistory: [
+      { id: 'run-gym-0410', scheduledAt: '2026-04-10 07:00', executedAt: '2026-04-10 07:00', status: 'success', transactionId: 'TX-20260410-012', message: 'Final membership payment posted.' },
+    ],
+  },
+];
+
+export const recurringSummary = {
+  active: mockRecurringRules.filter((rule) => rule.status === 'active').length,
+  paused: mockRecurringRules.filter((rule) => rule.status === 'paused').length,
+  cancelled: mockRecurringRules.filter((rule) => rule.status === 'cancelled').length,
+  monthlyOutflow: mockRecurringRules.filter((rule) => rule.status === 'active' && rule.type === 'expense').reduce((sum, rule) => sum + rule.amount, 0),
+  monthlyIncome: mockRecurringRules.filter((rule) => rule.status === 'active' && rule.type === 'income').reduce((sum, rule) => sum + rule.amount, 0),
+};
