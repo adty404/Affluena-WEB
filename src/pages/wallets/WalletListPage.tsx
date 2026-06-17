@@ -4,19 +4,32 @@ import { Card } from '../../components/ui/Card';
 import { DataTable } from '../../components/ui/DataTable';
 import { WalletCard } from '../../components/master-data/WalletCard';
 import { Amount } from '../../components/finance/Amount';
-import { mockWallets, walletTypeLabels } from '../../data/mockWallets';
+import { useWallets } from '../../hooks/useWallets';
+import { walletTypeLabels } from '../../schemas/wallet';
 import type { Wallet } from '../../types/wallet';
 
 export function WalletListPage() {
-  const totalBalance = mockWallets.reduce((sum, wallet) => sum + wallet.balance, 0);
-  const sharedCount = mockWallets.filter((wallet) => wallet.isShared).length;
+  const { data, isLoading, error } = useWallets({ limit: 100 });
+  const wallets = data?.wallets ?? [];
+  const totalBalance = wallets.reduce((sum, w) => sum + w.balance_minor, 0);
+  const sharedCount = wallets.filter((w) => w.role && w.role !== 'owner').length;
+
   const columns = [
-    { key: 'name', header: 'Wallet', render: (wallet: Wallet) => <div><strong>{wallet.name}</strong><span className="table-subtitle">{wallet.description}</span></div> },
+    { key: 'name', header: 'Wallet', render: (wallet: Wallet) => (
+      <div>
+        <strong>{wallet.name}</strong>
+        <span className="table-subtitle">{walletTypeLabels[wallet.type]} · {wallet.currency_code}</span>
+      </div>
+    ) },
     { key: 'type', header: 'Type', render: (wallet: Wallet) => walletTypeLabels[wallet.type] },
-    { key: 'balance', header: 'Balance', align: 'right' as const, render: (wallet: Wallet) => <Amount value={wallet.balance} /> },
-    { key: 'sharing', header: 'Sharing', render: (wallet: Wallet) => wallet.isShared ? `${wallet.memberCount} members` : 'Private' },
-    { key: 'activity', header: 'Last Activity', render: (wallet: Wallet) => wallet.lastActivity },
-    { key: 'action', header: 'Action', render: (wallet: Wallet) => <div className="inline-actions"><Button size="small" to={`/wallets/${wallet.id}`}>View</Button><Button size="small" to={`/wallets/${wallet.id}/edit`}>Edit</Button></div> },
+    { key: 'balance', header: 'Balance', align: 'right' as const, render: (wallet: Wallet) => <Amount value={wallet.balance_minor} /> },
+    { key: 'role', header: 'Akses', render: (wallet: Wallet) => wallet.role ?? '—' },
+    { key: 'action', header: 'Action', render: (wallet: Wallet) => (
+      <div className="inline-actions">
+        <Button size="small" to={`/wallets/${wallet.id}`}>View</Button>
+        <Button size="small" to={`/wallets/${wallet.id}/edit`}>Edit</Button>
+      </div>
+    ) },
   ];
 
   return (
@@ -28,22 +41,40 @@ export function WalletListPage() {
             <h2>Semua wallet terlihat jelas, termasuk shared wallet dan balance movement.</h2>
             <p>Wallet dipakai oleh transaction, transfer, adjustment, quick entry, budget, debt, dan recurring module.</p>
           </div>
-          <div className="app-hero-actions"><Button to="/wallets/new" variant="primary">+ Create Wallet</Button><Button to="/wallets/1/sharing">Manage Sharing</Button></div>
+          <div className="app-hero-actions"><Button to="/wallets/new" variant="primary">+ Create Wallet</Button></div>
         </section>
+
+        {error ? (
+          <Card className="panel-card">
+            <div className="readiness-list">
+              <div><span>Error</span><strong>{(error as { error?: string }).error ?? 'Gagal memuat wallet'}</strong></div>
+            </div>
+          </Card>
+        ) : null}
 
         <section className="stat-grid">
-          <Card className="stat-card"><span>Total Balance</span><strong><Amount value={totalBalance} /></strong><small>Across all wallets</small></Card>
-          <Card className="stat-card blue"><span>Wallet Count</span><strong>{mockWallets.length}</strong><small>Active wallets</small></Card>
-          <Card className="stat-card purple"><span>Shared Wallets</span><strong>{sharedCount}</strong><small>Collaboration enabled</small></Card>
-          <Card className="stat-card orange"><span>Monthly Outflow</span><strong><Amount value={8050000} variant="expense" /></strong><small>From wallet activity</small></Card>
+          <Card className="stat-card"><span>Total Balance</span><strong>{isLoading ? '…' : <Amount value={totalBalance} />}</strong><small>Across all wallets</small></Card>
+          <Card className="stat-card blue"><span>Wallet Count</span><strong>{isLoading ? '…' : wallets.length}</strong><small>Active wallets</small></Card>
+          <Card className="stat-card purple"><span>Shared Wallets</span><strong>{isLoading ? '…' : sharedCount}</strong><small>Collaboration enabled</small></Card>
         </section>
 
-        <section className="master-grid cards-4">{mockWallets.map((wallet) => <WalletCard key={wallet.id} wallet={wallet} />)}</section>
+        {isLoading ? (
+          <Card className="panel-card"><div className="readiness-list"><div><span>Memuat</span><strong>…</strong></div></div></Card>
+        ) : wallets.length === 0 ? (
+          <Card className="panel-card">
+            <div className="panel-head"><div><h3>Belum ada wallet</h3><p>Buat wallet pertama untuk mulai mencatat transaksi.</p></div></div>
+            <div className="modal-actions"><Button to="/wallets/new" variant="primary">+ Create Wallet</Button></div>
+          </Card>
+        ) : (
+          <>
+            <section className="master-grid cards-4">{wallets.map((wallet) => <WalletCard key={wallet.id} wallet={wallet} />)}</section>
 
-        <Card className="panel-card">
-          <div className="panel-head"><div><h3>Wallet Table</h3><p>Pattern table untuk list, pagination, dan action wallet.</p></div><Button to="/wallets/new" size="small" variant="primary">+ Wallet</Button></div>
-          <DataTable columns={columns} data={mockWallets} getRowKey={(wallet) => wallet.id} />
-        </Card>
+            <Card className="panel-card">
+              <div className="panel-head"><div><h3>Wallet Table</h3><p>{data?.pagination.total ?? wallets.length} wallet terdaftar.</p></div><Button to="/wallets/new" size="small" variant="primary">+ Wallet</Button></div>
+              <DataTable columns={columns} data={wallets} getRowKey={(wallet) => wallet.id} />
+            </Card>
+          </>
+        )}
       </div>
     </AppLayout>
   );
