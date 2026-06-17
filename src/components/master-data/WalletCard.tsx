@@ -3,7 +3,7 @@ import { Button } from '../ui/Button';
 import { AppIcon, type AppIconName } from '../ui/AppIcon';
 import { Amount } from '../finance/Amount';
 import type { Wallet } from '../../types/wallet';
-import { walletTypeLabels } from '../../data/mockWallets';
+import { walletTypeLabels } from '../../schemas/wallet';
 
 type WalletCardProps = { wallet: Wallet };
 
@@ -15,27 +15,33 @@ const walletIcons: Record<Wallet['type'], AppIconName> = {
   goal: 'goal',
 };
 
+function isShared(wallet: Wallet): boolean {
+  if (!wallet.role) return false;
+  return wallet.role !== 'owner';
+}
+
 export function WalletCard({ wallet }: WalletCardProps) {
+  const shared = isShared(wallet);
+  const subtitle = shared
+    ? `${walletTypeLabels[wallet.type]} · ${wallet.role ?? 'member'}`
+    : walletTypeLabels[wallet.type];
+
   return (
-    <article className={`wallet-card ${wallet.color}`}>
+    <article className={`wallet-card ${wallet.type}`}>
       <div className="wallet-card-top">
         <div className={`wallet-icon ${wallet.type}`} aria-hidden="true"><AppIcon name={walletIcons[wallet.type]} /></div>
         <div>
           <strong>{wallet.name}</strong>
-          <span>{walletTypeLabels[wallet.type]} · {wallet.isShared ? `${wallet.memberCount} members` : 'Private'}</span>
+          <span>{subtitle}</span>
         </div>
-        <Badge tone={wallet.isShared ? 'purple' : 'green'}>{wallet.isShared ? 'Shared' : 'Private'}</Badge>
+        <Badge tone={shared ? 'purple' : 'green'}>{shared ? 'Shared' : 'Private'}</Badge>
       </div>
-      <div className="wallet-balance"><Amount value={wallet.balance} /></div>
-      <p className="wallet-description">{wallet.description}</p>
-      <div className="wallet-mini-grid">
-        <div><span>Inflow</span><strong><Amount value={wallet.monthlyInflow} /></strong></div>
-        <div><span>Outflow</span><strong><Amount value={wallet.monthlyOutflow} variant="expense" /></strong></div>
-      </div>
+      <div className="wallet-balance"><Amount value={wallet.balance_minor} /></div>
+      <p className="wallet-description">{wallet.currency_code} · dibuat {new Date(wallet.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
       <div className="wallet-card-actions">
         <Button size="small" to={`/wallets/${wallet.id}`}>Detail</Button>
         <Button size="small" to={`/wallets/${wallet.id}/edit`}>Edit</Button>
-        {wallet.isShared ? <Button size="small" to={`/wallets/${wallet.id}/sharing`}>Sharing</Button> : null}
+        {shared ? <Button size="small" to={`/wallets/${wallet.id}/sharing`}>Sharing</Button> : null}
       </div>
     </article>
   );
