@@ -1,4 +1,5 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
+import { RequireAuth } from './components/routing/RequireAuth';
 import { LandingPage } from './pages/landing/LandingPage';
 import { LoginPage } from './pages/auth/LoginPage';
 import { RegisterPage } from './pages/auth/RegisterPage';
@@ -94,6 +95,7 @@ export function App() {
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="/onboarding" element={<OnboardingPage />} />
+      <Route element={<RequireAuth><Outlet /></RequireAuth>}>
       <Route path="/dashboard" element={<DashboardPage />} />
       <Route path="/dashboard/analytics" element={<AnalyticsPage />} />
       <Route path="/dashboard/forecast" element={<ForecastPage />} />
@@ -189,6 +191,7 @@ export function App() {
       <Route path="/app-menu" element={<AppMenuPage />} />
       <Route path="/app-shell" element={<AppShellPage />} />
       <Route path="/app" element={<Navigate to="/dashboard" replace />} />
+      </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
