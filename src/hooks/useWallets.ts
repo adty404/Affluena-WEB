@@ -2,8 +2,10 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   createWallet,
   deleteWallet,
+  getAnalytics,
   getWallet,
   inviteMember,
+  listMembers,
   listWallets,
   updateWallet,
   type ListParams,
@@ -27,6 +29,22 @@ export function useWallet(id: string | undefined) {
     queryKey: id ? queryKeys.wallets.detail(id) : ['wallets', 'detail', 'undefined'],
     queryFn: () => getWallet(id as string),
     enabled: Boolean(id),
+  })
+}
+
+export function useWalletMembers(walletId: string | undefined) {
+  return useQuery({
+    queryKey: ['wallets', 'members', walletId ?? 'undefined'],
+    queryFn: () => listMembers(walletId as string),
+    enabled: Boolean(walletId),
+  })
+}
+
+export function useWalletAnalytics(walletId: string | undefined, month: string) {
+  return useQuery({
+    queryKey: ['wallets', 'analytics', walletId ?? 'undefined', month],
+    queryFn: () => getAnalytics(walletId as string, month),
+    enabled: Boolean(walletId),
   })
 }
 
@@ -68,6 +86,7 @@ export function useInviteMember(walletId: string) {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.wallets.detail(walletId) })
       qc.invalidateQueries({ queryKey: queryKeys.wallets.all })
+      qc.invalidateQueries({ queryKey: ['wallets', 'members', walletId] })
     },
   })
 }

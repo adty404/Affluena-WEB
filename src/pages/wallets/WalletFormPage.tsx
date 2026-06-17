@@ -6,12 +6,12 @@ import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { Modal } from '../../components/ui/Modal';
-import { Input, Select } from '../../components/ui/Input';
+import { Input, Select, Textarea } from '../../components/ui/Input';
 import { useToast } from '../../components/ui/Toast';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { useCreateWallet, useDeleteWallet, useUpdateWallet, useWallet } from '../../hooks/useWallets';
-import { walletCreateSchema, walletUpdateSchema, walletTypeOptions, type WalletCreateFormValues, type WalletUpdateFormValues } from '../../schemas/wallet';
-import { majorToMinor, minorToMajor, formatIDR } from '../../lib/money';
+import { walletCreateSchema, walletUpdateSchema, walletTypeOptions, walletColorOptions, type WalletCreateFormValues, type WalletUpdateFormValues } from '../../schemas/wallet';
+import { majorToMinor, formatIDR } from '../../lib/money';
 import type { ApiError } from '../../api/types';
 
 export function WalletFormPage() {
@@ -28,13 +28,19 @@ export function WalletFormPage() {
 
   const createForm = useForm<WalletCreateFormValues>({
     resolver: zodResolver(walletCreateSchema),
-    defaultValues: { name: '', type: 'bank', currency_code: 'IDR', balance_minor: 0 },
+    defaultValues: { name: '', type: 'bank', currency_code: 'IDR', balance_minor: 0, color: '', description: '' },
   });
 
   const updateForm = useForm<WalletUpdateFormValues>({
     resolver: zodResolver(walletUpdateSchema),
     values: existing
-      ? { name: existing.name, type: existing.type as 'cash' | 'bank' | 'e_wallet' | 'investment', currency_code: existing.currency_code }
+      ? {
+          name: existing.name,
+          type: existing.type as 'cash' | 'bank' | 'e_wallet' | 'investment',
+          currency_code: existing.currency_code,
+          color: (existing.color || '') as '' | 'green' | 'blue' | 'orange' | 'purple' | 'gray',
+          description: existing.description || '',
+        }
       : undefined,
   });
 
@@ -125,6 +131,24 @@ export function WalletFormPage() {
                     {updateForm.formState.errors.currency_code && <span className="form-error">{updateForm.formState.errors.currency_code.message}</span>}
                   </label>
                 </div>
+                <div className="form-two">
+                  <label>
+                    <span>Color</span>
+                    <Select {...updateForm.register('color')}>
+                      <option value="">Default (by type)</option>
+                      {walletColorOptions.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                    </Select>
+                  </label>
+                  <label>
+                    <span>Status</span>
+                    <Select disabled><option>Active</option></Select>
+                  </label>
+                </div>
+                <label>
+                  <span>Description</span>
+                  <Textarea {...updateForm.register('description')} rows={3} />
+                  {updateForm.formState.errors.description && <span className="form-error">{updateForm.formState.errors.description.message}</span>}
+                </label>
                 <div className="readiness-list">
                   <div><span>Saldo saat ini</span><strong>{existing ? formatIDR(existing.balance_minor) : '—'}</strong></div>
                   <div><span>Cara ubah saldo</span><strong>Buat transaksi income/expense/transfer/adjustment</strong></div>
@@ -168,6 +192,24 @@ export function WalletFormPage() {
                   {createForm.formState.errors.balance_minor && <span className="form-error">{createForm.formState.errors.balance_minor.message}</span>}
                   <small>Minor unit: {formatIDR(createForm.watch('balance_minor') ?? 0)}</small>
                 </label>
+                <div className="form-two">
+                  <label>
+                    <span>Color</span>
+                    <Select {...createForm.register('color')}>
+                      <option value="">Default (by type)</option>
+                      {walletColorOptions.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                    </Select>
+                  </label>
+                  <label>
+                    <span>Sharing mode</span>
+                    <Select disabled><option>Private</option></Select>
+                  </label>
+                </div>
+                <label>
+                  <span>Description</span>
+                  <Textarea {...createForm.register('description')} rows={3} />
+                  {createForm.formState.errors.description && <span className="form-error">{createForm.formState.errors.description.message}</span>}
+                </label>
                 <div className="form-row-between">
                   <Button to="/wallets">Cancel</Button>
                   <Button type="submit" variant="primary" disabled={createForm.formState.isSubmitting || createMut.isPending}><AppIcon name="save" /> Save Wallet</Button>
@@ -181,6 +223,7 @@ export function WalletFormPage() {
               <div><span>Tipe goal</span><strong>Ditolak di endpoint umum</strong></div>
               <div><span>Saldo edit</span><strong>Hanya via transaksi</strong></div>
               <div><span>Currency</span><strong>3 huruf (IDR/USD/SGD)</strong></div>
+              <div><span>Color</span><strong>green/blue/orange/purple/gray atau default</strong></div>
               <div><span>Hapus wallet</span><strong>Butuh konfirmasi</strong></div>
             </div>
           </Card>

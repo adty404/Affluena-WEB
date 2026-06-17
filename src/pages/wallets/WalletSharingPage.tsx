@@ -10,7 +10,7 @@ import { Badge } from '../../components/ui/Badge';
 import { Input } from '../../components/ui/Input';
 import { useToast } from '../../components/ui/Toast';
 import { AppIcon } from '../../components/ui/AppIcon';
-import { useInviteMember, useWallet } from '../../hooks/useWallets';
+import { useInviteMember, useWallet, useWalletMembers } from '../../hooks/useWallets';
 import type { ApiError } from '../../api/types';
 
 const inviteSchema = z.object({
@@ -22,6 +22,7 @@ export function WalletSharingPage() {
   const { id } = useParams();
   const { showToast } = useToast();
   const { data: wallet, isLoading } = useWallet(id);
+  const { data: membersData, isLoading: membersLoading } = useWalletMembers(id);
   const inviteMut = useInviteMember(id ?? '');
 
   const form = useForm<InviteValues>({
@@ -60,6 +61,8 @@ export function WalletSharingPage() {
     );
   }
 
+  const members = membersData?.members ?? wallet.members ?? [];
+
   return (
     <AppLayout title="Wallet Sharing" description={`Kelola akses untuk ${wallet.name}.`}>
       <div className="dashboard-page grid-stack">
@@ -73,6 +76,30 @@ export function WalletSharingPage() {
         </section>
 
         <section className="dashboard-grid">
+          <Card className="panel-card">
+            <div className="panel-head"><div><h3>Members ({members.length})</h3><p>Owner + user yang diundang.</p></div></div>
+            {membersLoading ? (
+              <div className="readiness-list"><div><span>Memuat members</span><strong>…</strong></div></div>
+            ) : members.length === 0 ? (
+              <div className="readiness-list"><div><span>Status</span><strong>Belum ada member</strong></div></div>
+            ) : (
+              <div className="member-list">
+                {members.map((m) => (
+                  <div className="member-row" key={`${m.wallet_id}-${m.user_id}`}>
+                    <div className="avatar">{m.email.slice(0, 2).toUpperCase()}</div>
+                    <div>
+                      <strong>{m.email}</strong>
+                      <span>{m.role} · {m.status}</span>
+                    </div>
+                    <Badge tone={m.role === 'owner' ? 'green' : m.status === 'joined' ? 'blue' : m.status === 'pending' ? 'orange' : 'red'}>
+                      {m.role === 'owner' ? 'Owner' : m.status}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
+
           <Card className="panel-card">
             <div className="panel-head"><div><h3>Akses Kamu</h3><p>Info role dan status wallet ini untuk user yang login.</p></div></div>
             <div className="readiness-list">
@@ -104,11 +131,11 @@ export function WalletSharingPage() {
         </section>
 
         <Card className="panel-card">
-          <div className="panel-head"><div><h3>Catatan</h3><p>Keterbatasan endpoint wallet members.</p></div></div>
+          <div className="panel-head"><div><h3>Catatan</h3><p>Behavior endpoint wallet members.</p></div></div>
           <div className="readiness-list">
-            <div><span>Daftar semua member</span><strong>Backend belum punya endpoint GET members</strong></div>
+            <div><span>Daftar member</span><strong>GET /wallets/:id/members (owner + invitees)</strong></div>
             <div><span>Respond undangan</span><strong>PATCH /wallets/:id/members/:user_id</strong></div>
-            <div><span>Member yang join</span><strong>Lewat wallet list response share_status</strong></div>
+            <div><span>Owner</span><strong>Selalu join, role=owner</strong></div>
           </div>
         </Card>
       </div>
