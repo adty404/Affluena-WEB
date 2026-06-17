@@ -16,6 +16,9 @@ async function doRefresh(): Promise<boolean> {
   })
   if (!res.ok) {
     clearTokens()
+    if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+      window.location.assign('/login?reason=expired')
+    }
     return false
   }
   const data = (await res.json()) as {
