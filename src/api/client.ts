@@ -16,7 +16,8 @@ async function doRefresh(): Promise<boolean> {
   })
   if (!res.ok) {
     clearTokens()
-    if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+    const PUBLIC_PATHS = ['/', '/login', '/register', '/forgot-password', '/reset-password', '/onboarding']
+    if (typeof window !== 'undefined' && !PUBLIC_PATHS.includes(window.location.pathname)) {
       window.location.assign('/login?reason=expired')
     }
     return false

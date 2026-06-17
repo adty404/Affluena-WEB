@@ -17,3 +17,12 @@ img, svg { display: block; }
 .container { width: min(100% - 40px, var(--container)); margin-inline: auto; }
 .grid { display: grid; }
 .stack-lg { gap: 18px; }
+.app-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 24px;
+  color: var(--muted-ink);
+  font-size: 14px;
+}
