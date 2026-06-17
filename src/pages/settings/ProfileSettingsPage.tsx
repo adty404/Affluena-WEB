@@ -8,10 +8,15 @@ import { Select } from '../../components/ui/Input';
 import { Modal } from '../../components/ui/Modal';
 import { useToast } from '../../components/ui/Toast';
 import { AppIcon } from '../../components/ui/AppIcon';
+import { useMe } from '../../hooks/useMe';
+import { fromRFC3339 } from '../../lib/dates';
 
 export function ProfileSettingsPage() {
   const { showToast } = useToast();
   const [securityOpen, setSecurityOpen] = useState(false);
+  const { data, isLoading } = useMe();
+  const user = data?.user;
+  const memberSince = user ? fromRFC3339(user.created_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }) : '—';
 
   return (
     <AppLayout title="Profile Settings" description="Kelola profil, preferensi aplikasi, dan keamanan akun.">
@@ -34,7 +39,7 @@ export function ProfileSettingsPage() {
             <form className="form-stack" onSubmit={(event) => { event.preventDefault(); showToast('Profile information saved.'); }}>
               <div className="form-two">
                 <label><span>Full name</span><Input defaultValue="Aditya Prasetyo" /></label>
-                <label><span>Email</span><Input defaultValue="adty404@gmail.com" /></label>
+                <label><span>Email</span><Input defaultValue={isLoading ? 'Memuat…' : (user?.email ?? '')} disabled /></label>
               </div>
               <div className="form-two">
                 <label><span>Handle</span><Input defaultValue="@adty404" /></label>
@@ -53,7 +58,7 @@ export function ProfileSettingsPage() {
             <div className="readiness-list">
               <div><span>Two-factor auth</span><Badge tone="blue">Ready to configure</Badge></div>
               <div><span>Active session</span><strong>Chrome · Jakarta · Today</strong></div>
-              <div><span>Last password change</span><strong>14 days ago</strong></div>
+              <div><span>Last password change</span><strong>{memberSince}</strong></div>
               <div><span>Login alerts</span><Badge>Enabled</Badge></div>
             </div>
             <div className="modal-actions left-actions">

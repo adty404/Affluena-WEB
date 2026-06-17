@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '../ui/Button';
 import { AppIcon } from '../ui/AppIcon';
+import { useAuth } from '../../hooks/useAuth';
+import { useMe } from '../../hooks/useMe';
+import { queryClient } from '../../lib/queryClient';
 
 type TopbarProps = {
   title: string;
@@ -11,6 +15,18 @@ type TopbarProps = {
 export function Topbar({ title, description, onMenuClick }: TopbarProps) {
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
+  const { logout } = useAuth();
+  const { data } = useMe();
+  const navigate = useNavigate();
+  const user = data?.user;
+  const initials = (user?.email ?? 'U').slice(0, 2).toUpperCase();
+
+  function handleLogout() {
+    logout();
+    queryClient.clear();
+    setProfileOpen(false);
+    navigate('/login', { replace: true });
+  }
 
   useEffect(() => {
     if (!profileOpen) return;
@@ -44,16 +60,16 @@ export function Topbar({ title, description, onMenuClick }: TopbarProps) {
         <Button to="/transactions/new"><AppIcon name="add" /> Quick Add</Button>
         <div className="profile-menu-wrap" ref={profileRef}>
           <Button variant="primary" onClick={() => setProfileOpen((value) => !value)} aria-expanded={profileOpen} aria-haspopup="menu" aria-label="Open profile menu">
-            <AppIcon name="profile" /> AP
+            <AppIcon name="profile" /> {initials}
           </Button>
 
           {profileOpen ? (
             <div className="profile-popover" role="menu" aria-label="Profile menu">
               <div className="profile-popover-head">
-                <div className="avatar large">AP</div>
+                <div className="avatar large">{initials}</div>
                 <div>
-                  <h4>Aditya Prasetyo</h4>
-                  <p>Personal Finance Pro · adty404@gmail.com</p>
+                  <h4>{user?.email ?? 'Pengguna'}</h4>
+                  <p>{user?.email ?? '—'}</p>
                 </div>
               </div>
               <div className="profile-popover-actions">
@@ -64,7 +80,7 @@ export function Topbar({ title, description, onMenuClick }: TopbarProps) {
               </div>
               <div className="profile-popover-foot">
                 <Button onClick={() => setProfileOpen(false)}>Close</Button>
-                <Button to="/" variant="danger" onClick={() => setProfileOpen(false)}>Logout</Button>
+                <Button variant="danger" onClick={handleLogout}>Logout</Button>
               </div>
             </div>
           ) : null}
