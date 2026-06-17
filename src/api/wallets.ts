@@ -1,10 +1,12 @@
 import { apiFetch } from './client'
 import type {
   Wallet,
+  WalletAnalytics,
   WalletCreateRequest,
   WalletInviteRequest,
   WalletListResponse,
   WalletMemberResponse,
+  WalletMembersResponse,
   WalletUpdateRequest,
 } from '../types/wallet'
 
@@ -68,4 +70,15 @@ export function respondToInvite(
       body: payload,
     }
   )
+}
+
+export function listMembers(walletId: string) {
+  return apiFetch<WalletMembersResponse>(`/api/v1/wallets/${walletId}/members`)
+}
+
+export function getAnalytics(walletId: string, month: string) {
+  return apiFetch<WalletAnalytics>(`/api/v1/wallets/${walletId}/analytics`, {
+    method: 'GET',
+    query: { month },
+  })
 }

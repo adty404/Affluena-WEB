@@ -4,14 +4,16 @@ import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { Amount } from '../../components/finance/Amount';
-import { useWallet } from '../../hooks/useWallets';
+import { useWallet, useWalletAnalytics } from '../../hooks/useWallets';
 import { walletTypeLabels } from '../../schemas/wallet';
 import { formatIDR } from '../../lib/money';
-import { fromRFC3339 } from '../../lib/dates';
+import { fromRFC3339, toYearMonth } from '../../lib/dates';
 
 export function WalletDetailPage() {
   const { id } = useParams();
   const { data: wallet, isLoading, error } = useWallet(id);
+  const month = toYearMonth(new Date());
+  const { data: analytics } = useWalletAnalytics(id, month);
 
   if (isLoading) {
     return (
@@ -39,15 +41,19 @@ export function WalletDetailPage() {
   const shared = wallet.role && wallet.role !== 'owner';
   const created = fromRFC3339(wallet.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
   const updated = fromRFC3339(wallet.updated_at).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+  const lastActivity = analytics?.last_activity_at
+    ? fromRFC3339(analytics.last_activity_at).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
+    : 'Belum ada aktivitas';
+  const memberCount = wallet.members?.length ?? (shared ? 2 : 1);
 
   return (
     <AppLayout title="Wallet Detail" description={`${walletTypeLabels[wallet.type]} · ${wallet.currency_code}`}>
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <Badge className="dark">{shared ? `Shared · ${wallet.role}` : 'Private wallet'}</Badge>
+            <Badge className="dark">{shared ? `Shared · ${wallet.role} · ${memberCount} members` : 'Private wallet'}</Badge>
             <h2>{wallet.name}</h2>
-            <p>Dibuat {created}. Update terakhir {updated}.</p>
+            <p>{wallet.description || `Dibuat ${created}. Update terakhir ${updated}.`}</p>
           </div>
           <div className="app-hero-actions">
             <Button to={`/wallets/${wallet.id}/edit`}>Edit</Button>
@@ -58,29 +64,59 @@ export function WalletDetailPage() {
 
         <section className="stat-grid">
           <Card className="stat-card"><span>Saldo</span><strong><Amount value={wallet.balance_minor} /></strong><small>{wallet.currency_code}</small></Card>
-          <Card className="stat-card blue"><span>Tipe</span><strong>{walletTypeLabels[wallet.type]}</strong><small>Wallet type</small></Card>
-          <Card className="stat-card green"><span>Akses</span><strong>{wallet.role ?? '—'}</strong><small>{wallet.share_status ?? '—'}</small></Card>
-          <Card className="stat-card orange"><span>Wallet ID</span><strong style={{ fontSize: 12, wordBreak: 'break-all' }}>{wallet.id}</strong><small>Backend identifier</small></Card>
+          <Card className="stat-card blue"><span>Tipe</span><strong>{walletTypeLabels[wallet.type]}</strong><small>Color: {wallet.color || 'default'}</small></Card>
+          <Card className="stat-card green"><span>Inflow ({month})</span><strong><Amount value={analytics?.inflow_minor ?? 0} /></strong><small>This month</small></Card>
+          <Card className="stat-card orange"><span>Outflow ({month})</span><strong><Amount value={analytics?.outflow_minor ?? 0} variant="expense" /></strong><small>This month</small></Card>
+        </section>
+
+        <section className="dashboard-grid">
+          <Card className="panel-card chart-panel">
+            <div className="panel-head"><div><h3>Balance Movement</h3><p>{analytics?.transaction_count ?? 0} transaksi bulan {month}.</p></div></div>
+            <div className="cashflow-chart">
+              <svg viewBox="0 0 760 250" preserveAspectRatio="none">
+                <path d="M40 210 C110 170, 170 190, 240 140 C310 94, 380 122, 450 76 C540 18, 620 68, 720 38" fill="none" stroke="#10b981" strokeWidth="5" strokeLinecap="round"/>
+                <path d="M40 210 C110 170, 170 190, 240 140 C310 94, 380 122, 450 76 C540 18, 620 68, 720 38 L720 250 L40 250 Z" fill="rgba(16,185,129,.13)"/>
+              </svg>
+            </div>
+            <div className="readiness-list">
+              <div><span>Last activity</span><strong>{lastActivity}</strong></div>
+            </div>
+          </Card>
+
+          <Card className="panel-card">
+            <div className="panel-head"><div><h3>Metadata</h3><p>Info wallet dari backend.</p></div></div>
+            <div className="readiness-list">
+              <div><span>Nama</span><strong>{wallet.name}</strong></div>
+              <div><span>Tipe</span><strong>{walletTypeLabels[wallet.type]}</strong></div>
+              <div><span>Currency</span><strong>{wallet.currency_code}</strong></div>
+              <div><span>Color</span><strong>{wallet.color || 'default'}</strong></div>
+              <div><span>Saldo (minor)</span><strong>{wallet.balance_minor.toLocaleString('id-ID')}</strong></div>
+              <div><span>Display</span><strong>{formatIDR(wallet.balance_minor)}</strong></div>
+              <div><span>Owner ID</span><strong style={{ wordBreak: 'break-all' }}>{wallet.user_id}</strong></div>
+            </div>
+          </Card>
         </section>
 
         <Card className="panel-card">
-          <div className="panel-head"><div><h3>Metadata</h3><p>Info wallet dari backend.</p></div></div>
-          <div className="readiness-list">
-            <div><span>Nama</span><strong>{wallet.name}</strong></div>
-            <div><span>Tipe</span><strong>{walletTypeLabels[wallet.type]}</strong></div>
-            <div><span>Currency</span><strong>{wallet.currency_code}</strong></div>
-            <div><span>Saldo (minor)</span><strong>{wallet.balance_minor.toLocaleString('id-ID')}</strong></div>
-            <div><span>Display</span><strong>{formatIDR(wallet.balance_minor)}</strong></div>
-            <div><span>Owner ID</span><strong style={{ wordBreak: 'break-all' }}>{wallet.user_id}</strong></div>
-          </div>
-        </Card>
-
-        <Card className="panel-card">
-          <div className="panel-head"><div><h3>Aktivitas Terbaru</h3><p>Aktivitas transaksi akan muncul setelah Plan 4 (Transactions) terintegrasi.</p></div></div>
-          <div className="readiness-list">
-            <div><span>Status</span><strong>Menunggu integrasi transaksi</strong></div>
-            <div><span>Filter by wallet</span><strong>GET /api/v1/transactions?wallet_id=...</strong></div>
-          </div>
+          <div className="panel-head"><div><h3>Anggota Wallet</h3><p>{memberCount} user dengan akses.</p></div></div>
+          {wallet.members && wallet.members.length > 0 ? (
+            <div className="member-list">
+              {wallet.members.map((m) => (
+                <div className="member-row" key={m.user_id}>
+                  <div className="avatar">{m.email.slice(0, 2).toUpperCase()}</div>
+                  <div>
+                    <strong>{m.email}</strong>
+                    <span>{m.role} · {m.status}</span>
+                  </div>
+                  <Badge tone={m.status === 'joined' ? 'green' : m.status === 'pending' ? 'orange' : 'red'}>{m.status}</Badge>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="readiness-list">
+              <div><span>Status</span><strong>Wallet private, hanya owner</strong></div>
+            </div>
+          )}
         </Card>
       </div>
     </AppLayout>
