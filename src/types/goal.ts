@@ -1,34 +1,22 @@
-
 export type GoalStatus = 'active' | 'at_risk' | 'completed';
-export type GoalVisibility = 'private' | 'shared';
 
 export type GoalMember = {
-  id: string;
-  name: string;
-  role: 'owner' | 'contributor' | 'viewer';
-  contributionAmount: number;
-  status: 'joined' | 'pending';
-};
-
-export type GoalContribution = {
-  id: string;
-  date: string;
-  walletName: string;
-  amount: number;
-  note: string;
+  goal_id: string;
+  user_id: string;
+  status: 'joined' | 'pending' | 'rejected';
+  created_at: string;
+  updated_at: string;
 };
 
 export type Goal = {
   id: string;
+  user_id: string;
   name: string;
-  targetAmount: number;
-  currentAmount: number;
-  deadline: string;
-  walletName: string;
-  visibility: GoalVisibility;
+  target_amount_minor: number;
+  collected_amount_minor: number;
+  deadline?: string;
   status: GoalStatus;
-  icon: 'goal' | 'cash' | 'investment' | 'transport' | 'shopping';
-  note: string;
-  members: GoalMember[];
-  contributions: GoalContribution[];
+  created_at: string;
+  updated_at: string;
+  members?: GoalMember[];
 };
