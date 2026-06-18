@@ -66,7 +66,7 @@ export function BudgetFormPage() {
       }
       navigate('/budgets');
     } catch (error) {
-      showToast('Failed to save budget.', 'error');
+      showToast('Failed to save budget.');
     }
   };
 
@@ -78,7 +78,7 @@ export function BudgetFormPage() {
       showToast('Budget deleted successfully.');
       navigate('/budgets');
     } catch (error) {
-      showToast('Failed to delete budget.', 'error');
+      showToast('Failed to delete budget.');
     }
   };
 
