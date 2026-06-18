@@ -1,8 +1,22 @@
 export interface AuthUser {
   id: string
   email: string
+  name: string
+  avatar_url: string
   created_at: string
   updated_at: string
+}
+
+export interface AuthSession {
+  id: string
+  user_id: string
+  token_suffix: string
+  user_agent?: string
+  ip_address?: string
+  expires_at: string
+  created_at: string
+  revoked_at?: string
+  last_used_at?: string
 }
 
 export interface AuthTokens {
@@ -29,4 +43,14 @@ export interface RegisterRequest {
 
 export interface RefreshRequest {
   refresh_token: string
+}
+
+export interface UpdateAccountRequest {
+  name: string
+  avatar_url: string
+}
+
+export interface ChangePasswordRequest {
+  current_password: string
+  new_password: string
 }
