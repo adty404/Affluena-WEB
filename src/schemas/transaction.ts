@@ -44,7 +44,7 @@ export type TransactionFormData = z.infer<typeof transactionSchema>
 
 export const splitTransactionSchema = z.object({
   wallet_id: z.string().min(1, 'Wallet is required'),
-  category_id: z.string().optional(),
+  category_id: z.string().min(1, 'Category is required'),
   total_amount_minor: z.number().int().min(1, 'Total amount must be greater than 0'),
   transaction_at: z.string().optional(),
   note: z.string().optional(),
