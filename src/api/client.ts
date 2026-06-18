@@ -36,6 +36,7 @@ export interface ApiFetchOptions {
   signal?: AbortSignal
   /** skip auth header (used by login/register/refresh themselves) */
   anonymous?: boolean
+  responseType?: 'json' | 'blob'
 }
 
 function buildUrl(path: string, query?: ApiFetchOptions['query']): string {
@@ -56,7 +57,7 @@ export async function apiFetch<T = unknown>(
 ): Promise<T> {
   const { method = 'GET', body, query, signal, anonymous } = opts
 
-  const headers = new Headers({ 'content-type': 'application/json', accept: 'application/json' })
+  const headers = new Headers({ 'content-type': 'application/json', accept: opts.responseType === 'blob' ? '*/*' : 'application/json' })
   if (!anonymous) {
     const access = getAccessToken()
     if (access) headers.set('authorization', `Bearer ${access}`)
@@ -96,6 +97,7 @@ export async function apiFetch<T = unknown>(
   }
 
   if (res.status === 204) return undefined as T
+  if (opts.responseType === 'blob') return (await res.blob()) as T
   const contentType = res.headers.get('content-type') ?? ''
   if (!contentType.includes('application/json')) return undefined as T
   if (method === 'DELETE' || method === 'PUT') {
