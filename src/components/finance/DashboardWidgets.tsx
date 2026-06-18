@@ -19,24 +19,53 @@ export function StatGrid({ stats }: StatGridProps) {
   );
 }
 
-export function CashflowChart() {
+export function CashflowChart({ trend }: { trend?: { month: string; income_minor: number; expense_minor: number }[] }) {
+  if (!trend || trend.length === 0) {
+    return (
+      <Card className="dashboard-panel chart-panel">
+        <div className="panel-head">
+          <div>
+            <h3>Cashflow Trend</h3>
+            <p>Income vs expense in the last 6 months.</p>
+          </div>
+        </div>
+        <div className="cashflow-chart" aria-label="Cashflow trend chart">
+          <p style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>No data available</p>
+        </div>
+      </Card>
+    );
+  }
+
+  const maxVal = Math.max(...trend.map(t => Math.max(t.income_minor, t.expense_minor)), 1000000);
+  const width = 760;
+  const height = 260;
+  const paddingX = 55;
+  const paddingY = 24;
+  const chartWidth = width - paddingX * 2;
+  const chartHeight = height - paddingY * 2;
+
+  const getX = (index: number) => paddingX + (index / Math.max(trend.length - 1, 1)) * chartWidth;
+  const getY = (val: number) => height - paddingY - (val / maxVal) * chartHeight;
+
+  const incomePath = trend.map((t, i) => `${i === 0 ? 'M' : 'L'} ${getX(i)} ${getY(t.income_minor)}`).join(' ');
+  const expensePath = trend.map((t, i) => `${i === 0 ? 'M' : 'L'} ${getX(i)} ${getY(t.expense_minor)}`).join(' ');
+
   return (
     <Card className="dashboard-panel chart-panel">
       <div className="panel-head">
         <div>
           <h3>Cashflow Trend</h3>
-          <p>Income vs expense in the last 6 months.</p>
+          <p>Income vs expense in the last {trend.length} months.</p>
         </div>
-        <Badge tone="blue">Jun 2026</Badge>
+        <Badge tone="blue">{trend[trend.length - 1]?.month}</Badge>
       </div>
       <div className="cashflow-chart" aria-label="Cashflow trend chart">
-        <svg viewBox="0 0 760 260" preserveAspectRatio="none">
-          <text x="0" y="24" className="axis-text">15M</text>
-          <text x="0" y="106" className="axis-text">10M</text>
-          <text x="0" y="188" className="axis-text">5M</text>
-          <text x="0" y="250" className="axis-text">0</text>
-          <path d="M55 82 C150 70, 210 68, 292 58 C370 48, 430 54, 512 42 C590 34, 668 40, 742 28" fill="none" stroke="#10b981" strokeWidth="5" strokeLinecap="round" />
-          <path d="M55 158 C150 140, 210 154, 292 134 C370 146, 430 126, 512 138 C590 124, 668 132, 742 118" fill="none" stroke="#ef4444" strokeWidth="5" strokeLinecap="round" />
+        <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
+          <text x="0" y="24" className="axis-text">{Math.round(maxVal / 1000000)}M</text>
+          <text x="0" y={height / 2} className="axis-text">{Math.round(maxVal / 2000000)}M</text>
+          <text x="0" y={height - 24} className="axis-text">0</text>
+          <path d={incomePath} fill="none" stroke="#10b981" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
+          <path d={expensePath} fill="none" stroke="#ef4444" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </div>
       <div className="chart-legend">
