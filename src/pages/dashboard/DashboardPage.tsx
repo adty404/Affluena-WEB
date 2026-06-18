@@ -42,7 +42,7 @@ export function DashboardPage() {
     };
   }) || [];
 
-  const recentTransactions: DashboardTransaction[] = txData?.transactions.map(tx => ({
+  const recentTransactions: DashboardTransaction[] = (txData?.transactions ?? []).map(tx => ({
     id: tx.id,
     title: tx.note || 'Transaction',
     category: tx.category_id || 'Uncategorized',
@@ -52,12 +52,13 @@ export function DashboardPage() {
     date: new Date(tx.transaction_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }),
   })) || [];
 
-  const totalWalletBalance = walletsData?.wallets.reduce((sum, w) => sum + w.balance_minor, 0) || 1;
-  const walletPortfolio = walletsData?.wallets.map(w => ({
+  const walletList = walletsData?.wallets ?? [];
+  const totalWalletBalance = walletList.reduce((sum, w) => sum + w.balance_minor, 0) || 1;
+  const walletPortfolio = walletList.map(w => ({
     name: w.name,
     value: formatIDR(w.balance_minor),
     percent: Math.round((w.balance_minor / totalWalletBalance) * 100),
-  })) || [];
+  }));
 
   return (
     <AppLayout title="Dashboard" description="Overview finansial personal, cashflow, spending, dan alert bulan ini.">
