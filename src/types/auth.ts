@@ -7,7 +7,7 @@ export interface AuthUser {
   updated_at: string
 }
 
-export interface AuthSession {
+export interface AuthSessionRecord {
   id: string
   user_id: string
   token_suffix: string

@@ -2,6 +2,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom';
 import { Logo } from '../ui/Logo';
 import { Button } from '../ui/Button';
 import { AppIcon, type AppIconName } from '../ui/AppIcon';
+import { useMe } from '../../hooks/useMe';
 
 type NavItem = {
   to: string;
@@ -83,6 +84,10 @@ function Section({ title, links, onClose }: { title: string; links: NavItem[]; o
 }
 
 export function Sidebar({ onClose }: { onClose: () => void }) {
+  const { data, isLoading } = useMe();
+  const user = data?.user;
+  const initials = user?.email ? user.email.charAt(0).toUpperCase() : '?';
+
   return (
     <aside className="sidebar">
       <div className="sidebar-head">
@@ -101,10 +106,10 @@ export function Sidebar({ onClose }: { onClose: () => void }) {
 
       <div className="sidebar-footer">
         <NavLink to="/settings/profile" onClick={onClose} className="sidebar-user sidebar-user-link">
-          <div className="avatar">AP</div>
+          <div className="avatar">{isLoading ? '…' : initials}</div>
           <div>
-            <strong>Aditya Prasetyo</strong>
-            <span>Personal Finance Pro</span>
+            <strong>{isLoading ? 'Memuat…' : (user?.email ?? 'Guest')}</strong>
+            <span>Affluena User</span>
           </div>
         </NavLink>
       </div>

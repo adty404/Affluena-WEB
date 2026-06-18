@@ -19,6 +19,7 @@ export const queryClient = new QueryClient({
 
 export const queryKeys = {
   me: ['auth', 'me'] as const,
+  sessions: ['auth', 'sessions'] as const,
   wallets: {
     all: ['wallets'] as const,
     list: (params?: Record<string, unknown>) => ['wallets', 'list', params ?? {}] as const,

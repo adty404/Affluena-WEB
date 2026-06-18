@@ -40,7 +40,7 @@ export function BudgetFormPage() {
             <div className="panel-head"><div><h3>Budget Information</h3><p>Pastikan satu category hanya punya satu budget di periode yang sama.</p></div></div>
             <form className="form-stack" onSubmit={(event) => { event.preventDefault(); showToast('Budget berhasil disimpan.'); }}>
               <div className="form-two">
-                <label><span>Expense Category</span><Select defaultValue={budget.categoryId}>{expenseCategories.map((category) => <option key={category.id} value={category.id}>{category.icon} {category.name}</option>)}</Select><small className="field-help">Budget hanya berlaku untuk expense category.</small></label>
+                <label><span>Expense Category</span><Select defaultValue={budget.categoryId}>{expenseCategories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}</Select><small className="field-help">Budget hanya berlaku untuk expense category.</small></label>
                 <label><span>Period</span><Input type="month" defaultValue="2026-06" /><small className="field-help">Periode digunakan untuk menghitung actual spending.</small></label>
               </div>
               <div className="form-two">
