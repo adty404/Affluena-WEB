@@ -115,7 +115,7 @@ export const mockBudgetReport: BudgetReportItem[] = mockBudgets.map((budget) => 
   };
 });
 
-export const mockBudgetTransactions = mockTransactions.filter((transaction) => transaction.categoryName === 'Food & Drink');
+export const mockBudgetTransactions = mockTransactions.filter((transaction) => transaction.category_id === '1');
 
 export const budgetSummary = {
   totalLimit: mockBudgets.reduce((sum, budget) => sum + budget.limit, 0),
