@@ -11,6 +11,7 @@ import { Amount } from '../../components/finance/Amount';
 import { BudgetInsightCard } from '../../components/budgets/BudgetInsightCard';
 import { budgetSummary, mockBudgetReport } from '../../data/mockBudgets';
 import type { BudgetReportItem } from '../../types/budget';
+import { useCategories } from '../../hooks/useCategories';
 
 const statusTone = {
   safe: 'green',
@@ -21,6 +22,7 @@ const statusTone = {
 export function BudgetReportPage() {
   const { showToast } = useToast();
   const [exportOpen, setExportOpen] = useState(false);
+  const { data: categoriesData } = useCategories({ type: 'expense' });
 
   return (
     <AppLayout title="Budget Report" description="Budget vs actual report, chart, insight, dan export action.">
@@ -40,7 +42,7 @@ export function BudgetReportPage() {
 
         <section className="stat-grid">
           <Card className="stat-card"><span>Total Budget</span><strong><Amount value={budgetSummary.totalLimit} /></strong><small>June 2026</small></Card>
-          <Card className="stat-card"><span>Total Actual</span><strong><Amount value={budgetSummary.totalActual} type="expense" /></strong><small>61.2% used</small></Card>
+          <Card className="stat-card"><span>Total Actual</span><strong><Amount value={budgetSummary.totalActual} type="expense" /></strong><small>{budgetSummary.totalLimit > 0 ? Math.round((budgetSummary.totalActual / budgetSummary.totalLimit) * 100) : 0}% used</small></Card>
           <Card className="stat-card"><span>Remaining</span><strong><Amount value={budgetSummary.totalLimit - budgetSummary.totalActual} type="income" /></strong><small>Available</small></Card>
           <Card className="stat-card"><span>Forecast</span><strong><Amount value={budgetSummary.totalForecast} /></strong><small>Possible overspend</small></Card>
         </section>
@@ -50,11 +52,14 @@ export function BudgetReportPage() {
             <div className="panel-head"><div><h3>Budget vs Actual Chart</h3><p>Visual comparison untuk tiap category.</p></div><Badge tone="blue">June 2026</Badge></div>
             <div className="budget-bars" aria-label="Budget versus actual chart">
               {mockBudgetReport.map((item) => {
-                const actualPercent = Math.min(120, Math.round((item.actual / item.limit) * 100));
+                const actualPercent = Math.min(120, item.usage_percent);
+                const category = categoriesData?.categories.find(c => c.id === item.category_id);
+                const categoryName = category?.name ?? 'Unknown Category';
+                const status = item.usage_percent >= 100 ? 'exceeded' : item.usage_percent >= 80 ? 'warning' : 'safe';
                 return (
                   <div className="budget-bar-row" key={item.id}>
-                    <span>{item.categoryName}</span>
-                    <div className="budget-bar-track"><i className="limit" style={{ width: '100%' }} /><i className={`actual ${item.status}`} style={{ width: `${Math.min(100, actualPercent)}%` }} /></div>
+                    <span>{categoryName}</span>
+                    <div className="budget-bar-track"><i className="limit" style={{ width: '100%' }} /><i className={`actual ${status}`} style={{ width: `${Math.min(100, actualPercent)}%` }} /></div>
                     <strong>{actualPercent}%</strong>
                   </div>
                 );
@@ -75,12 +80,35 @@ export function BudgetReportPage() {
             data={mockBudgetReport}
             getRowKey={(item) => item.id}
             columns={[
-              { key: 'category', header: 'Category', render: (item) => <div className="table-title"><span className={`mini-icon ${item.status}`}><AppIcon name={item.categoryIcon} /></span><strong>{item.categoryName}</strong><small>{item.recommendation}</small></div> },
-              { key: 'budget', header: 'Budget', align: 'right', render: (item) => <Amount value={item.limit} /> },
-              { key: 'actual', header: 'Actual', align: 'right', render: (item) => <Amount value={item.actual} type="expense" /> },
+              { 
+                key: 'category', 
+                header: 'Category', 
+                render: (item) => {
+                  const category = categoriesData?.categories.find(c => c.id === item.category_id);
+                  const categoryName = category?.name ?? 'Unknown Category';
+                  const categoryIcon = 'categories';
+                  const status = item.usage_percent >= 100 ? 'exceeded' : item.usage_percent >= 80 ? 'warning' : 'safe';
+                  return (
+                    <div className="table-title">
+                      <span className={`mini-icon ${status}`}><AppIcon name={categoryIcon} /></span>
+                      <strong>{categoryName}</strong>
+                      <small>{item.recommendation}</small>
+                    </div>
+                  );
+                } 
+              },
+              { key: 'budget', header: 'Budget', align: 'right', render: (item) => <Amount value={item.limit_minor} /> },
+              { key: 'actual', header: 'Actual', align: 'right', render: (item) => <Amount value={item.spent_minor} type="expense" /> },
               { key: 'remaining', header: 'Remaining', align: 'right', render: (item) => <Amount value={Math.abs(item.variance)} type={item.variance < 0 ? 'expense' : 'income'} /> },
-              { key: 'forecast', header: 'Forecast', align: 'right', render: (item) => <Amount value={item.forecast} /> },
-              { key: 'status', header: 'Status', render: (item) => <Badge tone={statusTone[item.status]}>{item.status}</Badge> },
+              { key: 'forecast', header: 'Forecast', align: 'right', render: (item) => <Amount value={item.spent_minor * 1.2} /> },
+              { 
+                key: 'status', 
+                header: 'Status', 
+                render: (item) => {
+                  const status = item.usage_percent >= 100 ? 'exceeded' : item.usage_percent >= 80 ? 'warning' : 'safe';
+                  return <Badge tone={statusTone[status]}>{status}</Badge>;
+                } 
+              },
             ]}
           />
         </Card>

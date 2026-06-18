@@ -8,8 +8,10 @@ import { Amount } from '../../components/finance/Amount';
 import { ProgressBar } from '../../components/finance/ProgressBar';
 import { BudgetCard } from '../../components/budgets/BudgetCard';
 import { BudgetAlertItem } from '../../components/budgets/BudgetAlertItem';
-import { mockBudgets, mockBudgetAlerts, budgetSummary } from '../../data/mockBudgets';
-import type { Budget } from '../../types/budget';
+import { mockBudgetAlerts } from '../../data/mockBudgets';
+import type { BudgetSummary } from '../../types/budget';
+import { useBudgets } from '../../hooks/useBudgets';
+import { useCategories } from '../../hooks/useCategories';
 
 const statusTone = {
   safe: 'green',
@@ -18,7 +20,18 @@ const statusTone = {
 } as const;
 
 export function BudgetListPage() {
-  const overallUsage = Math.round((budgetSummary.totalActual / budgetSummary.totalLimit) * 100);
+  const { data: budgetsData, isLoading, error } = useBudgets();
+  const { data: categoriesData } = useCategories({ type: 'expense' });
+
+  const budgets = budgetsData?.budgets ?? [];
+  
+  const totalLimit = budgets.reduce((sum, b) => sum + b.limit_minor, 0);
+  const totalActual = budgets.reduce((sum, b) => sum + b.spent_minor, 0);
+  const overallUsage = totalLimit > 0 ? Math.round((totalActual / totalLimit) * 100) : 0;
+  
+  const safeCount = budgets.filter(b => b.usage_percent < 80).length;
+  const warningCount = budgets.filter(b => b.usage_percent >= 80 && b.usage_percent < 100).length;
+  const exceededCount = budgets.filter(b => b.usage_percent >= 100).length;
 
   return (
     <AppLayout title="Budgets" description="Monthly category budget, progress usage, alert threshold, dan budget health.">
@@ -37,43 +50,96 @@ export function BudgetListPage() {
         </section>
 
         <section className="stat-grid">
-          <Card className="stat-card"><span>Total Limit</span><strong><Amount value={budgetSummary.totalLimit} /></strong><small>{budgetSummary.activeCount} active budgets</small></Card>
-          <Card className="stat-card"><span>Actual Spent</span><strong><Amount value={budgetSummary.totalActual} type="expense" /></strong><small>{overallUsage}% overall usage</small></Card>
-          <Card className="stat-card"><span>Safe</span><strong>{budgetSummary.safeCount}</strong><small>Below 80%</small></Card>
-          <Card className="stat-card"><span>Need Action</span><strong>{budgetSummary.warningCount + budgetSummary.exceededCount}</strong><small>Warning or exceeded</small></Card>
+          <Card className="stat-card"><span>Total Limit</span><strong><Amount value={totalLimit} /></strong><small>{budgets.length} active budgets</small></Card>
+          <Card className="stat-card"><span>Actual Spent</span><strong><Amount value={totalActual} type="expense" /></strong><small>{overallUsage}% overall usage</small></Card>
+          <Card className="stat-card"><span>Safe</span><strong>{safeCount}</strong><small>Below 80%</small></Card>
+          <Card className="stat-card"><span>Need Action</span><strong>{warningCount + exceededCount}</strong><small>Warning or exceeded</small></Card>
         </section>
 
-        <section className="budget-card-grid">
-          {mockBudgets.slice(0, 3).map((budget, index) => <BudgetCard key={budget.id} budget={budget} featured={index === 0} />)}
-        </section>
+        {isLoading ? (
+          <p>Loading budgets...</p>
+        ) : error ? (
+          <p>Error loading budgets.</p>
+        ) : budgets.length === 0 ? (
+          <Card className="panel-card"><p>No budgets found. Create one to get started.</p></Card>
+        ) : (
+          <>
+            <section className="budget-card-grid">
+              {budgets.slice(0, 3).map((budget, index) => <BudgetCard key={budget.id} budget={budget} featured={index === 0} />)}
+            </section>
 
-        <section className="dashboard-grid">
-          <Card className="panel-card">
-            <div className="panel-head">
-              <div><h3>Budget List</h3><p>Category budget table dengan status safe, warning, dan exceeded.</p></div>
-              <div className="panel-actions"><Button to="/budgets/new" size="small" variant="primary"><AppIcon name="add" /> Add</Button><Button to="/budgets/report" size="small"><AppIcon name="chart" /> Report</Button></div>
-            </div>
-            <DataTable<Budget>
-              data={mockBudgets}
-              getRowKey={(budget) => budget.id}
-              columns={[
-                { key: 'category', header: 'Category', render: (budget) => <div className="table-title"><span className={`mini-icon ${budget.status}`}><AppIcon name={budget.categoryIcon} /></span><strong>{budget.categoryName}</strong><small>{budget.period}</small></div> },
-                { key: 'limit', header: 'Limit', align: 'right', render: (budget) => <Amount value={budget.limit} /> },
-                { key: 'actual', header: 'Actual', align: 'right', render: (budget) => <Amount value={budget.actual} type="expense" /> },
-                { key: 'usage', header: 'Usage', render: (budget) => { const usage = Math.round((budget.actual / budget.limit) * 100); return <div className="table-progress"><ProgressBar value={usage} tone={budget.status === 'safe' ? 'green' : budget.status === 'warning' ? 'orange' : 'red'} /><span>{usage}%</span></div>; } },
-                { key: 'status', header: 'Status', render: (budget) => <Badge tone={statusTone[budget.status]}>{budget.status}</Badge> },
-                { key: 'action', header: 'Action', render: (budget) => <div className="inline-actions"><Button to={`/budgets/${budget.id}`} size="small">View</Button><Button to={`/budgets/${budget.id}/edit`} size="small">Edit</Button></div> },
-              ]}
-            />
-          </Card>
+            <section className="dashboard-grid">
+              <Card className="panel-card">
+                <div className="panel-head">
+                  <div><h3>Budget List</h3><p>Category budget table dengan status safe, warning, dan exceeded.</p></div>
+                  <div className="panel-actions"><Button to="/budgets/new" size="small" variant="primary"><AppIcon name="add" /> Add</Button><Button to="/budgets/report" size="small"><AppIcon name="chart" /> Report</Button></div>
+                </div>
+                <DataTable<BudgetSummary>
+                  data={budgets}
+                  getRowKey={(budget) => budget.id}
+                  columns={[
+                    { 
+                      key: 'category', 
+                      header: 'Category', 
+                      render: (budget) => {
+                        const category = categoriesData?.categories.find(c => c.id === budget.category_id);
+                        const categoryName = category?.name ?? 'Unknown Category';
+                        const categoryIcon = 'categories';
+                        let status: 'safe' | 'warning' | 'exceeded' = 'safe';
+                        if (budget.usage_percent >= 100) status = 'exceeded';
+                        else if (budget.usage_percent >= 80) status = 'warning';
+                        
+                        return (
+                          <div className="table-title">
+                            <span className={`mini-icon ${status}`}><AppIcon name={categoryIcon} /></span>
+                            <strong>{categoryName}</strong>
+                            <small>{budget.month}</small>
+                          </div>
+                        );
+                      } 
+                    },
+                    { key: 'limit', header: 'Limit', align: 'right', render: (budget) => <Amount value={budget.limit_minor} /> },
+                    { key: 'actual', header: 'Actual', align: 'right', render: (budget) => <Amount value={budget.spent_minor} type="expense" /> },
+                    { 
+                      key: 'usage', 
+                      header: 'Usage', 
+                      render: (budget) => { 
+                        const usage = budget.usage_percent; 
+                        let status: 'safe' | 'warning' | 'exceeded' = 'safe';
+                        if (usage >= 100) status = 'exceeded';
+                        else if (usage >= 80) status = 'warning';
+                        return (
+                          <div className="table-progress">
+                            <ProgressBar value={usage} tone={status === 'safe' ? 'green' : status === 'warning' ? 'orange' : 'red'} />
+                            <span>{usage}%</span>
+                          </div>
+                        ); 
+                      } 
+                    },
+                    { 
+                      key: 'status', 
+                      header: 'Status', 
+                      render: (budget) => {
+                        let status: 'safe' | 'warning' | 'exceeded' = 'safe';
+                        if (budget.usage_percent >= 100) status = 'exceeded';
+                        else if (budget.usage_percent >= 80) status = 'warning';
+                        return <Badge tone={statusTone[status]}>{status}</Badge>;
+                      } 
+                    },
+                    { key: 'action', header: 'Action', render: (budget) => <div className="inline-actions"><Button to={`/budgets/${budget.id}`} size="small">View</Button><Button to={`/budgets/${budget.id}/edit`} size="small">Edit</Button></div> },
+                  ]}
+                />
+              </Card>
 
-          <Card className="panel-card">
-            <div className="panel-head"><div><h3>Latest Alerts</h3><p>Alert dari threshold 80% dan 100%.</p></div><Button to="/budgets/alerts" size="small">Open</Button></div>
-            <div className="budget-alert-list">
-              {mockBudgetAlerts.map((alert) => <BudgetAlertItem key={alert.id} alert={alert} />)}
-            </div>
-          </Card>
-        </section>
+              <Card className="panel-card">
+                <div className="panel-head"><div><h3>Latest Alerts</h3><p>Alert dari threshold 80% dan 100%.</p></div><Button to="/budgets/alerts" size="small">Open</Button></div>
+                <div className="budget-alert-list">
+                  {mockBudgetAlerts.map((alert) => <BudgetAlertItem key={alert.id} alert={alert} />)}
+                </div>
+              </Card>
+            </section>
+          </>
+        )}
       </div>
     </AppLayout>
   );
