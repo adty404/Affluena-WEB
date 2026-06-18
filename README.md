@@ -41,5 +41,5 @@ npm run build
 
 - Vanilla CSS only.
 - No Tailwind dependency.
-- Data is still local demo data under `src/data`; backend/API integration is intentionally not included.
+- Data is still local demo data under `src/data` for modules not yet integrated (Categories, Tags, Transactions, Budgets, Debts, Goals, Recurring, Reports, etc.). Auth and Wallets are already wired to the live backend API.
 - Form input placeholders such as example email/search text are retained because they are normal UX hints, not inactive placeholders.

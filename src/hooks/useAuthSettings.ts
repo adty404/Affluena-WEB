@@ -29,7 +29,7 @@ export function useChangePassword() {
 
 export function useSessions() {
   return useQuery({
-    queryKey: ['auth', 'sessions'],
+    queryKey: queryKeys.sessions,
     queryFn: () => listSessions(),
   })
 }
@@ -39,7 +39,7 @@ export function useRevokeSession() {
   return useMutation({
     mutationFn: (sessionId: string) => revokeSession(sessionId),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['auth', 'sessions'] })
+      qc.invalidateQueries({ queryKey: queryKeys.sessions })
     },
   })
 }

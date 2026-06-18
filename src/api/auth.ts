@@ -1,6 +1,7 @@
 import { apiFetch } from './client'
 import type {
   AuthSession,
+  AuthSessionRecord,
   AuthUser,
   ChangePasswordRequest,
   LoginRequest,
@@ -52,7 +53,7 @@ export function changePassword(payload: ChangePasswordRequest) {
 }
 
 export function listSessions() {
-  return apiFetch<{ sessions: AuthSession[] }>('/api/v1/auth/sessions')
+  return apiFetch<{ sessions: AuthSessionRecord[] }>('/api/v1/auth/sessions')
 }
 
 export function revokeSession(sessionId: string) {

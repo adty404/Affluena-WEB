@@ -38,11 +38,11 @@ export function ProfileSettingsPage() {
             <div className="panel-head"><div><h3>Personal Information</h3><p>Identitas yang tampil di topbar dan activity trail.</p></div></div>
             <form className="form-stack" onSubmit={(event) => { event.preventDefault(); showToast('Profile information saved.'); }}>
               <div className="form-two">
-                <label><span>Full name</span><Input defaultValue="Aditya Prasetyo" /></label>
+                <label><span>Full name</span><Input defaultValue={isLoading ? 'Memuat…' : (user?.email ?? '')} /></label>
                 <label><span>Email</span><Input defaultValue={isLoading ? 'Memuat…' : (user?.email ?? '')} disabled /></label>
               </div>
               <div className="form-two">
-                <label><span>Handle</span><Input defaultValue="@adty404" /></label>
+                <label><span>Handle</span><Input defaultValue="" disabled placeholder="Belum tersedia" /></label>
                 <label><span>Default currency</span><Select defaultValue="IDR"><option>IDR</option><option>USD</option><option>SGD</option></Select></label>
               </div>
               <div className="form-two">
