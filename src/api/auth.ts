@@ -60,3 +60,19 @@ export function revokeSession(sessionId: string) {
     method: 'DELETE',
   })
 }
+
+export function requestPasswordReset(email: string) {
+  return apiFetch<void>('/api/v1/auth/forgot-password', {
+    method: 'POST',
+    body: { email },
+    anonymous: true,
+  })
+}
+
+export function resetPassword(token: string, newPassword: string) {
+  return apiFetch<void>('/api/v1/auth/reset-password', {
+    method: 'POST',
+    body: { token, new_password: newPassword },
+    anonymous: true,
+  })
+}
