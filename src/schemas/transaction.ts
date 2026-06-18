@@ -7,7 +7,7 @@ export const transactionSchema = z.object({
   category_id: z.string().optional(),
   amount_minor: z.number().int(),
   tag_ids: z.array(z.string()).optional(),
-  transaction_at: z.string().datetime(),
+  transaction_at: z.string(),
   note: z.string().optional(),
 }).superRefine((data, ctx) => {
   if (data.type === 'transfer' && !data.to_wallet_id) {
@@ -46,7 +46,7 @@ export const splitTransactionSchema = z.object({
   wallet_id: z.string().min(1, 'Wallet is required'),
   category_id: z.string().optional(),
   total_amount_minor: z.number().int().min(1, 'Total amount must be greater than 0'),
-  transaction_at: z.string().datetime().optional(),
+  transaction_at: z.string().optional(),
   note: z.string().optional(),
   tag_ids: z.array(z.string()).optional(),
   splits: z.array(z.object({

@@ -31,7 +31,7 @@ export function TransactionDetailPage() {
   const wallet = walletsData?.wallets.find(w => w.id === transaction.wallet_id);
   const toWallet = walletsData?.wallets.find(w => w.id === transaction.to_wallet_id);
   const category = categoriesData?.categories.find(c => c.id === transaction.category_id);
-  const tags = tagsData?.tags.filter(t => transaction.tag_ids?.includes(t.id)) || [];
+  const tags = tagsData?.tags?.filter(t => transaction.tag_ids?.includes(t.id)) || [];
 
   const handleDelete = () => {
     if (window.confirm('Are you sure you want to delete this transaction?')) {
