@@ -18,7 +18,7 @@ export function useDashboardSummary(month?: string) {
 export function useCashflowTrend(months: number = 12) {
   return useQuery({
     queryKey: queryKeys.dashboard.cashflowTrend(months),
-    queryFn: () => getCashflowTrend(`1-${months}`),
+    queryFn: () => getCashflowTrend(String(months)),
   })
 }
 

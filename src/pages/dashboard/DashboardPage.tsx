@@ -32,7 +32,7 @@ export function DashboardPage() {
     { label: 'Cashflow', value: '...', note: 'Loading...' },
   ];
 
-  const expenseSlices: ExpenseSlice[] = expenseData?.distribution.map((d, i) => {
+  const expenseSlices: ExpenseSlice[] = (expenseData?.distribution ?? []).map((d, i) => {
     const tones: ('green' | 'blue' | 'orange' | 'purple' | 'red' | 'gray')[] = ['blue', 'purple', 'orange', 'green', 'red', 'gray'];
     return {
       label: d.category_name,
