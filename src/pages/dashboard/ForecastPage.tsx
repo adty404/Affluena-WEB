@@ -4,11 +4,26 @@ import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { ProgressBar } from '../../components/finance/ProgressBar';
 import { ForecastCards } from '../../components/finance/DashboardWidgets';
-import { forecastItems } from '../../data/mockDashboard';
 import { useToast } from '../../components/ui/Toast';
+import { useForecast } from '../../hooks/useDashboard';
+import { formatIDR as formatCurrency } from '../../lib/money';
+import type { ForecastItem } from '../../types/dashboard';
 
 export function ForecastPage() {
   const { showToast } = useToast();
+  const { data: forecast, refetch } = useForecast();
+
+  const forecastItems: ForecastItem[] = forecast ? [
+    { title: 'Current Expense', value: formatCurrency(forecast.current_expense_minor), note: 'Total spent so far', tone: 'blue' },
+    { title: 'Daily Average', value: formatCurrency(forecast.daily_average_minor), note: 'Average daily spend', tone: 'orange' },
+    { title: 'Forecasted Expense', value: formatCurrency(forecast.forecasted_expense_minor), note: 'Expected end of month', tone: forecast.status === 'safe' ? 'green' : 'red' },
+    { title: 'Budget Limit', value: formatCurrency(forecast.budget_limit_minor), note: 'Total budget limit', tone: 'purple' },
+  ] : [
+    { title: 'Current Expense', value: '...', note: 'Loading...', tone: 'blue' },
+    { title: 'Daily Average', value: '...', note: 'Loading...', tone: 'orange' },
+    { title: 'Forecasted Expense', value: '...', note: 'Loading...', tone: 'green' },
+    { title: 'Budget Limit', value: '...', note: 'Loading...', tone: 'purple' },
+  ];
 
   return (
     <AppLayout title="Forecast" description="Proyeksi saldo, safe-to-spend, budget risk, dan upcoming due.">
@@ -20,7 +35,7 @@ export function ForecastPage() {
             <p>Forecast ini memakai transaksi, budget, due reminder, dan recurring schedule agar user bisa melihat risiko sebelum akhir bulan.</p>
           </div>
           <div className="app-hero-actions">
-            <Button variant="primary" onClick={() => showToast('Forecast recalculated from latest financial metrics.')}>Recalculate</Button>
+            <Button variant="primary" onClick={() => { refetch(); showToast('Forecast recalculated from latest financial metrics.'); }}>Recalculate</Button>
             <Button to="/dashboard">Back Dashboard</Button>
           </div>
         </section>
@@ -29,11 +44,14 @@ export function ForecastPage() {
 
         <section className="dashboard-grid">
           <Card className="dashboard-panel forecast-timeline">
-            <div className="panel-head"><div><h3>Month-End Projection</h3><p>Cash reserve and risk projection.</p></div><Badge>Healthy</Badge></div>
-            <div className="forecast-step"><div><strong>Today</strong><span>Rp 68.450.000</span></div><ProgressBar value={72} /></div>
-            <div className="forecast-step"><div><strong>Expected income</strong><span>+Rp 3.400.000</span></div><ProgressBar value={86} tone="green" /></div>
-            <div className="forecast-step"><div><strong>Expected expense</strong><span>-Rp 1.950.000</span></div><ProgressBar value={43} tone="orange" /></div>
-            <div className="forecast-step"><div><strong>Projected balance</strong><span>Rp 72.900.000</span></div><ProgressBar value={91} tone="blue" /></div>
+            <div className="panel-head">
+              <div><h3>Month-End Projection</h3><p>Cash reserve and risk projection.</p></div>
+              {forecast && <Badge tone={forecast.status === 'safe' ? 'green' : 'red'}>{forecast.status === 'safe' ? 'Healthy' : 'Overbudget'}</Badge>}
+            </div>
+            <div className="forecast-step"><div><strong>Current Expense</strong><span>{forecast ? formatCurrency(forecast.current_expense_minor) : '...'}</span></div><ProgressBar value={forecast ? (forecast.current_expense_minor / forecast.budget_limit_minor) * 100 : 0} /></div>
+            <div className="forecast-step"><div><strong>Daily Average</strong><span>{forecast ? formatCurrency(forecast.daily_average_minor) : '...'}</span></div><ProgressBar value={forecast ? (forecast.daily_average_minor / (forecast.budget_limit_minor / 30)) * 100 : 0} tone="orange" /></div>
+            <div className="forecast-step"><div><strong>Forecasted Expense</strong><span>{forecast ? formatCurrency(forecast.forecasted_expense_minor) : '...'}</span></div><ProgressBar value={forecast ? (forecast.forecasted_expense_minor / forecast.budget_limit_minor) * 100 : 0} tone={forecast?.status === 'safe' ? 'green' : 'red'} /></div>
+            <div className="forecast-step"><div><strong>Budget Limit</strong><span>{forecast ? formatCurrency(forecast.budget_limit_minor) : '...'}</span></div><ProgressBar value={100} tone="blue" /></div>
           </Card>
 
           <Card className="dashboard-panel">
