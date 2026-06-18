@@ -1,29 +1,46 @@
+import type { Transaction } from './transaction';
+
+export type RecurringFrequency = 'weekly' | 'monthly';
 export type RecurringStatus = 'active' | 'paused' | 'cancelled';
-export type RecurringFrequency = 'daily' | 'weekly' | 'monthly' | 'yearly';
-export type RecurringRunStatus = 'success' | 'failed' | 'skipped';
+export type RecurringType = 'income' | 'expense' | 'transfer' | 'adjustment';
 
-export type RecurringRun = {
+export interface RecurringRule {
   id: string;
-  scheduledAt: string;
-  executedAt: string;
-  status: RecurringRunStatus;
-  transactionId?: string;
-  message: string;
-};
-
-export type RecurringRule = {
-  id: string;
-  title: string;
-  type: 'income' | 'expense' | 'transfer';
-  walletName: string;
-  destinationWalletName?: string;
-  categoryName?: string;
-  amount: number;
+  user_id: string;
+  name: string;
+  type: RecurringType;
+  wallet_id: string;
+  to_wallet_id?: string;
+  category_id?: string;
+  amount_minor: number;
   frequency: RecurringFrequency;
-  startDate: string;
-  nextRunDate: string;
-  lastRunDate?: string;
+  interval_count: number;
+  next_run_at: string;
+  end_at?: string;
+  last_run_at?: string;
   status: RecurringStatus;
   note: string;
-  runHistory: RecurringRun[];
-};
+  created_at: string;
+  updated_at: string;
+}
+
+export interface RecurringRun {
+  id: string;
+  rule_id: string;
+  user_id: string;
+  scheduled_for: string;
+  transaction_id?: string;
+  run_type: 'manual' | 'scheduled';
+  created_at: string;
+  transaction?: Transaction;
+  rule?: RecurringRule;
+}
+
+export interface RecurringRuleListResponse {
+  recurring_transactions: RecurringRule[];
+  pagination: {
+    total: number;
+    limit: number;
+    offset: number;
+  };
+}

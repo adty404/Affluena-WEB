@@ -1,16 +1,24 @@
-import type { TransactionType } from './transaction';
+import type { Transaction } from './transaction';
 
-export type QuickEntryTemplate = {
+export interface QuickEntryTemplate {
   id: string;
+  user_id: string;
   name: string;
-  type: TransactionType;
-  walletId: string;
-  walletName: string;
-  categoryId?: string;
-  categoryName?: string;
-  amount: number;
+  type: string;
+  wallet_id: string;
+  to_wallet_id?: string;
+  category_id?: string;
+  amount_minor: number;
   note: string;
-  tags: string[];
-  lastUsed: string;
-  usageCount: number;
-};
+  created_at: string;
+  updated_at: string;
+}
+
+export interface QuickEntryTemplateListResponse {
+  templates: QuickEntryTemplate[];
+  pagination: {
+    total: number;
+    limit: number;
+    offset: number;
+  };
+}
