@@ -5,13 +5,13 @@ export const categoryTypeEnum = z.enum(['income', 'expense'])
 export const categoryCreateSchema = z.object({
   name: z.string().min(1, 'Nama kategori wajib diisi').max(100, 'Maksimal 100 karakter'),
   type: categoryTypeEnum,
-  parent_id: z.string().uuid().optional(),
+  parent_id: z.preprocess((val) => (val === '' ? undefined : val), z.string().uuid().optional()),
 })
 
 export const categoryUpdateSchema = z.object({
   name: z.string().min(1, 'Nama kategori wajib diisi').max(100, 'Maksimal 100 karakter'),
   type: categoryTypeEnum,
-  parent_id: z.string().uuid().optional(),
+  parent_id: z.preprocess((val) => (val === '' ? undefined : val), z.string().uuid().optional()),
 })
 
 export type CategoryCreateFormValues = z.infer<typeof categoryCreateSchema>
