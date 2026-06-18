@@ -64,11 +64,11 @@ export function BudgetDetailPage() {
             data={mockBudgetTransactions}
             getRowKey={(transaction) => transaction.id}
             columns={[
-              { key: 'title', header: 'Transaction', render: (transaction) => <div className="table-title"><strong>{transaction.title}</strong><small>{transaction.note}</small></div> },
-              { key: 'wallet', header: 'Wallet', render: (transaction) => transaction.walletName },
-              { key: 'date', header: 'Date', render: (transaction) => transaction.date },
-              { key: 'tags', header: 'Tags', render: (transaction) => <div className="tag-row">{transaction.tags.map((tag) => <Badge key={tag} tone="gray">#{tag}</Badge>)}</div> },
-              { key: 'amount', header: 'Amount', align: 'right', render: (transaction) => <Amount value={transaction.amount} type="expense" /> },
+              { key: 'title', header: 'Transaction', render: (transaction) => <div className="table-title"><strong>{transaction.note || 'Transaction'}</strong><small>{transaction.note}</small></div> },
+              { key: 'wallet', header: 'Wallet', render: (transaction) => transaction.wallet_id },
+              { key: 'date', header: 'Date', render: (transaction) => new Date(transaction.transaction_at).toLocaleDateString() },
+              { key: 'tags', header: 'Tags', render: (transaction) => <div className="tag-row">{transaction.tag_ids?.map((tag) => <Badge key={tag} tone="gray">#{tag}</Badge>)}</div> },
+              { key: 'amount', header: 'Amount', align: 'right', render: (transaction) => <Amount value={transaction.amount_minor} type="expense" /> },
             ]}
           />
         </Card>
