@@ -1,4 +1,4 @@
-import type { ActivityEvent, AlertMessage, ExportJob, ReportMetric, ReportRow, SystemLog } from '../types/reporting';
+import type { Activity, AlertMessage, ExportJob, ReportMetric, ReportRow, SystemLog } from '../types/reporting';
 
 export const reportMetrics: ReportMetric[] = [
   { id: 'net-cashflow', label: 'Net Cashflow', value: 4825000, helper: '+18.4% vs last month', tone: 'green' },
@@ -53,12 +53,12 @@ export const exportJobs: ExportJob[] = [
   { id: 'export-goals-2026', name: 'Goals Contribution 2026', module: 'Goals', period: '2026', format: 'CSV', status: 'ready', rows: 72, requestedAt: '12 Jun 2026 · 09:04', size: '31 KB' },
 ];
 
-export const activityEvents: ActivityEvent[] = [
-  { id: 'act-1001', actor: 'Aditya Prasetyo', action: 'created transaction', module: 'Transactions', description: 'Expense Team Dinner Split Bill posted from Bank BCA.', timestamp: '14 Jun 2026 · 15:34', severity: 'info' },
-  { id: 'act-1002', actor: 'Aditya Prasetyo', action: 'recorded payment', module: 'Debt', description: 'Payment Rp 1.500.000 recorded for KTA Bank Installment.', timestamp: '14 Jun 2026 · 13:12', severity: 'success' },
-  { id: 'act-1003', actor: 'Scheduler', action: 'ran recurring rule', module: 'Recurring', description: 'Monthly Salary rule executed and created income transaction.', timestamp: '14 Jun 2026 · 08:00', severity: 'success' },
-  { id: 'act-1004', actor: 'Budget Engine', action: 'created alert', module: 'Budget', description: 'Shopping budget exceeded 100% threshold.', timestamp: '13 Jun 2026 · 20:48', severity: 'warning' },
-  { id: 'act-1005', actor: 'Aditya Prasetyo', action: 'invited member', module: 'Goals', description: 'Nadia invited as contributor to Japan Vacation goal.', timestamp: '13 Jun 2026 · 16:05', severity: 'info' },
+export const activityEvents: Activity[] = [
+  { id: 'act-1001', user_id: 'Aditya Prasetyo', action_type: 'created transaction', entity_type: 'Transactions', entity_id: 'tx-1', description: 'Expense Team Dinner Split Bill posted from Bank BCA.', created_at: '2026-06-14T15:34:00Z' },
+  { id: 'act-1002', user_id: 'Aditya Prasetyo', action_type: 'recorded payment', entity_type: 'Debt', entity_id: 'debt-1', description: 'Payment Rp 1.500.000 recorded for KTA Bank Installment.', created_at: '2026-06-14T13:12:00Z' },
+  { id: 'act-1003', user_id: 'Scheduler', action_type: 'ran recurring rule', entity_type: 'RECURRING', entity_id: 'rec-1', description: 'Monthly Salary rule executed and created income transaction.', created_at: '2026-06-14T08:00:00Z' },
+  { id: 'act-1004', user_id: 'Budget Engine', action_type: 'created alert', entity_type: 'BUDGET', entity_id: 'bud-1', description: 'Shopping budget exceeded 100% threshold.', created_at: '2026-06-13T20:48:00Z' },
+  { id: 'act-1005', user_id: 'Aditya Prasetyo', action_type: 'invited member', entity_type: 'Goals', entity_id: 'goal-1', description: 'Nadia invited as contributor to Japan Vacation goal.', created_at: '2026-06-13T16:05:00Z' },
 ];
 
 export const alertMessages: AlertMessage[] = [
@@ -69,9 +69,9 @@ export const alertMessages: AlertMessage[] = [
 ];
 
 export const systemLogs: SystemLog[] = [
-  { id: 'log-9001', endpoint: '/api/v1/transactions', method: 'POST', statusCode: 201, latencyMs: 124, user: 'adty404@gmail.com', timestamp: '14 Jun 2026 · 15:34:20', module: 'transaction' },
-  { id: 'log-9002', endpoint: '/api/v1/debts/debt-kta/payments', method: 'POST', statusCode: 201, latencyMs: 142, user: 'adty404@gmail.com', timestamp: '14 Jun 2026 · 13:12:09', module: 'debt' },
-  { id: 'log-9003', endpoint: '/api/v1/recurring-transactions/run', method: 'POST', statusCode: 200, latencyMs: 210, user: 'scheduler', timestamp: '14 Jun 2026 · 08:00:01', module: 'recurring' },
-  { id: 'log-9004', endpoint: '/api/v1/export/csv', method: 'POST', statusCode: 202, latencyMs: 88, user: 'adty404@gmail.com', timestamp: '14 Jun 2026 · 10:12:33', module: 'export' },
-  { id: 'log-9005', endpoint: '/api/v1/category-budgets/alerts', method: 'GET', statusCode: 200, latencyMs: 65, user: 'adty404@gmail.com', timestamp: '13 Jun 2026 · 20:48:03', module: 'alert' },
+  { id: 'log-9001', path: '/api/v1/transactions', method: 'POST', status_code: 201, latency_ms: 124, user_id: 'adty404@gmail.com', created_at: '2026-06-14T15:34:20Z', client_ip: '127.0.0.1', user_agent: 'Mozilla', request_payload: null, response_payload: null },
+  { id: 'log-9002', path: '/api/v1/debts/debt-kta/payments', method: 'POST', status_code: 201, latency_ms: 142, user_id: 'adty404@gmail.com', created_at: '2026-06-14T13:12:09Z', client_ip: '127.0.0.1', user_agent: 'Mozilla', request_payload: null, response_payload: null },
+  { id: 'log-9003', path: '/api/v1/recurring-transactions/run', method: 'POST', status_code: 200, latency_ms: 210, user_id: 'scheduler', created_at: '2026-06-14T08:00:01Z', client_ip: '127.0.0.1', user_agent: 'Mozilla', request_payload: null, response_payload: null },
+  { id: 'log-9004', path: '/api/v1/export/csv', method: 'POST', status_code: 202, latency_ms: 88, user_id: 'adty404@gmail.com', created_at: '2026-06-14T10:12:33Z', client_ip: '127.0.0.1', user_agent: 'Mozilla', request_payload: null, response_payload: null },
+  { id: 'log-9005', path: '/api/v1/category-budgets/alerts', method: 'GET', status_code: 200, latency_ms: 65, user_id: 'adty404@gmail.com', created_at: '2026-06-13T20:48:03Z', client_ip: '127.0.0.1', user_agent: 'Mozilla', request_payload: null, response_payload: null },
 ];

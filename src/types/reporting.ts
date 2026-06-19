@@ -32,14 +32,23 @@ export type ExportJob = {
   size: string;
 };
 
-export type ActivityEvent = {
+export type Activity = {
   id: string;
-  actor: string;
-  action: string;
-  module: string;
+  user_id: string;
+  action_type: string;
+  entity_type: string;
+  entity_id: string;
   description: string;
-  timestamp: string;
-  severity: Severity;
+  created_at: string;
+};
+
+export type ActivityListResponse = {
+  data: Activity[];
+  pagination: {
+    limit: number;
+    offset: number;
+    total: number;
+  };
 };
 
 export type AlertMessage = {
@@ -55,11 +64,18 @@ export type AlertMessage = {
 
 export type SystemLog = {
   id: string;
-  endpoint: string;
-  method: 'GET' | 'POST' | 'PUT' | 'DELETE';
-  statusCode: number;
-  latencyMs: number;
-  user: string;
-  timestamp: string;
-  module: string;
+  method: string;
+  path: string;
+  status_code: number;
+  latency_ms: number;
+  client_ip: string;
+  user_agent: string;
+  user_id: string;
+  request_payload: Record<string, unknown> | null;
+  response_payload: Record<string, unknown> | null;
+  created_at: string;
+};
+
+export type SystemLogsResponse = {
+  logs: SystemLog[];
 };

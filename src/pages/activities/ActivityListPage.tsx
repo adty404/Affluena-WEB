@@ -5,12 +5,19 @@ import { Badge } from '../../components/ui/Badge';
 import { DataTable } from '../../components/ui/DataTable';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { severityTone } from '../../components/reports/ReportCards';
-import type { ActivityEvent } from '../../types/reporting';
+import type { Activity } from '../../types/reporting';
 import { useActivities } from '../../hooks/useActivities';
+
+function getSeverity(entityType: string): 'info' | 'success' | 'warning' | 'danger' {
+  if (entityType === 'RECURRING') return 'success';
+  if (entityType === 'BUDGET') return 'warning';
+  if (entityType === 'DEBT') return 'danger';
+  return 'info';
+}
 
 export function ActivityListPage() {
   const { data, isLoading } = useActivities();
-  const activities = data?.activities ?? [];
+  const activities = data?.data ?? [];
 
   return (
     <AppLayout title="Activity Log" description="Audit trail aktivitas user, scheduler, budget engine, dan export.">
@@ -23,15 +30,21 @@ export function ActivityListPage() {
           ) : activities.length === 0 ? (
             <div className="empty-state">Belum ada aktivitas.</div>
           ) : (
-            <DataTable<ActivityEvent> 
+            <DataTable<Activity> 
               data={activities} 
               getRowKey={(event) => event.id} 
               columns={[
-                { key: 'action', header: 'Activity', render: (event) => <div className="table-title"><span className={`mini-icon ${event.severity === 'danger' ? 'danger' : event.severity === 'warning' ? 'warning' : event.severity === 'success' ? 'safe' : 'info'}`}><AppIcon name="history" /></span><strong>{event.action}</strong><small>{event.description}</small></div> }, 
-                { key: 'actor', header: 'Actor', render: (event) => event.actor }, 
-                { key: 'module', header: 'Module', render: (event) => <Badge tone="gray">{event.module}</Badge> }, 
-                { key: 'time', header: 'Time', render: (event) => new Date(event.timestamp).toLocaleString('id-ID') }, 
-                { key: 'severity', header: 'Severity', render: (event) => <Badge tone={severityTone(event.severity)}>{event.severity}</Badge> }, 
+                { key: 'action', header: 'Activity', render: (event) => {
+                  const severity = getSeverity(event.entity_type);
+                  return <div className="table-title"><span className={`mini-icon ${severity === 'danger' ? 'danger' : severity === 'warning' ? 'warning' : severity === 'success' ? 'safe' : 'info'}`}><AppIcon name="history" /></span><strong>{event.action_type}</strong><small>{event.description}</small></div>
+                } }, 
+                { key: 'actor', header: 'Actor', render: (event) => event.user_id || 'System' }, 
+                { key: 'module', header: 'Module', render: (event) => <Badge tone="gray">{event.entity_type}</Badge> }, 
+                { key: 'time', header: 'Time', render: (event) => new Date(event.created_at).toLocaleString('id-ID') }, 
+                { key: 'severity', header: 'Severity', render: (event) => {
+                  const severity = getSeverity(event.entity_type);
+                  return <Badge tone={severityTone(severity)}>{severity}</Badge>
+                } }, 
                 { key: 'actionLink', header: 'Action', render: (event) => <Button to={`/activities/${event.id}`} size="small">Open</Button> }
               ]} 
             />
