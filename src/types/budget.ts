@@ -46,18 +46,42 @@ export interface BudgetUpdateRequest {
 
 export interface BudgetAlert {
   id: string;
-  budgetId: string;
-  categoryName: string;
+  budget_id: string;
+  category_id: string;
+  category_name: string;
   title: string;
   message: string;
   threshold: 80 | 100;
-  status: 'unread' | 'read';
-  severity: 'warning' | 'danger' | 'info';
-  createdAt: string;
+  severity: 'warning' | 'danger';
+  usage_percent: number;
+  spent_minor: number;
+  limit_minor: number;
+  notified_at: string | null;
+  month: string;
 }
 
 export interface BudgetReportItem extends BudgetSummary {
-  variance: number;
-  dailyAllowance: number;
+  variance_minor: number;
+  daily_allowance_minor: number;
   recommendation: string;
+}
+
+export interface BudgetReportSummary {
+  total_limit_minor: number;
+  total_spent_minor: number;
+  total_remaining_minor: number;
+  safe_count: number;
+  warning_count: number;
+  exceeded_count: number;
+  daily_allowance_minor: number;
+  forecast_minor: number;
+}
+
+export interface BudgetAlertsResponse {
+  alerts: BudgetAlert[];
+}
+
+export interface BudgetReportResponse {
+  report: BudgetReportItem[];
+  summary: BudgetReportSummary;
 }

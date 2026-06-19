@@ -8,9 +8,8 @@ import { Amount } from '../../components/finance/Amount';
 import { ProgressBar } from '../../components/finance/ProgressBar';
 import { BudgetCard } from '../../components/budgets/BudgetCard';
 import { BudgetAlertItem } from '../../components/budgets/BudgetAlertItem';
-import { mockBudgetAlerts } from '../../data/mockBudgets';
 import type { BudgetSummary } from '../../types/budget';
-import { useBudgets } from '../../hooks/useBudgets';
+import { useBudgets, useBudgetAlerts } from '../../hooks/useBudgets';
 import { useCategories } from '../../hooks/useCategories';
 
 const statusTone = {
@@ -22,8 +21,10 @@ const statusTone = {
 export function BudgetListPage() {
   const { data: budgetsData, isLoading, error } = useBudgets();
   const { data: categoriesData } = useCategories({ type: 'expense' });
+  const { data: alertsData, isLoading: alertsLoading } = useBudgetAlerts();
 
   const budgets = budgetsData?.budgets ?? [];
+  const alerts = alertsData?.alerts ?? [];
   
   const totalLimit = budgets.reduce((sum, b) => sum + b.limit_minor, 0);
   const totalActual = budgets.reduce((sum, b) => sum + b.spent_minor, 0);
@@ -134,7 +135,13 @@ export function BudgetListPage() {
               <Card className="panel-card">
                 <div className="panel-head"><div><h3>Latest Alerts</h3><p>Alert dari threshold 80% dan 100%.</p></div><Button to="/budgets/alerts" size="small">Open</Button></div>
                 <div className="budget-alert-list">
-                  {mockBudgetAlerts.map((alert) => <BudgetAlertItem key={alert.id} alert={alert} />)}
+                  {alertsLoading ? (
+                    <p>Loading alerts...</p>
+                  ) : alerts.length > 0 ? (
+                    alerts.slice(0, 3).map((alert) => <BudgetAlertItem key={alert.id} alert={alert} />)
+                  ) : (
+                    <p>No active alerts.</p>
+                  )}
                 </div>
               </Card>
             </section>

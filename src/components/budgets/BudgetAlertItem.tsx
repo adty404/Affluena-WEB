@@ -5,7 +5,6 @@ import type { BudgetAlert } from '../../types/budget';
 const severityTone = {
   warning: 'orange',
   danger: 'red',
-  info: 'blue',
 } as const;
 
 export function BudgetAlertItem({ alert }: { alert: BudgetAlert }) {
@@ -15,7 +14,7 @@ export function BudgetAlertItem({ alert }: { alert: BudgetAlert }) {
       <div>
         <strong>{alert.title}</strong>
         <p>{alert.message}</p>
-        <span>{alert.createdAt}</span>
+        <span>{alert.notified_at ?? 'Just now'}</span>
       </div>
       <Badge tone={severityTone[alert.severity]}>{alert.threshold}%</Badge>
     </article>
