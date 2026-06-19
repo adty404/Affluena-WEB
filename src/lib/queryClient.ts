@@ -98,4 +98,12 @@ export const queryKeys = {
     list: (limit?: number, offset?: number) => ['exportJobs', 'list', limit, offset] as const,
     detail: (id: string) => ['exportJobs', 'detail', id] as const,
   },
+  reports: {
+    income: (month: string) => ['reports', 'income', month] as const,
+    expense: (month: string) => ['reports', 'expense', month] as const,
+    cashflow: (month: string) => ['reports', 'cashflow', month] as const,
+    debt: (month: string) => ['reports', 'debt', month] as const,
+    goal: (month: string) => ['reports', 'goal', month] as const,
+    overview: (month: string) => ['reports', 'overview', month] as const,
+  },
 }
