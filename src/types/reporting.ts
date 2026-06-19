@@ -51,15 +51,21 @@ export type ActivityListResponse = {
   };
 };
 
-export type AlertMessage = {
+export interface Alert {
   id: string;
+  type: 'budget' | 'debt' | 'recurring';
   title: string;
   module: string;
   description: string;
-  timestamp: string;
-  severity: Severity;
-  read: boolean;
-  actionTo: string;
+  severity: 'info' | 'success' | 'warning' | 'danger';
+  created_at: string;
+  action_path: string;
+}
+
+export type AlertMessage = Alert;
+
+export type AlertsResponse = {
+  alerts: Alert[];
 };
 
 export type SystemLog = {

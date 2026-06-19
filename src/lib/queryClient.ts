@@ -90,4 +90,8 @@ export const queryKeys = {
     list: (limit?: number) => ['systemLogs', 'list', limit] as const,
     detail: (id: string) => ['systemLogs', 'detail', id] as const,
   },
+  alerts: {
+    list: (month?: string) => ['alerts', 'list', month ?? 'current'] as const,
+    detail: (id: string) => ['alerts', 'detail', id] as const,
+  },
 }
