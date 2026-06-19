@@ -33,7 +33,7 @@ export function BudgetDetailPage() {
     return <AppLayout title="Budget Detail" description="Error loading budget details."><p>Error loading budget.</p></AppLayout>;
   }
 
-  const category = categoriesData?.categories.find(c => c.id === budget.category_id);
+  const category = (categoriesData?.categories ?? []).find(c => c.id === budget.category_id);
   const categoryName = category?.name ?? 'Unknown Category';
 
   // We don't have spent_minor in the single budget response (it returns Budget, not BudgetSummary).

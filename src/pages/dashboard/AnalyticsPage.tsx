@@ -28,7 +28,7 @@ export function AnalyticsPage() {
     { label: 'Expense Ratio', value: '...', note: 'Loading...' },
   ];
 
-  const expenseSlices: ExpenseSlice[] = expenseData?.distribution.map((d, i) => {
+  const expenseSlices: ExpenseSlice[] = (expenseData?.distribution ?? []).map((d, i) => {
     const tones: ('green' | 'blue' | 'orange' | 'purple' | 'red' | 'gray')[] = ['blue', 'purple', 'orange', 'green', 'red', 'gray'];
     return {
       label: d.category_name,
@@ -36,7 +36,7 @@ export function AnalyticsPage() {
       percent: d.percentage,
       tone: tones[i % tones.length],
     };
-  }) || [];
+  });
 
   const forecastItems: ForecastItem[] = forecast ? [
     { title: 'Forecasted Expense', value: formatCurrency(forecast.forecasted_expense_minor), note: 'Expected end of month', tone: forecast.status === 'safe' ? 'green' : 'red' },
