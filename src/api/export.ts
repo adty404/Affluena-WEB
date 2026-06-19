@@ -1,4 +1,5 @@
 import { apiFetch } from './client'
+import type { ExportJob, ExportJobsResponse } from '../types/reporting'
 
 export function getExportCSV(from?: string, to?: string) {
   const query: Record<string, string> = {}
@@ -9,5 +10,22 @@ export function getExportCSV(from?: string, to?: string) {
     method: 'GET',
     query,
     responseType: 'blob',
+  })
+}
+
+export function listExportJobs(limit?: number, offset?: number) {
+  const query: Record<string, string> = {}
+  if (limit !== undefined) query.limit = limit.toString()
+  if (offset !== undefined) query.offset = offset.toString()
+
+  return apiFetch<ExportJobsResponse>('/api/v1/export/jobs', {
+    method: 'GET',
+    query,
+  })
+}
+
+export function getExportJob(id: string) {
+  return apiFetch<ExportJob>(`/api/v1/export/jobs/${id}`, {
+    method: 'GET',
   })
 }

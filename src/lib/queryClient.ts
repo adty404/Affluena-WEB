@@ -94,4 +94,8 @@ export const queryKeys = {
     list: (month?: string) => ['alerts', 'list', month ?? 'current'] as const,
     detail: (id: string) => ['alerts', 'detail', id] as const,
   },
+  exportJobs: {
+    list: (limit?: number, offset?: number) => ['exportJobs', 'list', limit, offset] as const,
+    detail: (id: string) => ['exportJobs', 'detail', id] as const,
+  },
 }

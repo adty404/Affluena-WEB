@@ -47,10 +47,10 @@ export const goalReportRows: ReportRow[] = [
 ];
 
 export const exportJobs: ExportJob[] = [
-  { id: 'export-cashflow-jun', name: 'Cashflow Report June 2026', module: 'Reports', period: 'Jun 2026', format: 'CSV', status: 'ready', rows: 128, requestedAt: '14 Jun 2026 · 10:12', size: '54 KB' },
-  { id: 'export-transactions-q2', name: 'Transactions Q2 2026', module: 'Transactions', period: 'Q2 2026', format: 'CSV', status: 'ready', rows: 842, requestedAt: '13 Jun 2026 · 18:45', size: '210 KB' },
-  { id: 'export-budget-audit', name: 'Budget Audit June 2026', module: 'Budget', period: 'Jun 2026', format: 'XLSX', status: 'processing', rows: 56, requestedAt: '14 Jun 2026 · 14:20', size: 'Preparing' },
-  { id: 'export-goals-2026', name: 'Goals Contribution 2026', module: 'Goals', period: '2026', format: 'CSV', status: 'ready', rows: 72, requestedAt: '12 Jun 2026 · 09:04', size: '31 KB' },
+  { id: 'export-cashflow-jun', user_id: 'user-1', format: 'csv', from_at: '2026-06-01', to_at: '2026-06-30', row_count: 128, status: 'completed', created_at: '2026-06-14T10:12:00Z' },
+  { id: 'export-transactions-q2', user_id: 'user-1', format: 'csv', from_at: '2026-04-01', to_at: '2026-06-30', row_count: 842, status: 'completed', created_at: '2026-06-13T18:45:00Z' },
+  { id: 'export-budget-audit', user_id: 'user-1', format: 'xlsx', from_at: '2026-06-01', to_at: '2026-06-30', row_count: 56, status: 'failed', created_at: '2026-06-14T14:20:00Z' },
+  { id: 'export-goals-2026', user_id: 'user-1', format: 'csv', from_at: '2026-01-01', to_at: '2026-12-31', row_count: 72, status: 'completed', created_at: '2026-06-12T09:04:00Z' },
 ];
 
 export const activityEvents: Activity[] = [
