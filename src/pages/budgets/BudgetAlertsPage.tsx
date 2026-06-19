@@ -6,13 +6,16 @@ import { EmptyState } from '../../components/ui/EmptyState';
 import { useToast } from '../../components/ui/Toast';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { BudgetAlertItem } from '../../components/budgets/BudgetAlertItem';
-import { mockBudgetAlerts } from '../../data/mockBudgets';
+import { useBudgetAlerts } from '../../hooks/useBudgets';
 
 export function BudgetAlertsPage() {
   const { showToast } = useToast();
-  const unread = mockBudgetAlerts.filter((alert) => alert.status === 'unread').length;
-  const warning = mockBudgetAlerts.filter((alert) => alert.severity === 'warning').length;
-  const danger = mockBudgetAlerts.filter((alert) => alert.severity === 'danger').length;
+  const { data, isLoading } = useBudgetAlerts();
+  
+  const alerts = data?.alerts ?? [];
+  const unread = alerts.filter((alert) => !alert.notified_at).length;
+  const warning = alerts.filter((alert) => alert.severity === 'warning').length;
+  const danger = alerts.filter((alert) => alert.severity === 'danger').length;
 
   return (
     <AppLayout title="Budget Alerts" description="Threshold alert 80% warning dan 100% exceeded untuk budget.">
@@ -41,7 +44,13 @@ export function BudgetAlertsPage() {
           <Card className="panel-card">
             <div className="panel-head"><div><h3>Active Alerts</h3><p>Alert yang perlu ditindaklanjuti.</p></div><Button size="small" onClick={() => showToast('Filter by unread, warning, exceeded.')}><AppIcon name="filter" /> Filter</Button></div>
             <div className="budget-alert-list large">
-              {mockBudgetAlerts.map((alert) => <BudgetAlertItem key={alert.id} alert={alert} />)}
+              {isLoading ? (
+                <p>Loading alerts...</p>
+              ) : alerts.length > 0 ? (
+                alerts.map((alert) => <BudgetAlertItem key={alert.id} alert={alert} />)
+              ) : (
+                <p>No active alerts.</p>
+              )}
             </div>
           </Card>
 
@@ -56,11 +65,13 @@ export function BudgetAlertsPage() {
           </Card>
         </section>
 
-        <EmptyState
-          title="Safe budget empty state"
-          description="Jika semua budget aman, tampilkan empty state positif agar user tetap merasa kondisi keuangan terkendali."
-          action={<Button to="/budgets" variant="primary"><AppIcon name="budget" /> Back to Budgets</Button>}
-        />
+        {alerts.length === 0 && !isLoading && (
+          <EmptyState
+            title="Safe budget empty state"
+            description="Jika semua budget aman, tampilkan empty state positif agar user tetap merasa kondisi keuangan terkendali."
+            action={<Button to="/budgets" variant="primary"><AppIcon name="budget" /> Back to Budgets</Button>}
+          />
+        )}
       </div>
     </AppLayout>
   );

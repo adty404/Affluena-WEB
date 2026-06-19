@@ -6,6 +6,8 @@ import {
   listBudgets,
   type BudgetListParams,
   updateBudget,
+  getBudgetAlerts,
+  getBudgetReport,
 } from '../api/budgets';
 import type {
   BudgetCreateRequest,
@@ -56,5 +58,19 @@ export function useDeleteBudget() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.budgets.all });
     },
+  });
+}
+
+export function useBudgetAlerts(month?: string) {
+  return useQuery({
+    queryKey: queryKeys.budgets.alerts(month),
+    queryFn: () => getBudgetAlerts(month),
+  });
+}
+
+export function useBudgetReport(month?: string) {
+  return useQuery({
+    queryKey: queryKeys.budgets.report(month),
+    queryFn: () => getBudgetReport(month),
   });
 }

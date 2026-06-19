@@ -55,6 +55,8 @@ export const queryKeys = {
     all: ['budgets'] as const,
     list: (month?: string) => ['budgets', 'list', month ?? 'current'] as const,
     detail: (id: string) => ['budgets', 'detail', id] as const,
+    alerts: (month?: string) => ['budgets', 'alerts', month ?? 'current'] as const,
+    report: (month?: string) => ['budgets', 'report', month ?? 'current'] as const,
   },
   debts: {
     all: ['debts'] as const,

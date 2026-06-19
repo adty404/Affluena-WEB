@@ -4,6 +4,8 @@ import type {
   BudgetCreateRequest,
   BudgetListResponse,
   BudgetUpdateRequest,
+  BudgetAlertsResponse,
+  BudgetReportResponse,
 } from '../types/budget';
 
 export interface BudgetListParams {
@@ -46,5 +48,25 @@ export function updateBudget(id: string, payload: BudgetUpdateRequest) {
 export function deleteBudget(id: string) {
   return apiFetch<void>(`/api/v1/category-budgets/${id}`, {
     method: 'DELETE',
+  });
+}
+
+export function getBudgetAlerts(month?: string) {
+  const query: Record<string, string> = {};
+  if (month) query.month = month;
+  
+  return apiFetch<BudgetAlertsResponse>('/api/v1/category-budgets/alerts', {
+    method: 'GET',
+    query,
+  });
+}
+
+export function getBudgetReport(month?: string) {
+  const query: Record<string, string> = {};
+  if (month) query.month = month;
+  
+  return apiFetch<BudgetReportResponse>('/api/v1/category-budgets/report', {
+    method: 'GET',
+    query,
   });
 }
