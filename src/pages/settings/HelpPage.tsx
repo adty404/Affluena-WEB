@@ -6,7 +6,7 @@ import { Input, Textarea, Select } from '../../components/ui/Input';
 import { Modal } from '../../components/ui/Modal';
 import { useToast } from '../../components/ui/Toast';
 import { AppIcon } from '../../components/ui/AppIcon';
-import { faqItems } from '../../data/mockSettings';
+import { faqItems } from '../../constants/faq';
 import { SettingsCard, SettingsHero } from './SettingsShared';
 
 export function HelpPage() {
