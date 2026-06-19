@@ -82,5 +82,10 @@ export const queryKeys = {
   },
   activities: {
     list: (params?: Record<string, unknown>) => ['activities', 'list', params ?? {}] as const,
+    detail: (id: string) => ['activities', 'detail', id] as const,
+  },
+  systemLogs: {
+    list: (limit?: number) => ['systemLogs', 'list', limit] as const,
+    detail: (id: string) => ['systemLogs', 'detail', id] as const,
   },
 }
