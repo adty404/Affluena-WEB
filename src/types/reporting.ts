@@ -4,20 +4,25 @@ export type Severity = 'info' | 'success' | 'warning' | 'danger';
 export type ReportMetric = {
   id: string;
   label: string;
-  value: number;
+  value_minor: number;
   helper: string;
-  tone: 'green' | 'blue' | 'orange' | 'purple' | 'red' | 'gray';
+  tone: string;
 };
 
 export type ReportRow = {
   id: string;
   name: string;
   category: string;
-  amount: number;
-  previousAmount: number;
-  changePercent: number;
+  amount_minor: number;
+  previous_amount_minor: number;
+  change_percent: number;
   wallet: string;
   status: 'healthy' | 'watch' | 'critical' | 'growth';
+};
+
+export type ReportResponse = {
+  metrics: ReportMetric[];
+  rows: ReportRow[];
 };
 
 export interface ExportJob {

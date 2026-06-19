@@ -13,7 +13,7 @@ export function ReportMetricCard({ metric }: { metric: ReportMetric }) {
   return (
     <Card className={`stat-card ${metric.tone === 'blue' ? 'blue' : metric.tone === 'purple' ? 'purple' : metric.tone === 'orange' ? 'warning-card' : metric.tone === 'red' ? 'danger-card' : ''}`}>
       <span>{metric.label}</span>
-      <strong><Amount value={metric.value} type={metric.tone === 'red' || metric.tone === 'orange' ? 'expense' : 'income'} /></strong>
+      <strong><Amount value={metric.value_minor} type={metric.tone === 'red' || metric.tone === 'orange' ? 'expense' : 'income'} /></strong>
       <small>{metric.helper}</small>
     </Card>
   );
@@ -46,16 +46,16 @@ export function InsightCard({ title, description, severity, actionTo }: { title:
 }
 
 export function ReportBarChart({ rows }: { rows: ReportRow[] }) {
-  const max = Math.max(...rows.map((row) => row.amount), 1);
+  const max = Math.max(...rows.map((row) => row.amount_minor), 1);
   return (
     <div className="report-bars" aria-label="Report bar chart">
       {rows.map((row) => {
-        const width = Math.max(12, Math.round((row.amount / max) * 100));
+        const width = Math.max(12, Math.round((row.amount_minor / max) * 100));
         return (
           <div className="report-bar-row" key={row.id}>
             <span>{row.name}</span>
             <div className="report-bar-track"><i className={row.status} style={{ width: `${width}%` }} /></div>
-            <strong><Amount value={row.amount} /></strong>
+            <strong><Amount value={row.amount_minor} /></strong>
           </div>
         );
       })}
