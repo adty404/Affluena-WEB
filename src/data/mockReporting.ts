@@ -62,10 +62,10 @@ export const activityEvents: Activity[] = [
 ];
 
 export const alertMessages: AlertMessage[] = [
-  { id: 'alert-budget-shopping', title: 'Shopping budget exceeded', module: 'Budget', description: 'Usage reached 104% of monthly limit. Review spending or adjust the budget.', timestamp: '13 Jun 2026 · 20:48', severity: 'danger', read: false, actionTo: '/budgets/alerts' },
-  { id: 'alert-debt-overdue', title: 'Loan to Friend overdue', module: 'Debt', description: 'Receivable is 2 days overdue. Send reminder or record collection.', timestamp: '14 Jun 2026 · 09:00', severity: 'warning', read: false, actionTo: '/debts/debt-loan' },
-  { id: 'alert-recurring-success', title: 'Monthly Salary executed', module: 'Recurring', description: 'Recurring income rule created a transaction successfully.', timestamp: '14 Jun 2026 · 08:00', severity: 'success', read: true, actionTo: '/recurring/rec-salary/history' },
-  { id: 'alert-export-ready', title: 'Cashflow export ready', module: 'Export', description: 'Cashflow Report June 2026 is ready to download.', timestamp: '14 Jun 2026 · 10:13', severity: 'info', read: true, actionTo: '/exports/export-cashflow-jun' },
+  { id: 'alert-budget-shopping', type: 'budget', title: 'Shopping budget exceeded', module: 'Budget', description: 'Usage reached 104% of monthly limit. Review spending or adjust the budget.', created_at: '13 Jun 2026 · 20:48', severity: 'danger', action_path: '/budgets/alerts' },
+  { id: 'alert-debt-overdue', type: 'debt', title: 'Loan to Friend overdue', module: 'Debt', description: 'Receivable is 2 days overdue. Send reminder or record collection.', created_at: '14 Jun 2026 · 09:00', severity: 'warning', action_path: '/debts/debt-loan' },
+  { id: 'alert-recurring-success', type: 'recurring', title: 'Monthly Salary executed', module: 'Recurring', description: 'Recurring income rule created a transaction successfully.', created_at: '14 Jun 2026 · 08:00', severity: 'success', action_path: '/recurring/rec-salary/history' },
+  { id: 'alert-export-ready', type: 'recurring', title: 'Cashflow export ready', module: 'Export', description: 'Cashflow Report June 2026 is ready to download.', created_at: '14 Jun 2026 · 10:13', severity: 'info', action_path: '/exports/export-cashflow-jun' },
 ];
 
 export const systemLogs: SystemLog[] = [
