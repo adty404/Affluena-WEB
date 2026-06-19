@@ -59,7 +59,7 @@ export function ReportsOverviewPage() {
           <div className="panel-head"><div><h3>Latest Exports</h3><p>Export yang bisa langsung dibuka atau diunduh dari export center.</p></div><Button to="/exports" size="small">Export Center</Button></div>
           <div className="export-chip-row">
             {exportJobs.slice(0, 4).map((job) => (
-              <Button key={job.id} to={`/exports/${job.id}`}><AppIcon name="download" /> {job.name}</Button>
+              <Button key={job.id} to={`/exports/${job.id}`}><AppIcon name="download" /> Export {new Date(job.created_at).toLocaleDateString('id-ID')}</Button>
             ))}
           </div>
         </Card>

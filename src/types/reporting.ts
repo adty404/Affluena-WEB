@@ -20,16 +20,24 @@ export type ReportRow = {
   status: 'healthy' | 'watch' | 'critical' | 'growth';
 };
 
-export type ExportJob = {
+export interface ExportJob {
   id: string;
-  name: string;
-  module: string;
-  period: string;
-  format: 'CSV' | 'XLSX';
-  status: 'ready' | 'processing' | 'failed';
-  rows: number;
-  requestedAt: string;
-  size: string;
+  user_id: string;
+  format: string;
+  from_at: string | null;
+  to_at: string | null;
+  row_count: number;
+  status: 'completed' | 'failed';
+  created_at: string;
+}
+
+export type ExportJobsResponse = {
+  jobs: ExportJob[];
+  pagination: {
+    limit: number;
+    offset: number;
+    total: number;
+  };
 };
 
 export type Activity = {
