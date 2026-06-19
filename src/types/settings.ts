@@ -18,14 +18,27 @@ export type LoginHistoryItem = {
   status: 'success' | 'blocked' | 'review';
 };
 
-export type NotificationRule = {
+export interface NotificationRule {
   id: string;
+  user_id: string;
+  rule_key: string;
   title: string;
   description: string;
   enabled: boolean;
   channel: 'email' | 'in-app' | 'both';
-  tone: PreferenceTone;
-};
+  tone: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface NotificationRulesResponse {
+  rules: NotificationRule[];
+}
+
+export interface NotificationRuleUpdate {
+  enabled?: boolean;
+  channel?: 'email' | 'in-app' | 'both';
+}
 
 export type FAQItem = {
   id: string;

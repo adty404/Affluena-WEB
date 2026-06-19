@@ -106,4 +106,7 @@ export const queryKeys = {
     goal: (month: string) => ['reports', 'goal', month] as const,
     overview: (month: string) => ['reports', 'overview', month] as const,
   },
+  notifications: {
+    rules: ['notifications', 'rules'] as const,
+  },
 }

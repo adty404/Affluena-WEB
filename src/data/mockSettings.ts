@@ -14,11 +14,11 @@ export const loginHistory: LoginHistoryItem[] = [
 ];
 
 export const notificationRules: NotificationRule[] = [
-  { id: 'budget-alert', title: 'Budget threshold alert', description: 'Notify when category budget reaches 80% and 100%.', enabled: true, channel: 'both', tone: 'orange' },
-  { id: 'due-reminder', title: 'Due date reminder', description: 'Debt, installment, and subscription reminders at H-3 and H-1.', enabled: true, channel: 'both', tone: 'blue' },
-  { id: 'recurring-run', title: 'Recurring run result', description: 'Notify when recurring transaction runs or fails.', enabled: true, channel: 'in-app', tone: 'green' },
-  { id: 'security-alert', title: 'Security alert', description: 'Notify login from a new device or location.', enabled: true, channel: 'email', tone: 'red' },
-  { id: 'weekly-summary', title: 'Weekly finance summary', description: 'Send a weekly cashflow, budget, and goal summary.', enabled: false, channel: 'email', tone: 'purple' },
+  { id: 'budget-alert', user_id: 'u1', rule_key: 'budget_alert', title: 'Budget threshold alert', description: 'Notify when category budget reaches 80% and 100%.', enabled: true, channel: 'both', tone: 'orange', created_at: '2026-06-01T00:00:00Z', updated_at: '2026-06-01T00:00:00Z' },
+  { id: 'due-reminder', user_id: 'u1', rule_key: 'due_reminder', title: 'Due date reminder', description: 'Debt, installment, and subscription reminders at H-3 and H-1.', enabled: true, channel: 'both', tone: 'blue', created_at: '2026-06-01T00:00:00Z', updated_at: '2026-06-01T00:00:00Z' },
+  { id: 'recurring-run', user_id: 'u1', rule_key: 'recurring_run', title: 'Recurring run result', description: 'Notify when recurring transaction runs or fails.', enabled: true, channel: 'in-app', tone: 'green', created_at: '2026-06-01T00:00:00Z', updated_at: '2026-06-01T00:00:00Z' },
+  { id: 'security-alert', user_id: 'u1', rule_key: 'security_alert', title: 'Security alert', description: 'Notify login from a new device or location.', enabled: true, channel: 'email', tone: 'red', created_at: '2026-06-01T00:00:00Z', updated_at: '2026-06-01T00:00:00Z' },
+  { id: 'weekly-summary', user_id: 'u1', rule_key: 'weekly_summary', title: 'Weekly finance summary', description: 'Send a weekly cashflow, budget, and goal summary.', enabled: false, channel: 'email', tone: 'purple', created_at: '2026-06-01T00:00:00Z', updated_at: '2026-06-01T00:00:00Z' },
 ];
 
 export const faqItems: FAQItem[] = [

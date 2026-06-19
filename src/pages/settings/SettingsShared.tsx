@@ -44,9 +44,9 @@ export function SettingRow({ title, description, aside, children }: { title: str
   );
 }
 
-export function SettingsToggle({ checked, onChange, label }: { checked: boolean; onChange: () => void; label: string }) {
+export function SettingsToggle({ checked, onChange, label, disabled }: { checked: boolean; onChange: () => void; label: string; disabled?: boolean }) {
   return (
-    <button type="button" className={`settings-toggle ${checked ? 'on' : ''}`} onClick={onChange} aria-pressed={checked} aria-label={label}>
+    <button type="button" className={`settings-toggle ${checked ? 'on' : ''}`} onClick={onChange} aria-pressed={checked} aria-label={label} disabled={disabled}>
       <span />
     </button>
   );
