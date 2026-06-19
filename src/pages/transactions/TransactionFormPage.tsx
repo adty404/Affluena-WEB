@@ -86,7 +86,7 @@ export function TransactionFormPage() {
   const watchAmount = watch('amount_minor');
   const watchWalletId = watch('wallet_id');
 
-  const selectedWallet = walletsData?.wallets.find(w => w.id === watchWalletId);
+  const selectedWallet = (walletsData?.wallets ?? []).find(w => w.id === watchWalletId);
   const currentBalance = selectedWallet?.balance_minor || 0;
   const delta = watchType === 'income' ? watchAmount : -watchAmount;
 

@@ -53,7 +53,7 @@ export function BudgetReportPage() {
             <div className="budget-bars" aria-label="Budget versus actual chart">
               {mockBudgetReport.map((item) => {
                 const actualPercent = Math.min(120, item.usage_percent);
-                const category = categoriesData?.categories.find(c => c.id === item.category_id);
+                const category = (categoriesData?.categories ?? []).find(c => c.id === item.category_id);
                 const categoryName = category?.name ?? 'Unknown Category';
                 const status = item.usage_percent >= 100 ? 'exceeded' : item.usage_percent >= 80 ? 'warning' : 'safe';
                 return (
@@ -84,7 +84,7 @@ export function BudgetReportPage() {
                 key: 'category', 
                 header: 'Category', 
                 render: (item) => {
-                  const category = categoriesData?.categories.find(c => c.id === item.category_id);
+                  const category = (categoriesData?.categories ?? []).find(c => c.id === item.category_id);
                   const categoryName = category?.name ?? 'Unknown Category';
                   const categoryIcon = 'categories';
                   const status = item.usage_percent >= 100 ? 'exceeded' : item.usage_percent >= 80 ? 'warning' : 'safe';

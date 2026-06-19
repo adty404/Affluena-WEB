@@ -47,7 +47,7 @@ export function AdjustmentPage() {
   const watchAmount = watch('amount_minor') || 0;
   const watchWalletId = watch('wallet_id');
 
-  const selectedWallet = walletsData?.wallets.find(w => w.id === watchWalletId);
+  const selectedWallet = (walletsData?.wallets ?? []).find(w => w.id === watchWalletId);
   const currentBalance = selectedWallet?.balance_minor || 0;
 
   return (
@@ -75,7 +75,7 @@ export function AdjustmentPage() {
                   <span>Wallet</span>
                   <Select {...register('wallet_id')}>
                     <option value="">Select Wallet</option>
-                    {walletsData?.wallets.map((wallet) => <option key={wallet.id} value={wallet.id}>{wallet.name}</option>)}
+                    {(walletsData?.wallets ?? []).map((wallet) => <option key={wallet.id} value={wallet.id}>{wallet.name}</option>)}
                   </Select>
                   {errors.wallet_id && <span className="error-text">{errors.wallet_id.message}</span>}
                 </label>

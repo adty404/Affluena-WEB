@@ -82,7 +82,7 @@ export function BudgetListPage() {
                       key: 'category', 
                       header: 'Category', 
                       render: (budget) => {
-                        const category = categoriesData?.categories.find(c => c.id === budget.category_id);
+                        const category = (categoriesData?.categories ?? []).find(c => c.id === budget.category_id);
                         const categoryName = category?.name ?? 'Unknown Category';
                         const categoryIcon = 'categories';
                         let status: 'safe' | 'warning' | 'exceeded' = 'safe';

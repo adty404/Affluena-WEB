@@ -69,14 +69,14 @@ export function TransactionFilterPage() {
                 <span>Wallet</span>
                 <Select>
                   <option value="">All wallets</option>
-                  {walletsData?.wallets.map(w => <option key={w.id} value={w.id}>{w.name}</option>)}
+                  {(walletsData?.wallets ?? []).map(w => <option key={w.id} value={w.id}>{w.name}</option>)}
                 </Select>
               </label>
               <label>
                 <span>Category</span>
                 <Select>
                   <option value="">All categories</option>
-                  {categoriesData?.categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                  {(categoriesData?.categories ?? []).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </Select>
               </label>
             </div>

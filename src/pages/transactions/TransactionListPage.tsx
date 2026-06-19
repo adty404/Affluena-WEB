@@ -26,7 +26,7 @@ export function TransactionListPage() {
       key: 'title', 
       header: 'Transaction', 
       render: (tx: Transaction) => {
-        const category = categoriesData?.categories.find(c => c.id === tx.category_id);
+        const category = (categoriesData?.categories ?? []).find(c => c.id === tx.category_id);
         return (
           <div>
             <strong>{category?.name || tx.note || transactionTypeLabels[tx.type]}</strong>
@@ -48,8 +48,8 @@ export function TransactionListPage() {
       key: 'wallet', 
       header: 'Wallet', 
       render: (tx: Transaction) => {
-        const wallet = walletsData?.wallets.find(w => w.id === tx.wallet_id);
-        const toWallet = walletsData?.wallets.find(w => w.id === tx.to_wallet_id);
+        const wallet = (walletsData?.wallets ?? []).find(w => w.id === tx.wallet_id);
+        const toWallet = (walletsData?.wallets ?? []).find(w => w.id === tx.to_wallet_id);
         return toWallet ? `${wallet?.name || 'Unknown'} → ${toWallet.name}` : (wallet?.name || 'Unknown');
       } 
     },
@@ -57,7 +57,7 @@ export function TransactionListPage() {
       key: 'category', 
       header: 'Category', 
       render: (tx: Transaction) => {
-        const category = categoriesData?.categories.find(c => c.id === tx.category_id);
+        const category = (categoriesData?.categories ?? []).find(c => c.id === tx.category_id);
         return category?.name ?? '—';
       } 
     },

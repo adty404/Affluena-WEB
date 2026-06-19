@@ -48,8 +48,8 @@ export function TransferPage() {
   const watchWalletId = watch('wallet_id');
   const watchToWalletId = watch('to_wallet_id');
 
-  const sourceWallet = walletsData?.wallets.find(w => w.id === watchWalletId);
-  const destWallet = walletsData?.wallets.find(w => w.id === watchToWalletId);
+  const sourceWallet = (walletsData?.wallets ?? []).find(w => w.id === watchWalletId);
+  const destWallet = (walletsData?.wallets ?? []).find(w => w.id === watchToWalletId);
 
   const sourceBalance = sourceWallet?.balance_minor || 0;
   const destBalance = destWallet?.balance_minor || 0;
