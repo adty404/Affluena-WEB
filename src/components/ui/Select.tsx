@@ -106,17 +106,36 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
         ? Array.isArray(selected) ? selected.map((s) => s.value) : []
         : (() => { const single = selected as SingleValue<SelectOption>; return single ? single.value : ''; })();
 
-      if (internalRef.current) {
+      const selectElement = internalRef.current;
+      if (selectElement) {
         if (multi && Array.isArray(newValue)) {
-          Array.from(internalRef.current.options).forEach((opt) => {
+          Array.from(selectElement.options).forEach((opt) => {
             opt.selected = (newValue as string[]).includes(opt.value);
           });
         } else {
-          internalRef.current.value = newValue as string;
+          selectElement.value = newValue as string;
         }
-        internalRef.current.dispatchEvent(new Event('change', { bubbles: true }));
+        if (onChange) {
+          const target = { name: selectElement.name, value: newValue };
+          onChange({ type: 'change', target, currentTarget: target } as React.ChangeEvent<HTMLSelectElement>);
+        } else {
+          selectElement.dispatchEvent(new Event('change', { bubbles: true }));
+        }
       }
       if (!isControlled) setDisplayValue(newValue);
+    };
+
+    const handleReactSelectBlur = () => {
+      if (!onBlur) return;
+      window.setTimeout(() => {
+        const selectElement = internalRef.current;
+        if (!selectElement) return;
+        const target = {
+          name: selectElement.name,
+          value: multi ? Array.from(selectElement.selectedOptions).map((option) => option.value) : selectElement.value,
+        };
+        onBlur({ type: 'blur', target, currentTarget: target } as React.FocusEvent<HTMLSelectElement>);
+      }, 0);
     };
 
     const styles: StylesConfig<SelectOption> = {
@@ -150,10 +169,11 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
       isSearchable: searchable,
       isClearable: clearable,
       isMulti: multi,
+      blurInputOnSelect: true,
       placeholder,
       name,
       isDisabled: disabled,
-      onBlur: () => onBlur?.({ target: { name } } as React.FocusEvent<HTMLSelectElement>),
+      onBlur: handleReactSelectBlur,
       className: `react-select-container ${className || ''}`,
       classNamePrefix: 'react-select',
       styles,
@@ -169,7 +189,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           disabled={disabled}
           multiple={multi}
           defaultValue={isControlled ? undefined : (value as string | undefined)}
-          style={{ position: 'absolute', width: 1, height: 1, padding: 0, margin: -1, overflow: 'hidden', clip: 'rect(0,0,0,0)', border: 0, opacity: 0 }}
+          style={{ display: 'none' }}
           aria-hidden="true"
           tabIndex={-1}
           {...rest}

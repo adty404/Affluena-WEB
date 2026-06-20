@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
@@ -11,6 +12,10 @@ import type { Category } from '../../types/category';
 export function CategoryListPage() {
   const { data, isLoading, error } = useCategories({ limit: 100 });
   const categories = data?.categories ?? [];
+  const categoryNameById = useMemo(
+    () => new Map(categories.map((category) => [category.id, category.name])),
+    [categories]
+  );
   const incomeCount = categories.filter((c) => c.type === 'income').length;
   const expenseCount = categories.filter((c) => c.type === 'expense').length;
 
@@ -18,7 +23,7 @@ export function CategoryListPage() {
     { key: 'name', header: 'Category', render: (category: Category) => (
       <div>
         <strong>{category.name}</strong>
-        <span className="table-subtitle">{category.parent_id ? `Child of ${category.parent_id}` : 'Root category'}</span>
+        <span className="table-subtitle">{category.parent_id ? `Child of ${categoryNameById.get(category.parent_id) ?? 'unknown parent'}` : 'Parent category'}</span>
       </div>
     ) },
     { key: 'type', header: 'Type', render: (category: Category) => <Badge tone={category.type === 'income' ? 'green' : 'orange'}>{categoryTypeLabels[category.type]}</Badge> },
@@ -61,8 +66,8 @@ export function CategoryListPage() {
         ) : (
           <>
             <section className="dashboard-grid">
-              <Card className="panel-card">
-                <div className="panel-head"><div><h3>Category Tree</h3><p>Root dan child category.</p></div></div>
+              <Card className="panel-card category-tree-card">
+                <div className="panel-head"><div><h3>Category Tree</h3><p>Parent, child, dan grandchild terlihat sebagai cabang.</p></div></div>
                 <CategoryTree categories={categories} />
               </Card>
             </section>

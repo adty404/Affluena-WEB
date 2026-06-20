@@ -3,8 +3,16 @@ import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
 import { featureCards, modules } from '../../data/stage1Data';
 import { AppIcon } from '../../components/ui/AppIcon';
+import { useAuth } from '../../hooks/useAuth';
 
 export function LandingPage() {
+  const { isAuthenticated, isLoading } = useAuth();
+  const hasSession = isAuthenticated || isLoading;
+  const primaryTarget = hasSession ? '/dashboard' : '/register';
+  const secondaryTarget = hasSession ? '/dashboard' : '/login';
+  const primaryLabel = hasSession ? 'Buka dashboard' : 'Buat akun gratis';
+  const secondaryLabel = hasSession ? 'Lihat dashboard' : 'Lihat demo app';
+
   return (
     <LandingLayout>
       <main>
@@ -19,8 +27,8 @@ export function LandingPage() {
                 dalam pengalaman web yang bersih dan mudah dipakai.
               </p>
               <div className="hero-actions">
-                <Button variant="primary" to="/register">Buat akun gratis</Button>
-                <Button to="/login">Lihat demo app</Button>
+                <Button variant="primary" to={primaryTarget}>{primaryLabel}</Button>
+                <Button to={secondaryTarget}>{secondaryLabel}</Button>
               </div>
               <div className="hero-proof">
                 <span><i /> Multi wallet</span>
@@ -134,8 +142,8 @@ export function LandingPage() {
             <h2>Semua modul utama sudah tersedia dalam satu pengalaman web yang rapi.</h2>
             <p>Kelola wallet, transaksi, budget, debt, recurring, goals, reports, alerts, dan pengaturan akun tanpa berpindah aplikasi.</p>
             <div className="hero-actions center">
-              <Button variant="primary" to="/register">Mulai sekarang</Button>
-              <Button to="/login">Masuk demo</Button>
+              <Button variant="primary" to={primaryTarget}>{hasSession ? 'Buka dashboard' : 'Mulai sekarang'}</Button>
+              <Button to={secondaryTarget}>{hasSession ? 'Lihat dashboard' : 'Masuk demo'}</Button>
             </div>
           </div>
         </section>
