@@ -37,10 +37,10 @@ export function DataTable<T>({
   columns,
   data,
   getRowKey,
-  sortable = false,
-  pagination = false,
+  sortable = true,
+  pagination = true,
   pageSize = 10,
-  searchable = false,
+  searchable = true,
   searchKeys,
   initialSort,
 }: DataTableProps<T>) {
@@ -155,7 +155,7 @@ export function DataTable<T>({
           </tbody>
         </table>
       </div>
-      {pagination && (
+      {pagination && table.getPageCount() > 1 && (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '1rem' }}>
           <div style={{ fontSize: '0.875rem', color: 'var(--text-muted, #64748b)' }}>
             Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
