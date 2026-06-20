@@ -124,7 +124,7 @@ export function CategoryFormPage() {
     );
   }
 
-  const ParentSelect = ({ field }: { field: ReturnType<typeof activeForm.register> }) => (
+  const renderParentSelect = (field: ReturnType<typeof activeForm.register>) => (
     <Select {...field}>
       <option value="">No parent</option>
       {eligibleParents.map((cat) => (
@@ -164,7 +164,7 @@ export function CategoryFormPage() {
                   </label>
                   <label>
                     <span>Parent category</span>
-                    <ParentSelect field={updateForm.register('parent_id')} />
+                    {renderParentSelect(updateForm.register('parent_id'))}
                   </label>
                 </div>
                 <label>
@@ -195,7 +195,7 @@ export function CategoryFormPage() {
                   </label>
                   <label>
                     <span>Parent category</span>
-                    <ParentSelect field={createForm.register('parent_id')} />
+                    {renderParentSelect(createForm.register('parent_id'))}
                   </label>
                 </div>
                 <label>

@@ -81,9 +81,83 @@
   .auth-page { padding: 16px; }
   .auth-aside, .auth-card { padding: 24px; }
   .auth-stat-grid, .form-two { grid-template-columns: 1fr; }
-  .app-topbar { padding: 14px 16px; align-items: flex-start; }
-  .topbar-actions .btn:not(.primary) { display: none; }
-  .app-content { padding: 18px 16px 96px; }
+  .app-layout { min-height: 100dvh; background: linear-gradient(180deg, #f8fbff 0%, #eef4f8 100%); }
+  .app-main { min-height: 100dvh; }
+  .app-topbar {
+    min-height: 64px;
+    padding: max(8px, env(safe-area-inset-top)) 14px 10px;
+    align-items: center;
+    gap: 10px;
+    background: rgba(248,250,252,.94);
+    box-shadow: 0 10px 24px rgba(15,23,42,.04);
+  }
+  .topbar-title {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+  .app-topbar h1 {
+    font-size: 21px;
+    line-height: 1.05;
+    letter-spacing: -.045em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .app-topbar p {
+    max-width: calc(100vw - 188px);
+    margin-top: 3px;
+    font-size: 11px;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .mobile-sidebar-button {
+    width: 36px;
+    min-height: 36px;
+    border-radius: 14px;
+    padding: 0;
+    background: rgba(255,255,255,.96);
+    box-shadow: 0 8px 18px rgba(15,23,42,.06);
+  }
+  .topbar-actions {
+    flex: 0 0 auto;
+    margin-left: auto;
+    gap: 8px;
+  }
+  .topbar-actions > .btn:not(.primary) { display: none; }
+  .profile-menu-wrap > .btn.primary {
+    min-height: 40px;
+    padding: 0 13px;
+    border-radius: 15px;
+    box-shadow: 0 12px 26px rgba(16,185,129,.22);
+  }
+  .profile-menu-wrap > .btn.primary .app-icon {
+    width: 15px;
+    height: 15px;
+  }
+  .app-content {
+    padding: 14px 12px calc(118px + env(safe-area-inset-bottom));
+  }
+  .bottom-nav {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    gap: 2px;
+    padding: 7px 12px calc(8px + env(safe-area-inset-bottom));
+    border-right: 0;
+    border-bottom: 0;
+    border-left: 0;
+    border-radius: 24px 24px 0 0;
+    background: rgba(255,255,255,.98);
+    box-shadow: 0 -14px 34px rgba(15,23,42,.12);
+  }
+  .bottom-nav a,
+  .bottom-nav button {
+    min-height: 54px;
+    border-radius: 18px;
+    font-size: 10px;
+  }
 }
 
 /* Latest sidebar audit: scrollable navigation, stable footer, no bottom collision. */

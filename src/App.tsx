@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
+import { PublicOnlyRoute } from './components/routing/PublicOnlyRoute';
 import { RequireAuth } from './components/routing/RequireAuth';
 import { Card } from './components/ui/Card';
 
@@ -127,11 +128,13 @@ export function App() {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
-      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-      <Route path="/reset-password" element={<ResetPasswordPage />} />
-      <Route path="/onboarding" element={<OnboardingPage />} />
+      <Route element={<PublicOnlyRoute><Outlet /></PublicOnlyRoute>}>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/onboarding" element={<OnboardingPage />} />
+      </Route>
       <Route element={<RequireAuth><Outlet /></RequireAuth>}>
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/dashboard/analytics" element={<Suspense fallback={<PageLoader />}><AnalyticsPage /></Suspense>} />
