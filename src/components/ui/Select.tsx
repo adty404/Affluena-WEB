@@ -107,7 +107,9 @@ export const Select = forwardRef<SelectInstance<SelectOption, boolean>, SelectPr
 
     const commonProps = {
       options,
-      value: selectedOption,
+      // Only pass value when explicitly provided — when undefined (react-hook-form register mode),
+      // let react-select manage its own internal state (uncontrolled) so user clicks register.
+      ...(value !== undefined ? { value: selectedOption } : {}),
       onChange: handleChange,
       isSearchable: searchable,
       isClearable: clearable,
