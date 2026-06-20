@@ -1,5 +1,7 @@
 # Wallets Smoke Checklist
 
+> **Current status (2026-06-20):** Historical smoke checklist. The current Web app has broader API integration across all main domains plus DataTable backed by `datatables.net-react`. Use `../../../README.md`, `../../../AGENTS.md`, and `../../AI_ROUTE_MAP.md` for current context.
+
 Date: 2026-06-18
 Branch: `feat/backend-integration-wallets`
 

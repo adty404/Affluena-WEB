@@ -5,6 +5,7 @@ import { Badge } from '../../components/ui/Badge';
 import { DataTable } from '../../components/ui/DataTable';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { Amount } from '../../components/finance/Amount';
+import { PageMetaStrip } from '../../components/layout/PageMetaStrip';
 import { useReportsOverview } from '../../hooks/useReports';
 import { ReportMetricCard, ReportShortcutCard, statusTone } from '../../components/reports/ReportCards';
 import type { ReportRow } from '../../types/reporting';
@@ -69,6 +70,18 @@ export function ReportsOverviewPage() {
               <div className="panel-head"><div><h3>Latest Exports</h3><p>Export yang bisa langsung dibuka atau diunduh dari export center.</p></div><Button to="/exports" size="small">Export Center</Button></div>
               <div className="empty-state"><p>View all exports in the Export Center.</p></div>
             </Card>
+            <PageMetaStrip
+              title="Reports status"
+              items={[
+                { label: 'Last updated', value: 'June 2026', icon: 'calendar' },
+                { label: 'Rows in watchlist', value: rows.length, icon: 'list' },
+                { label: 'Sync status', value: 'API synced', icon: 'success' },
+              ]}
+              actions={[
+                { label: 'Export Center', to: '/exports', icon: 'export' },
+                { label: 'New Export', to: '/exports/new', icon: 'download', variant: 'primary' },
+              ]}
+            />
           </>
         )}
       </div>

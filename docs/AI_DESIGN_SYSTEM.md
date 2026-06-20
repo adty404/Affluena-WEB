@@ -128,11 +128,13 @@ Every button must have real behavior.
 ## Tables
 
 Tables must:
-- use the existing table/data table style
+- use the shared `DataTable` component backed by `datatables.net-react` and `datatables.net-dt`
 - have clear headers
 - be inside overflow wrapper
 - not cause body horizontal scroll
 - be readable on mobile
+
+Do not hand-render page tables with raw `<table>` markup. Keep custom cell content inside `DataTable` column renderers.
 
 ## Icons
 

@@ -1,5 +1,7 @@
 # Affluena Backend Integration — Foundation & Auth (Plan 1 of N)
 
+> **Current status (2026-06-20):** Historical implementation plan. The current app already has the API client, auth provider, React Query domain hooks, and integrated pages across the main product surface. Use `../../../README.md`, `../../../AGENTS.md`, and `../../AI_ROUTE_MAP.md` for current context.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Establish the API client, type system, auth flow, and TanStack Query scaffolding so that every subsequent domain (wallets, transactions, budgets, …) plugs into a single, consistent pipeline that replaces `src/data/*` mock imports with live backend calls against `Affluena-API`.

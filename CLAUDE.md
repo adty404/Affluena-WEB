@@ -16,4 +16,5 @@ Before making UI changes:
 1. Inspect the relevant page/component.
 2. Reuse existing components.
 3. Preserve the Affluena design system.
-4. Run `npm run build`.
+4. Run `npm install`.
+5. Run `npm run build`.
