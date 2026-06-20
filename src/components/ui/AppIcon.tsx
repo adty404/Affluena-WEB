@@ -9,12 +9,14 @@ export type AppIconName =
   | 'trend' | 'chart' | 'calendar' | 'list' | 'filter'
   | 'save' | 'back' | 'edit' | 'delete' | 'export'
   | 'warning' | 'success' | 'food' | 'transport' | 'shopping' | 'bills'
-  | 'health' | 'empty' | 'close' | 'profile' | 'settings' | 'copy' | 'download';
+  | 'health' | 'empty' | 'close' | 'profile' | 'settings' | 'copy' | 'download'
+  | 'arrow-up' | 'arrow-down' | 'arrow-up-down';
 
 type AppIconProps = {
   name: AppIconName;
   className?: string;
   decorative?: boolean;
+  size?: number;
 };
 
 const paths: Record<AppIconName, string[]> = {
@@ -76,9 +78,12 @@ const paths: Record<AppIconName, string[]> = {
   settings: ['M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z', 'M19.4 15a1.7 1.7 0 0 0 .34 1.88l.05.08-1.9 3.3-.1-.03a1.7 1.7 0 0 0-1.84.42l-.07.07a1.7 1.7 0 0 0-.42 1.84l.03.1h-3.8l.03-.1a1.7 1.7 0 0 0-.42-1.84l-.07-.07a1.7 1.7 0 0 0-1.84-.42l-.1.03-1.9-3.3.05-.08A1.7 1.7 0 0 0 4.6 15H4v-6h.6a1.7 1.7 0 0 0 .34-1.88l-.05-.08 1.9-3.3.1.03a1.7 1.7 0 0 0 1.84-.42l.07-.07a1.7 1.7 0 0 0 .42-1.84L9.19 1h3.8l-.03.1a1.7 1.7 0 0 0 .42 1.84l.07.07a1.7 1.7 0 0 0 1.84.42l.1-.03 1.9 3.3-.05.08A1.7 1.7 0 0 0 19.4 9h.6v6h-.6Z'],
   copy: ['M8 8h10v12H8z', 'M6 16H4V4h12v2'],
   download: ['M12 4v10', 'M8 10l4 4 4-4', 'M5 20h14'],
+  'arrow-up': ['M12 19V5', 'M5 12l7-7 7 7'],
+  'arrow-down': ['M12 5v14', 'M19 12l-7 7-7-7'],
+  'arrow-up-down': ['M7 15l5 5 5-5', 'M7 9l5-5 5 5'],
 };
 
-export function AppIcon({ name, className, decorative = true }: AppIconProps) {
+export function AppIcon({ name, className, decorative = true, size }: AppIconProps) {
   return (
     <svg
       className={clsx('app-icon', className)}
@@ -87,6 +92,7 @@ export function AppIcon({ name, className, decorative = true }: AppIconProps) {
       aria-hidden={decorative}
       focusable="false"
       role={decorative ? undefined : 'img'}
+      style={size ? { width: size, height: size } : undefined}
     >
       {paths[name].map((d) => (
         <path key={d} d={d} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />

@@ -84,6 +84,8 @@ Do not add a dark theme unless explicitly requested.
 
 Use existing Vanilla CSS files. Do not introduce Tailwind, CSS Modules, UI libraries, random colors, large inline style blocks, or duplicate style systems.
 
+Approved libraries: `react-select` (for `Select` component search/async/multi), `@tanstack/react-table` (for `DataTable` sort/pagination). No other UI libraries without explicit approval.
+
 Use CSS variables from `tokens.css`. If a new token is needed, add it to `tokens.css` and reuse it consistently.
 
 ## Component Rules
