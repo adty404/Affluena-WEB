@@ -125,3 +125,41 @@ jobs:
           sudo -n systemctl reload nginx
           curl -fsS http://127.0.0.1/healthz
           REMOTE
+
+  notify:
+    name: Notify Telegram
+    needs:
+      - build
+      - deploy
+    if: always() && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+
+    env:
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      BUILD_RESULT: ${{ needs.build.result }}
+      DEPLOY_RESULT: ${{ needs.deploy.result }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+    steps:
+      - name: Send Telegram notification
+        run: |
+          if [ -z "$TELEGRAM_BOT_TOKEN" ] || [ -z "$TELEGRAM_CHAT_ID" ]; then
+            echo "Telegram secrets are not configured; skipping notification."
+            exit 0
+          fi
+
+          status="SUCCESS"
+          title="Affluena Web deploy selesai"
+          if [ "$BUILD_RESULT" != "success" ] || [ "$DEPLOY_RESULT" != "success" ]; then
+            status="FAILED"
+            title="Affluena Web deploy gagal"
+          fi
+
+          short_sha="${GITHUB_SHA::7}"
+          message="$(printf '[%s] %s\nRepository: %s\nBranch: %s\nCommit: %s\nBuild: %s\nDeploy: %s\nRun: %s\n' \
+            "$status" "$title" "$GITHUB_REPOSITORY" "$GITHUB_REF_NAME" "$short_sha" "$BUILD_RESULT" "$DEPLOY_RESULT" "$RUN_URL")"
+
+          curl -fsS -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -d "chat_id=${TELEGRAM_CHAT_ID}" \
+            --data-urlencode "text=${message}"
