@@ -6,8 +6,10 @@ import { Modal } from '../../components/ui/Modal';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { CashflowChart, ExpenseDistribution, RecentTransactions, StatGrid, WalletPortfolio } from '../../components/finance/DashboardWidgets';
 import { useDashboardSummary, useCashflowTrend, useExpenseDistribution } from '../../hooks/useDashboard';
+import { useCategories } from '../../hooks/useCategories';
 import { useTransactions } from '../../hooks/useTransactions';
 import { useWallets } from '../../hooks/useWallets';
+import { categoryLabel, createNameById, walletPairLabel } from '../../lib/financeLabels';
 import { formatIDR } from '../../lib/money';
 import type { DashboardStat, ExpenseSlice, DashboardTransaction } from '../../types/dashboard';
 
@@ -19,6 +21,10 @@ export function DashboardPage() {
   const { data: expenseData } = useExpenseDistribution();
   const { data: txData } = useTransactions({ limit: 5 });
   const { data: walletsData } = useWallets();
+  const { data: categoriesData } = useCategories();
+
+  const walletNameById = createNameById(walletsData?.wallets ?? []);
+  const categoryNameById = createNameById(categoriesData?.categories ?? []);
 
   const stats: DashboardStat[] = summary ? [
     { label: 'Net Worth', value: formatIDR(summary.net_worth_minor), note: 'Total aset bersih', tone: 'blue' },
@@ -45,8 +51,8 @@ export function DashboardPage() {
   const recentTransactions: DashboardTransaction[] = (txData?.transactions ?? []).map(tx => ({
     id: tx.id,
     title: tx.note || 'Transaction',
-    category: tx.category_id || 'Uncategorized',
-    wallet: tx.wallet_id || 'Unknown Wallet',
+    category: categoryLabel(categoryNameById, tx.category_id, tx.type),
+    wallet: walletPairLabel(walletNameById, tx.wallet_id, tx.to_wallet_id),
     amount: formatIDR(tx.amount_minor),
     type: tx.type as 'income' | 'expense',
     date: new Date(tx.transaction_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }),

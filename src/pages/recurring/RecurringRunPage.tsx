@@ -6,7 +6,10 @@ import { Input, Select, Textarea } from '../../components/ui/Input';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { Amount } from '../../components/finance/Amount';
 import { useToast } from '../../components/ui/Toast';
+import { useCategories } from '../../hooks/useCategories';
 import { useRecurringRule, useRunRecurringRule } from '../../hooks/useRecurring';
+import { useWallets } from '../../hooks/useWallets';
+import { categoryLabel, createNameById, walletPairLabel } from '../../lib/financeLabels';
 
 export function RecurringRunPage() {
   const { id } = useParams();
@@ -14,10 +17,16 @@ export function RecurringRunPage() {
   const { showToast } = useToast();
   
   const { data: rule, isLoading, error } = useRecurringRule(id || '');
+  const { data: walletsData } = useWallets();
+  const { data: categoriesData } = useCategories();
   const runMutation = useRunRecurringRule();
+  const walletNameById = createNameById(walletsData?.wallets ?? []);
+  const categoryNameById = createNameById(categoriesData?.categories ?? []);
 
   if (isLoading) return <AppLayout title="Manual Run" description="Loading..."><div className="p-8">Loading...</div></AppLayout>;
   if (error || !rule) return <AppLayout title="Manual Run" description="Loading..."><div className="p-8 text-red-500">Error loading recurring rule</div></AppLayout>;
+  const walletText = walletPairLabel(walletNameById, rule.wallet_id, rule.to_wallet_id);
+  const categoryText = categoryLabel(categoryNameById, rule.category_id, rule.type);
 
   const handleRun = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -47,7 +56,7 @@ export function RecurringRunPage() {
                 <label><span>Run Date</span><Input type="datetime-local" defaultValue={new Date().toISOString().slice(0, 16)} readOnly /></label>
               </div>
               <div className="form-two">
-                <label><span>Wallet</span><Input defaultValue={rule.wallet_id} readOnly /></label>
+                <label><span>Wallet</span><Input value={walletText} readOnly /></label>
                 <label><span>Amount</span><Input defaultValue={`Rp ${rule.amount_minor.toLocaleString('id-ID')}`} readOnly /></label>
               </div>
               <div className="form-two">
@@ -67,7 +76,8 @@ export function RecurringRunPage() {
             <div className="metric-list">
               <div><span>Type</span><strong>{rule.type}</strong></div>
               <div><span>Amount</span><strong><Amount value={rule.amount_minor} type={rule.type === 'income' ? 'income' : 'expense'} /></strong></div>
-              <div><span>Wallet</span><strong>{rule.wallet_id}</strong></div>
+              <div><span>Wallet</span><strong>{walletText}</strong></div>
+              <div><span>Category</span><strong>{categoryText}</strong></div>
               <div><span>History result</span><strong>success / failed / skipped</strong></div>
             </div>
           </Card>
