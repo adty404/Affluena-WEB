@@ -1,12 +1,12 @@
 # Affluena AI Agent Instructions
 
-You are working on the Affluena React + Vite + TypeScript UI/prototype.
+You are working on the Affluena React + Vite + TypeScript web app.
 
 ## Current Base
 
-Use this project as an existing completed UI/prototype, not as a blank project.
+Use this project as an existing integrated app, not as a blank project.
 
-The UI already covers Stage 1–10:
+The UI covers these product areas:
 
 1. Foundation
 2. Dashboard
@@ -84,7 +84,7 @@ Do not add a dark theme unless explicitly requested.
 
 Use existing Vanilla CSS files. Do not introduce Tailwind, CSS Modules, UI libraries, random colors, large inline style blocks, or duplicate style systems.
 
-Approved libraries: `react-select` (for `Select` component search/async/multi), `@tanstack/react-table` (for `DataTable` sort/pagination). No other UI libraries without explicit approval.
+Approved libraries: `react-select` (for `Select` component search/async/multi), `datatables.net-react`, and `datatables.net-dt` (for the shared `DataTable` sort/pagination/search wrapper). No other UI libraries without explicit approval.
 
 Use CSS variables from `tokens.css`. If a new token is needed, add it to `tokens.css` and reuse it consistently.
 
@@ -228,7 +228,7 @@ Desktop forms may use 2 columns. Mobile forms must stack into 1 column. Mutation
 
 ## Table/List Rules
 
-Use existing table/list patterns. Large tables must be inside an overflow wrapper. The page body must not horizontally scroll.
+Use the shared `DataTable` component for table views. It is backed by `datatables.net-react` + `datatables.net-dt`; do not hand-render page tables with raw `<table>` markup. Large tables must remain inside the DataTable/overflow pattern, and the page body must not horizontally scroll.
 
 ## Modal/Popover Rules
 
@@ -287,16 +287,17 @@ These issues have happened before and must not happen again:
 
 ## Backend/API Integration Rules
 
-If connecting APIs later:
-- do not replace all mock data at once
-- create an API/service layer first
-- keep mock fallback during transition if useful
+The app uses `src/api/client.ts` plus domain API modules and React Query hooks for the main backend-integrated surface. The API base URL defaults to `http://localhost:8080` and can be overridden with `VITE_API_BASE_URL`.
+
+When adding or changing API-backed UI:
+- keep request/response shapes aligned with `Affluena-API/docs/API_CONTRACT.md`
 - preserve existing loading/error/empty states
-- handle JWT/auth gradually
-- preserve Amount formatting
-- preserve user isolation expectations
-- use minor units for money when relevant
-- every mutation must show loading/success/error behavior
+- preserve JWT auth/refresh behavior in `apiFetch`
+- preserve `Amount` formatting and integer minor-unit money handling
+- preserve user isolation expectations from the API
+- every mutation must show loading/success/error behavior and invalidate/refetch relevant query keys
+
+The remaining `src/data/*` files are static UI/support data for the landing page, app menu/widget-state previews, and shared transaction labels. Do not treat those files as live business data sources.
 
 ## Commands
 

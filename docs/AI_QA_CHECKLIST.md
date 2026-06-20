@@ -33,6 +33,7 @@ Check:
 - No body-level horizontal scroll.
 - Cards do not overflow.
 - Tables are inside scroll wrappers.
+- Table pages use the shared `DataTable` wrapper; `rg -n "<table|</table" src/pages src/layouts src/components --glob '!src/components/ui/DataTable.tsx' --glob '!**/*.test.tsx'` should not find page-level raw tables.
 
 ## Button / Link QA
 

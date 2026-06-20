@@ -4,6 +4,7 @@ import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { DataTable } from '../../components/ui/DataTable';
 import { AppIcon } from '../../components/ui/AppIcon';
+import { PageMetaStrip } from '../../components/layout/PageMetaStrip';
 import { useExportJobs } from '../../hooks/useExportJobs';
 import type { ExportJob } from '../../types/reporting';
 
@@ -84,6 +85,18 @@ export function ExportCenterPage() {
             />
           )}
         </Card>
+        <PageMetaStrip
+          title="Export Center status"
+          items={[
+            { label: 'Last updated', value: jobs.length > 0 ? new Date(jobs[0].created_at).toLocaleDateString('id-ID') : 'No exports yet', icon: 'calendar' },
+            { label: 'Export Center', value: `${jobs.length} jobs`, icon: 'export' },
+            { label: 'Rows available', value: totalRows.toLocaleString('id-ID'), icon: 'list' },
+          ]}
+          actions={[
+            { label: 'New Export', to: '/exports/new', icon: 'add', variant: 'primary' },
+            { label: 'Reports', to: '/reports', icon: 'chart' },
+          ]}
+        />
       </div>
     </AppLayout>
   );

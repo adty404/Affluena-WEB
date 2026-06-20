@@ -5,6 +5,7 @@ import { Badge } from '../../components/ui/Badge';
 import { DataTable } from '../../components/ui/DataTable';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { Amount } from '../../components/finance/Amount';
+import { PageMetaStrip } from '../../components/layout/PageMetaStrip';
 import { useDebtReport } from '../../hooks/useReports';
 import { ReportBarChart, ReportMetricCard, statusTone } from '../../components/reports/ReportCards';
 import type { ReportRow } from '../../types/reporting';
@@ -74,6 +75,18 @@ export function DebtReportPage() {
                 ]}
               />
             </Card>
+            <PageMetaStrip
+              title="Debt report status"
+              items={[
+                { label: 'Last updated', value: 'June 2026', icon: 'calendar' },
+                { label: 'Rows', value: rows.length, icon: 'list' },
+                { label: 'Sync status', value: 'Report API', icon: 'success' },
+              ]}
+              actions={[
+                { label: 'Back to Reports', to: '/reports', icon: 'back' },
+                { label: 'Export CSV', to: '/exports/new', icon: 'download', variant: 'primary' },
+              ]}
+            />
           </>
         )}
       </div>

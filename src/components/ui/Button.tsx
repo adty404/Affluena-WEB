@@ -1,5 +1,5 @@
 import type { ButtonHTMLAttributes, AnchorHTMLAttributes, ReactNode } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useInRouterContext } from 'react-router-dom';
 import clsx from 'clsx';
 
 type CommonProps = {
@@ -15,6 +15,7 @@ type LinkButtonProps = CommonProps & Omit<AnchorHTMLAttributes<HTMLAnchorElement
 
 export function Button(props: ButtonProps | LinkButtonProps) {
   const { children, variant = 'default', size = 'md', full, className } = props;
+  const isInRouter = useInRouterContext();
   const classes = clsx('btn', variant !== 'default' && variant, size !== 'md' && size, full && 'full', className);
 
   if ('to' in props && props.to) {
@@ -27,6 +28,14 @@ export function Button(props: ButtonProps | LinkButtonProps) {
       className: _className,
       ...anchorProps
     } = props;
+
+    if (!isInRouter) {
+      return (
+        <a {...anchorProps} href={to} className={classes}>
+          {children}
+        </a>
+      );
+    }
 
     return (
       <Link {...anchorProps} to={to} className={classes}>

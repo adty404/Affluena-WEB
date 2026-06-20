@@ -4,6 +4,7 @@ import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { AppIcon } from '../../components/ui/AppIcon';
+import { PageMetaStrip } from '../../components/layout/PageMetaStrip';
 import { useExportJob } from '../../hooks/useExportJob';
 import { getExportCSV } from '../../api/export';
 
@@ -111,6 +112,18 @@ export function ExportDetailPage() {
             </div>
           </Card>
         </section>
+        <PageMetaStrip
+          title="Export detail status"
+          items={[
+            { label: 'Last updated', value: new Date(job.created_at).toLocaleDateString('id-ID'), icon: 'calendar' },
+            { label: 'Export Center', value: ready ? 'Download ready' : 'Failed job', icon: ready ? 'download' : 'warning' },
+            { label: 'Rows available', value: job.row_count.toLocaleString('id-ID'), icon: 'list' },
+          ]}
+          actions={[
+            { label: 'Back to Exports', to: '/exports', icon: 'back' },
+            { label: 'New Export', to: '/exports/new', icon: 'add', variant: 'primary' },
+          ]}
+        />
       </div>
     </AppLayout>
   );

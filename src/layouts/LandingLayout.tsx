@@ -37,6 +37,28 @@ export function LandingLayout({ children }: LandingLayoutProps) {
         </nav>
       </header>
       {children}
+      <footer className="public-footer">
+        <div className="container public-footer-grid">
+          <div>
+            <Logo />
+            <p>Personal finance command center untuk wallet, transaksi, budget, debt, recurring, goals, reports, dan export.</p>
+          </div>
+          <nav aria-label="Footer product links">
+            <a href="#features">Fitur</a>
+            <a href="#modules">Module</a>
+            <a href="#workflow">Flow</a>
+            <a href="#pricing">Pricing</a>
+          </nav>
+          <nav aria-label="Footer account links">
+            <Link to="/login">Masuk</Link>
+            <Link to="/register">Mulai Gratis</Link>
+          </nav>
+        </div>
+        <div className="container public-footer-bottom">
+          <span>© 2026 Affluena</span>
+          <span>Built for focused financial workflows.</span>
+        </div>
+      </footer>
     </>
   );
 }

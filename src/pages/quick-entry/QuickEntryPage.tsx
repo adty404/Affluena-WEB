@@ -5,11 +5,14 @@ import { EmptyState } from '../../components/ui/EmptyState';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { Amount } from '../../components/finance/Amount';
 import { useQuickEntryTemplates, useExecuteQuickEntryTemplate } from '../../hooks/useQuickEntry';
+import { useWallets } from '../../hooks/useWallets';
+import { useCategories } from '../../hooks/useCategories';
 import { useToast } from '../../components/ui/Toast';
-import type { QuickEntryTemplate } from '../../types/quickEntry';
 
 export function QuickEntryPage() {
   const { data, isLoading, error } = useQuickEntryTemplates();
+  const { data: walletsData } = useWallets();
+  const { data: categoriesData } = useCategories();
   const executeMutation = useExecuteQuickEntryTemplate();
   const { showToast } = useToast();
 
@@ -17,6 +20,11 @@ export function QuickEntryPage() {
   if (error) return <AppLayout title="Quick Entry" description="Loading..."><div className="p-8 text-red-500">Error loading quick entry templates</div></AppLayout>;
 
   const templates = data?.templates || [];
+  const walletNameById = new Map((walletsData?.wallets ?? []).map((wallet) => [wallet.id, wallet.name]));
+  const categoryNameById = new Map((categoriesData?.categories ?? []).map((category) => [category.id, category.name]));
+
+  const walletLabel = (walletId: string) => walletNameById.get(walletId) ?? 'Unknown wallet';
+  const categoryLabel = (categoryId: string | undefined, type: string) => categoryId ? (categoryNameById.get(categoryId) ?? 'Unknown category') : type;
 
   const handleExecute = async (id: string) => {
     try {
@@ -50,8 +58,8 @@ export function QuickEntryPage() {
                   <Amount value={item.amount_minor} type={item.type === 'income' ? 'income' : 'expense'} />
                 </div>
                 <div className="qe-meta">
-                  <small>{item.to_wallet_id ? `${item.wallet_id} → ${item.to_wallet_id}` : item.wallet_id}</small>
-                  <small>{item.category_id ?? item.type}</small>
+                  <small><span>Wallet</span><strong>{item.to_wallet_id ? `${walletLabel(item.wallet_id)} → ${walletLabel(item.to_wallet_id)}` : walletLabel(item.wallet_id)}</strong></small>
+                  <small><span>Category</span><strong>{categoryLabel(item.category_id, item.type)}</strong></small>
                 </div>
                 <div className="qe-action">
                   <Button 

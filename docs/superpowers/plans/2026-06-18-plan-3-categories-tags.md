@@ -1,5 +1,7 @@
 # Affluena-WEB — Plan 3: Categories & Tags Integration + Hardcoded UI Fixes + Stale Documentation
 
+> **Current status (2026-06-20):** Historical implementation plan. Categories, tags, auth/user context, and later main domains are integrated through the current API client/hooks. Use `../../../README.md`, `../../../AGENTS.md`, and `../../AI_ROUTE_MAP.md` for current context.
+
 **Goal:** Wire the categories & tags UI (list, create, edit) to live backend endpoints, replacing mock data with real TanStack Query state. Fix all hardcoded user values in Sidebar and ProfileSettingsPage. Fix the duplicate AuthSession type and useMe localStorage bypass. Update stale documentation in API and README.
 
 **Mirrors:** `Affluena-API/docs/API_CONTRACT.md` § Category, § Tag, § Auth (sessions)
@@ -319,15 +321,14 @@ None. Mock files are kept (rewritten) for cross-plan consumers.
 **Task 21.** Update `Affluena-API/docs/API_CONTRACT.md`
 
 - Fix the `frequency` enum in the Recurring section: change `"daily"|"weekly"|"monthly"` to `"weekly"|"monthly"` (actual code only accepts weekly/monthly)
-- Replace the "Logout/Revoke is handled purely client-side (token deletion) currently" note with actual session management endpoints:
-  - `GET /api/v1/auth/sessions` → `{ sessions: [...], pagination: {...} }` (list sessions)
-  - `DELETE /api/v1/auth/sessions/:id` → revoke a specific session (except current)
+- Replace the old client-only logout note with actual session management endpoints:
+  - `GET /api/v1/auth/sessions` -> `{ sessions: [...] }`
+  - `DELETE /api/v1/auth/sessions/:session_id` -> revoke a specific session
 - Add `POST /api/v1/auth/forgot-password` and `POST /api/v1/auth/reset-password` to the Auth section
 
 **Task 22.** Update `Affluena-WEB/README.md`
 
-- Remove line ~44: `"Data is still local demo data under src/data; backend/API integration is intentionally not included."`
-- Replace with: `"Auth and Wallets pages use live backend APIs. Other pages (Categories, Tags, Transactions, etc.) still use mock data until their respective integration plans land."`
+- Keep the README aligned with the current integrated app: domain pages use the shared API client/hooks, and remaining `src/data/*` files are static UI/support data rather than the main business-data source.
 
 ### E. QA E2E Tests (depends on B tasks being complete)
 

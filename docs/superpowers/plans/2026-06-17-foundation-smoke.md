@@ -1,5 +1,7 @@
 # Foundation Smoke Checklist
 
+> **Current status (2026-06-20):** Historical smoke checklist. The current app includes this foundation plus broader API integration and current verification is `npm install`, `npm run build`, and `npm run test:run`.
+
 Date: 2026-06-17
 Branch: `feat/backend-integration-foundation`
 Plan: `2026-06-17-backend-integration-foundation-auth.md`

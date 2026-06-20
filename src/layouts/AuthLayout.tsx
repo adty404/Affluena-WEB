@@ -23,6 +23,10 @@ export function AuthLayout({ children, title, description, narrow }: AuthLayoutP
         </aside>
         <section className={`auth-card ${narrow ? 'narrow' : ''}`}>
           {children}
+          <footer className="auth-legal">
+            <span>© 2026 Affluena</span>
+            <span>Data finansial tetap berada di akun pribadi kamu.</span>
+          </footer>
         </section>
       </section>
     </main>

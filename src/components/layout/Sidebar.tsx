@@ -112,6 +112,15 @@ export function Sidebar({ onClose }: { onClose: () => void }) {
             <span>Affluena User</span>
           </div>
         </NavLink>
+        <nav className="sidebar-quick-links" aria-label="Account shortcuts">
+          <Link to="/settings/profile" onClick={onClose}>Profile</Link>
+          <Link to="/settings/help" onClick={onClose}>Help</Link>
+          <Link to="/settings/about" onClick={onClose}>About</Link>
+        </nav>
+        <div className="sidebar-version" aria-label="Application version">
+          <span>Affluena Web</span>
+          <strong>v1.0.0</strong>
+        </div>
       </div>
     </aside>
   );

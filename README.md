@@ -1,8 +1,8 @@
-# Affluena React Vite Full Audit
+# Affluena-WEB
 
-React + Vite + TypeScript implementation for Affluena personal finance web app.
+React + Vite + TypeScript implementation for the Affluena personal finance web app. The app is integrated with Affluena-API through `src/api/client.ts`, domain API modules, and React Query hooks.
 
-## Included modules
+## Current App Surface
 
 - Foundation, auth, onboarding, and global layout
 - Dashboard, analytics, forecast, and widget states
@@ -15,14 +15,14 @@ React + Vite + TypeScript implementation for Affluena personal finance web app.
 - Reports, export center, activity log, alert center, and system logs
 - Settings, account, security, notification preferences, privacy, help, and UI audit
 
-## Audit fixes
+## Architecture Notes
 
-- Removed outdated staging copy from landing and app shell pages.
-- Kept icons consistent through the shared inline SVG `AppIcon` system.
-- Replaced emoji feature icons on the landing page with `AppIcon`.
-- Removed user-facing “mock/prototype/stage readiness” copy from active UI screens.
-- Confirmed implemented modules route to real pages or local UI actions.
-- Preserved responsive layout for desktop sidebar, mobile drawer, bottom navigation, cards, tables, and forms.
+- `src/api/client.ts` is the central fetch wrapper. It defaults to `http://localhost:8080` and supports `VITE_API_BASE_URL`.
+- `src/api/*.ts` and `src/hooks/*.ts` provide the domain API and React Query layer.
+- `src/components/ui/DataTable.tsx` wraps `datatables.net-react` + `datatables.net-dt`; page code should use this component rather than raw table markup.
+- `src/components/ui/AppIcon.tsx` is the shared icon system.
+- `src/styles/*.css` define the vanilla CSS design system.
+- Remaining `src/data/*` files are static UI/support data for the landing page, app shell/widget-state previews, and shared transaction labels. They are not the main business-data source.
 
 ## Run
 
@@ -31,15 +31,24 @@ npm install
 npm run dev
 ```
 
+The Vite dev server runs on `http://localhost:5173` by default.
+
 ## Build
 
 ```bash
+npm install
 npm run build
+```
+
+## Test
+
+```bash
+npm run test:run
 ```
 
 ## Notes
 
-- Vanilla CSS only.
-- No Tailwind dependency.
-- Data is still local demo data under `src/data` for modules not yet integrated (Categories, Tags, Transactions, Budgets, Debts, Goals, Recurring, Reports, etc.). Auth and Wallets are already wired to the live backend API.
-- Form input placeholders such as example email/search text are retained because they are normal UX hints, not inactive placeholders.
+- Vanilla CSS only; no Tailwind dependency.
+- Keep routes aligned with `docs/AI_ROUTE_MAP.md`.
+- Keep UI edits aligned with `docs/AI_DESIGN_SYSTEM.md` and `docs/AI_QA_CHECKLIST.md`.
+- API behavior should match `../Affluena-API/docs/API_CONTRACT.md`.

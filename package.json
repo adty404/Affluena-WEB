@@ -13,9 +13,12 @@
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
     "@tanstack/react-query": "^5.101.0",
-    "@tanstack/react-table": "^8.21.3",
     "@vitejs/plugin-react": "latest",
     "clsx": "latest",
+    "datatables.net": "^2.3.8",
+    "datatables.net-buttons-dt": "^3.2.6",
+    "datatables.net-dt": "^2.3.8",
+    "datatables.net-react": "^1.0.2",
     "react": "latest",
     "react-dom": "latest",
     "react-hook-form": "^7.79.0",

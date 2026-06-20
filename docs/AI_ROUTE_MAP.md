@@ -165,6 +165,8 @@ Do not interpret `/exports/new` or `/exports/history` as `/exports/:id`.
 ## App Menu
 
 - `/app-menu`
+- `/app-shell`
+- `/app` redirects to `/dashboard`
 
 ## Active Link Checklist
 
