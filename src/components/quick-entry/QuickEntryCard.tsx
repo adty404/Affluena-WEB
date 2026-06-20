@@ -6,14 +6,23 @@ import { Modal } from '../ui/Modal';
 import { useToast } from '../ui/Toast';
 import { AppIcon } from '../ui/AppIcon';
 import { Amount } from '../finance/Amount';
+import { useCategories } from '../../hooks/useCategories';
 import { useExecuteQuickEntryTemplate } from '../../hooks/useQuickEntry';
+import { useWallets } from '../../hooks/useWallets';
+import { categoryLabel, createNameById, walletPairLabel } from '../../lib/financeLabels';
 import type { QuickEntryTemplate } from '../../types/quickEntry';
 
 export function QuickEntryCard({ item }: { item: QuickEntryTemplate }) {
   const { showToast } = useToast();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const executeMutation = useExecuteQuickEntryTemplate();
+  const { data: walletsData } = useWallets();
+  const { data: categoriesData } = useCategories();
   const amountVariant = item.type === 'income' ? 'income' : 'expense';
+  const walletNameById = createNameById(walletsData?.wallets ?? []);
+  const categoryNameById = createNameById(categoriesData?.categories ?? []);
+  const walletText = walletPairLabel(walletNameById, item.wallet_id, item.to_wallet_id);
+  const categoryText = categoryLabel(categoryNameById, item.category_id, item.type);
 
   async function executeTemplate() {
     try {
@@ -30,7 +39,7 @@ export function QuickEntryCard({ item }: { item: QuickEntryTemplate }) {
       <Card className="quick-entry-card">
         <div className="card-topline">
           <div className={`finance-icon ${item.type === 'income' ? 'income' : 'danger'}`}><AppIcon name={item.type === 'income' ? 'success' : 'transactions'} /></div>
-          <div><h3>{item.name}</h3><p>{item.to_wallet_id ? `${item.wallet_id} → ${item.to_wallet_id}` : item.wallet_id} · {item.category_id ?? item.type}</p></div>
+          <div><h3>{item.name}</h3><p>{walletText} · {categoryText}</p></div>
           <Badge tone={item.type === 'income' ? 'green' : 'red'}>{item.type}</Badge>
         </div>
         <h2><Amount value={item.amount_minor} type={amountVariant} /></h2>
@@ -44,8 +53,8 @@ export function QuickEntryCard({ item }: { item: QuickEntryTemplate }) {
       <Modal open={confirmOpen} title="Execute Quick Entry" description="Konfirmasi detail transaksi sebelum template dijalankan." onClose={() => setConfirmOpen(false)}>
         <div className="readiness-list">
           <div><span>Template</span><strong>{item.name}</strong></div>
-          <div><span>Wallet</span><strong>{item.to_wallet_id ? `${item.wallet_id} → ${item.to_wallet_id}` : item.wallet_id}</strong></div>
-          <div><span>Category</span><strong>{item.category_id ?? item.type}</strong></div>
+          <div><span>Wallet</span><strong>{walletText}</strong></div>
+          <div><span>Category</span><strong>{categoryText}</strong></div>
           <div><span>Amount</span><strong><Amount value={item.amount_minor} type={amountVariant} /></strong></div>
         </div>
         <div className="modal-actions">

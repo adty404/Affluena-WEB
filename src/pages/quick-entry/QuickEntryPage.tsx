@@ -8,6 +8,7 @@ import { useQuickEntryTemplates, useExecuteQuickEntryTemplate } from '../../hook
 import { useWallets } from '../../hooks/useWallets';
 import { useCategories } from '../../hooks/useCategories';
 import { useToast } from '../../components/ui/Toast';
+import { categoryLabel, createNameById, walletPairLabel } from '../../lib/financeLabels';
 
 export function QuickEntryPage() {
   const { data, isLoading, error } = useQuickEntryTemplates();
@@ -20,11 +21,8 @@ export function QuickEntryPage() {
   if (error) return <AppLayout title="Quick Entry" description="Loading..."><div className="p-8 text-red-500">Error loading quick entry templates</div></AppLayout>;
 
   const templates = data?.templates || [];
-  const walletNameById = new Map((walletsData?.wallets ?? []).map((wallet) => [wallet.id, wallet.name]));
-  const categoryNameById = new Map((categoriesData?.categories ?? []).map((category) => [category.id, category.name]));
-
-  const walletLabel = (walletId: string) => walletNameById.get(walletId) ?? 'Unknown wallet';
-  const categoryLabel = (categoryId: string | undefined, type: string) => categoryId ? (categoryNameById.get(categoryId) ?? 'Unknown category') : type;
+  const walletNameById = createNameById(walletsData?.wallets ?? []);
+  const categoryNameById = createNameById(categoriesData?.categories ?? []);
 
   const handleExecute = async (id: string) => {
     try {
@@ -58,8 +56,8 @@ export function QuickEntryPage() {
                   <Amount value={item.amount_minor} type={item.type === 'income' ? 'income' : 'expense'} />
                 </div>
                 <div className="qe-meta">
-                  <small><span>Wallet</span><strong>{item.to_wallet_id ? `${walletLabel(item.wallet_id)} → ${walletLabel(item.to_wallet_id)}` : walletLabel(item.wallet_id)}</strong></small>
-                  <small><span>Category</span><strong>{categoryLabel(item.category_id, item.type)}</strong></small>
+                  <small><span>Wallet</span><strong>{walletPairLabel(walletNameById, item.wallet_id, item.to_wallet_id)}</strong></small>
+                  <small><span>Category</span><strong>{categoryLabel(categoryNameById, item.category_id, item.type)}</strong></small>
                 </div>
                 <div className="qe-action">
                   <Button 
