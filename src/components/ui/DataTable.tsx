@@ -2,6 +2,7 @@ import { useId, useMemo, type ReactNode } from 'react';
 import ReactDataTable, { type DataTableSlots } from 'datatables.net-react';
 import DT from 'datatables.net-dt';
 import type { Config } from 'datatables.net';
+import { dataTableStyles } from './DataTable.styles';
 
 ReactDataTable.use(DT);
 
@@ -40,73 +41,6 @@ function renderDataValue(value: unknown) {
   if (value === null || value === undefined || typeof value === 'boolean') return '';
   return value;
 }
-
-const dataTableStyles = `
-  .dt-wrapper .dt-search { margin-bottom: 0.75rem; }
-  .dt-wrapper .dt-length { margin-bottom: 0.75rem; }
-  .dt-wrapper .dt-input {
-    border: 1px solid var(--border, #e2e8f0);
-    border-radius: var(--radius-md, 8px);
-    padding: 0.5rem 0.75rem;
-    font-size: 0.875rem;
-    background-color: var(--bg-input, #ffffff);
-  }
-  .dt-wrapper table.dataTable,
-  .dt-wrapper table.dt-empty-table {
-    width: 100% !important;
-    border-collapse: collapse;
-  }
-  .dt-wrapper table.dataTable thead th,
-  .dt-wrapper table.dt-empty-table thead th {
-    border-bottom: 2px solid var(--border, #e2e8f0);
-    padding: 0.75rem 1rem;
-    text-align: left;
-    font-size: 0.8125rem;
-    font-weight: 600;
-    color: var(--text-muted, #64748b);
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-  }
-  .dt-wrapper table.dataTable thead th.dt-right,
-  .dt-wrapper table.dt-empty-table thead th.dt-right { text-align: right; }
-  .dt-wrapper table.dataTable tbody td,
-  .dt-wrapper table.dt-empty-table tbody td {
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid var(--border-light, #f1f5f9);
-    font-size: 0.875rem;
-    color: var(--text-main, #0f172a);
-  }
-  .dt-wrapper table.dataTable tbody td.dt-right,
-  .dt-wrapper table.dt-empty-table tbody td.dt-right { text-align: right; }
-  .dt-wrapper table.dataTable tbody tr:hover {
-    background-color: var(--bg-hover, #f8fafc);
-  }
-  .dt-wrapper .dt-empty-state {
-    color: var(--text-muted, #64748b);
-    text-align: center;
-  }
-  .dt-wrapper .dt-paging .dt-paging-button {
-    border: 1px solid var(--border, #e2e8f0);
-    border-radius: var(--radius-sm, 6px);
-    padding: 0.375rem 0.75rem;
-    margin: 0 0.125rem;
-    background: var(--bg-input, #ffffff);
-    cursor: pointer;
-  }
-  .dt-wrapper .dt-paging .dt-paging-button.current {
-    background: var(--primary, #10b981);
-    border-color: var(--primary, #10b981);
-    color: #ffffff;
-  }
-  .dt-wrapper .dt-paging .dt-paging-button.disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
-  .dt-wrapper .dt-info {
-    font-size: 0.8125rem;
-    color: var(--text-muted, #64748b);
-  }
-`;
 
 function DataTableInner<T>({
   columns,
