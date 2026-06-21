@@ -42,6 +42,56 @@ function renderDataValue(value: unknown) {
   return value;
 }
 
+function MobileCardList<T>({
+  columns,
+  data,
+  getRowKey,
+  emptyMessage,
+}: Pick<DataTableProps<T>, 'columns' | 'data' | 'getRowKey' | 'emptyMessage'>) {
+  const titleColumn = columns[0];
+  const detailColumns = columns.slice(1);
+
+  if (data.length === 0) {
+    return (
+      <div className="dt-mobile-list" role="list">
+        <article className="dt-mobile-empty-card" role="listitem">
+          {emptyMessage}
+        </article>
+      </div>
+    );
+  }
+
+  return (
+    <div className="dt-mobile-list" role="list">
+      {data.map((row) => {
+        const rowKey = getRowKey(row);
+
+        return (
+          <article className="dt-mobile-card" role="listitem" key={rowKey}>
+            {titleColumn ? (
+              <div className="dt-mobile-card-title">
+                {renderDisplayNode(titleColumn.render(row))}
+              </div>
+            ) : null}
+            {detailColumns.length > 0 ? (
+              <dl className="dt-mobile-fields">
+                {detailColumns.map((col) => (
+                  <div className="dt-mobile-field" key={`${rowKey}-${col.key}`}>
+                    <dt>{col.header}</dt>
+                    <dd className={col.align === 'right' ? 'dt-mobile-value dt-right' : 'dt-mobile-value'}>
+                      {renderDisplayNode(col.render(row))}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            ) : null}
+          </article>
+        );
+      })}
+    </div>
+  );
+}
+
 function DataTableInner<T>({
   columns,
   data,
@@ -119,6 +169,7 @@ function DataTableInner<T>({
     return (
       <div className="dt-wrapper">
         <style>{dataTableStyles}</style>
+        <MobileCardList columns={columns} data={data} getRowKey={getRowKey} emptyMessage={emptyMessage} />
         <table id={tableId} className="dt-empty-table">
           <thead>
             <tr>
@@ -144,6 +195,7 @@ function DataTableInner<T>({
   return (
     <div className="dt-wrapper">
       <style>{dataTableStyles}</style>
+      <MobileCardList columns={columns} data={data} getRowKey={getRowKey} emptyMessage={emptyMessage} />
       <ReactDataTable id={tableId} data={tableRows} columns={dtColumns} options={options} slots={slots} className="display" />
     </div>
   );

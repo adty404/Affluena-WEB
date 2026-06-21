@@ -105,6 +105,9 @@ export const dataTableStyles = `
     color: var(--muted, #64748b);
     text-align: center;
   }
+  .dt-mobile-list {
+    display: none;
+  }
   .dt-wrapper .dt-info,
   .dt-wrapper .dt-paging {
     padding: 0.75rem 0.875rem;
@@ -138,11 +141,85 @@ export const dataTableStyles = `
   }
   @media (max-width: 720px) {
     .dt-wrapper {
-      border-radius: 16px;
+      overflow: visible;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+    .dt-wrapper .dt-layout-row.dt-layout-table,
+    .dt-wrapper table.dataTable,
+    .dt-wrapper table.dt-empty-table {
+      display: none !important;
+    }
+    .dt-mobile-list {
+      display: grid;
+      gap: var(--mobile-page-gap, 8px);
+      padding: 0;
+    }
+    .dt-mobile-card,
+    .dt-mobile-empty-card {
+      min-width: 0;
+      padding: var(--mobile-card-padding, 12px);
+      border: 1px solid var(--line, #e2e8f0);
+      border-radius: var(--mobile-card-radius, 16px);
+      background: var(--surface, #ffffff);
+      box-shadow: var(--mobile-card-shadow, 0 6px 18px rgba(15, 23, 42, .055));
+    }
+    .dt-mobile-card {
+      display: grid;
+      gap: 0.75rem;
+    }
+    .dt-mobile-card-title {
+      min-width: 0;
+      font-size: 0.9375rem;
+      font-weight: 900;
+      color: var(--ink, #0f172a);
+      overflow-wrap: anywhere;
+    }
+    .dt-mobile-card-title .table-subtitle {
+      margin-top: 0.25rem;
+    }
+    .dt-mobile-fields {
+      display: grid;
+      gap: 0.5rem;
+      margin: 0;
+    }
+    .dt-mobile-field {
+      min-width: 0;
+      display: grid;
+      grid-template-columns: minmax(88px, .42fr) minmax(0, 1fr);
+      gap: 0.75rem;
+      align-items: start;
+      padding-top: 0.5rem;
+      border-top: 1px solid var(--line-soft, #f1f5f9);
+    }
+    .dt-mobile-field dt {
+      color: var(--muted, #64748b);
+      font-size: 0.75rem;
+      font-weight: 850;
+      line-height: 1.35;
+    }
+    .dt-mobile-field dd {
+      min-width: 0;
+      margin: 0;
+      color: var(--ink, #0f172a);
+      font-size: 0.875rem;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+    }
+    .dt-mobile-field dd.dt-right {
+      text-align: right;
+    }
+    .dt-mobile-empty-card {
+      color: var(--muted, #64748b);
+      font-weight: 850;
+      text-align: center;
     }
     .dt-wrapper .dt-layout-row:not(.dt-layout-table) {
       flex-direction: column;
       align-items: stretch;
+      padding: 0 0 0.75rem;
     }
     .dt-wrapper .dt-search {
       width: 100%;
@@ -154,10 +231,17 @@ export const dataTableStyles = `
     .dt-wrapper .dt-search .dt-input,
     .dt-wrapper .dt-length .dt-input {
       width: 100%;
+      min-height: var(--mobile-touch-target, 48px);
+      font-size: 1rem;
     }
     .dt-wrapper .dt-info,
     .dt-wrapper .dt-paging {
       justify-content: flex-start;
+      padding-inline: 0;
+    }
+    .dt-wrapper .dt-paging .dt-paging-button {
+      min-height: 44px;
+      min-width: 44px;
     }
   }
 `;

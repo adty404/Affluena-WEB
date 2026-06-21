@@ -1,5 +1,6 @@
 import { Badge } from '../ui/Badge';
 import { Card } from '../ui/Card';
+import { AppIcon } from '../ui/AppIcon';
 import { ProgressBar } from './ProgressBar';
 import type { DashboardStat, DashboardTransaction, ExpenseSlice, ForecastItem } from '../../types/dashboard';
 
@@ -110,7 +111,9 @@ export function RecentTransactions({ items }: { items: DashboardTransaction[] })
       <div className="transaction-list compact">
         {items.map((item) => (
           <div className="transaction-row" key={item.id}>
-            <div className={`transaction-icon ${item.type}`}>{item.type === 'income' ? '↙' : '↗'}</div>
+            <div className={`transaction-icon ${item.type}`}>
+              <AppIcon name={item.type === 'income' ? 'arrow-down' : 'arrow-up'} />
+            </div>
             <div>
               <strong>{item.title}</strong>
               <span>{item.category} · {item.wallet} · {item.date}</span>
