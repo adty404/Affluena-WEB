@@ -1865,3 +1865,9 @@ input.form-control {
     border-radius: 22px;
   }
 }
+
+@media (max-width: 960px) {
+  .app-topbar .btn.mobile-sidebar-button {
+    display: none;
+  }
+}
