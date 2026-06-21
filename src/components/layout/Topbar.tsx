@@ -57,6 +57,7 @@ export function Topbar({ title, description, onMenuClick }: TopbarProps) {
         <p>{description}</p>
       </div>
       <div className="topbar-actions">
+        <Button to="/alerts" size="icon" className="mobile-alert-button" aria-label="Open alerts"><AppIcon name="budgetAlert" /></Button>
         <Button to="/transactions/new"><AppIcon name="add" /> Quick Add</Button>
         <div className="profile-menu-wrap" ref={profileRef}>
           <Button variant="primary" onClick={() => setProfileOpen((value) => !value)} aria-expanded={profileOpen} aria-haspopup="menu" aria-label="Open profile menu">

@@ -36,6 +36,7 @@
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 .modal-backdrop { position: fixed; inset: 0; z-index: 100; background: rgba(15,23,42,.38); display: grid; place-items: center; padding: 18px; }
 .modal { width: min(100%, 580px); background: white; border-radius: 26px; border: 1px solid var(--line); box-shadow: var(--shadow); padding: 24px; }
+.modal-sheet-handle { display: none; }
 .modal-head { display: flex; justify-content: space-between; align-items: start; gap: 16px; margin-bottom: 18px; }
 .modal-head h3 { margin: 0; letter-spacing: -.03em; }
 .modal-head p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
@@ -43,3 +44,78 @@
 .empty-illustration { width: 78px; height: 78px; border-radius: 28px; display: grid; place-items: center; font-size: 30px; background: var(--secondary-soft); margin-inline: auto; }
 .empty-state h3 { margin: 16px 0 8px; letter-spacing: -.03em; }
 .empty-state p { margin: 0 auto 18px; color: var(--muted); line-height: 1.65; max-width: 420px; }
+
+@media (max-width: 720px) {
+  .btn {
+    min-height: var(--mobile-touch-target);
+    padding: 12px 14px;
+    border-radius: 14px;
+  }
+  .btn.small {
+    min-height: 44px;
+  }
+  .btn.icon {
+    width: var(--mobile-touch-target);
+  }
+  .btn:active {
+    transform: translateY(1px) scale(.99);
+  }
+  .form-control {
+    min-height: var(--mobile-touch-target);
+    border-radius: 14px;
+    font-size: 16px;
+  }
+  .form-stack {
+    gap: 12px;
+    margin-top: 14px;
+  }
+  .modal-backdrop {
+    align-items: end;
+    place-items: end stretch;
+    padding: 0;
+    background: rgba(15,23,42,.44);
+  }
+  .modal {
+    width: 100%;
+    max-height: calc(92dvh - env(safe-area-inset-top));
+    overflow-y: auto;
+    border-right: 0;
+    border-bottom: 0;
+    border-left: 0;
+    border-radius: 24px 24px 0 0;
+    padding: 10px 16px calc(18px + env(safe-area-inset-bottom));
+    box-shadow: 0 -20px 44px rgba(15,23,42,.18);
+    animation: modalSheetIn .18s ease both;
+  }
+  .modal-sheet-handle {
+    display: block;
+    width: 42px;
+    height: 5px;
+    margin: 0 auto 14px;
+    border-radius: 999px;
+    background: #cbd5e1;
+  }
+  .modal-head {
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .modal-head h3 {
+    font-size: 19px;
+    line-height: 1.15;
+  }
+  .modal-head p {
+    font-size: 12px;
+    line-height: 1.4;
+  }
+  .empty-state {
+    min-height: 220px;
+    padding: var(--mobile-card-padding);
+    border-radius: var(--mobile-card-radius);
+  }
+}
+
+@keyframes modalSheetIn {
+  from { opacity: .92; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}

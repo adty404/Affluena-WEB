@@ -56,7 +56,16 @@ describe('DataTable', () => {
 
     expect(container.querySelector('table.dataTable')).toBeNull();
     expect(container.querySelector('.dt-empty-state')?.textContent).toContain('No data available');
+    expect(container.querySelector('.dt-mobile-empty-card')?.textContent).toContain('No data available');
     expect(container.querySelector('tbody td')?.getAttribute('colspan')).toBe(String(columns.length));
+  });
+
+  it('renders a mobile card list with the first column as the card title', () => {
+    const container = renderDataTable([{ id: 'row-1', name: 'Wallet', amount: 100_000 }]);
+
+    expect(container.querySelector('.dt-mobile-card-title')?.textContent).toContain('Wallet');
+    expect(container.querySelector('.dt-mobile-field dt')?.textContent).toBe('Amount');
+    expect(container.querySelector('.dt-mobile-value.dt-right')?.textContent).toBe('100.000');
   });
 
   it('does not throw when display-only columns do not exist on the raw row object', () => {

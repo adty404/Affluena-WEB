@@ -13,6 +13,14 @@ import { categoryLabel, createNameById, walletPairLabel } from '../../lib/financ
 import { formatIDR } from '../../lib/money';
 import type { DashboardStat, ExpenseSlice, DashboardTransaction } from '../../types/dashboard';
 
+const mobileDashboardActions = [
+  { to: '/transactions/new', icon: 'transactions', label: 'Add Transaction' },
+  { to: '/transactions/transfer', icon: 'arrow-up-down', label: 'Transfer' },
+  { to: '/wallets/new', icon: 'wallet', label: 'Add Wallet' },
+  { to: '/budgets/new', icon: 'budgetForm', label: 'Budget' },
+  { to: '/goals/new', icon: 'goal', label: 'Goal' },
+] as const;
+
 export function DashboardPage() {
   const [quickOpen, setQuickOpen] = useState(false);
   
@@ -65,11 +73,34 @@ export function DashboardPage() {
     value: formatIDR(w.balance_minor),
     percent: Math.round((w.balance_minor / totalWalletBalance) * 100),
   }));
+  const netWorthValue = summary ? formatIDR(summary.net_worth_minor) : '...';
+  const cashflowValue = summary ? formatIDR(summary.monthly_cashflow_minor) : '...';
+  const cashflowTone = summary && summary.monthly_cashflow_minor < 0 ? 'expense' : 'income';
 
   return (
     <AppLayout title="Dashboard" description="Overview finansial personal, cashflow, spending, dan alert bulan ini.">
       <div className="grid stack-lg dashboard-page">
-        <section className="app-hero-card dashboard-hero">
+        <section className="mobile-dashboard-home" aria-label="Mobile dashboard overview">
+          <div className="mobile-balance-card">
+            <span>Total Balance</span>
+            <strong>{netWorthValue}</strong>
+            <small className={`amount ${cashflowTone}`}>Cashflow bulan ini {cashflowValue}</small>
+          </div>
+          <div className="mobile-dashboard-actions" aria-label="Mobile quick actions">
+            {mobileDashboardActions.map((action) => (
+              <Button to={action.to} className="mobile-dashboard-action" key={action.to}>
+                <AppIcon name={action.icon} />
+                <span>{action.label}</span>
+              </Button>
+            ))}
+          </div>
+        </section>
+
+        <div className="mobile-dashboard-recent">
+          <RecentTransactions items={recentTransactions} />
+        </div>
+
+        <section className="app-hero-card dashboard-hero dashboard-desktop-hero">
           <div>
             <Badge>● Dashboard</Badge>
             <h2>Financial command center untuk memantau uang masuk, keluar, dan kesehatan budget.</h2>
@@ -81,12 +112,16 @@ export function DashboardPage() {
           </div>
         </section>
 
-        <StatGrid stats={stats} />
+        <div className="dashboard-desktop-stats">
+          <StatGrid stats={stats} />
+        </div>
 
         <section className="dashboard-grid">
           <div className="grid stack-lg">
             <CashflowChart trend={trendData?.trend} />
-            <RecentTransactions items={recentTransactions} />
+            <div className="dashboard-recent-desktop">
+              <RecentTransactions items={recentTransactions} />
+            </div>
           </div>
           <div className="grid stack-lg">
             <ExpenseDistribution items={expenseSlices} />
@@ -103,6 +138,8 @@ export function DashboardPage() {
           <Button to="/transactions/split" onClick={() => setQuickOpen(false)}><AppIcon name="split" /> Split Bill</Button>
           <Button to="/quick-entry" onClick={() => setQuickOpen(false)}><AppIcon name="quick" /> Execute Quick Entry</Button>
           <Button to="/budgets/new" onClick={() => setQuickOpen(false)}><AppIcon name="budgetForm" /> Create Budget</Button>
+          <Button to="/wallets/new" onClick={() => setQuickOpen(false)}><AppIcon name="wallet" /> Add Wallet</Button>
+          <Button to="/goals/new" onClick={() => setQuickOpen(false)}><AppIcon name="goal" /> Create Goal</Button>
         </div>
       </Modal>
     </AppLayout>
