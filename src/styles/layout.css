@@ -90,32 +90,29 @@
   .app-main { min-height: 100dvh; }
   .app-topbar {
     min-height: 64px;
-    padding: max(8px, env(safe-area-inset-top)) 14px 10px;
+    padding: calc(env(safe-area-inset-top) + 8px) 16px 8px;
     align-items: center;
-    gap: 10px;
-    background: rgba(248,250,252,.94);
-    box-shadow: 0 10px 24px rgba(15,23,42,.04);
+    gap: 12px;
+    background: rgba(248,250,252,.82);
+    backdrop-filter: none;
+    z-index: 70;
+    border-bottom: 0;
+    box-shadow: none;
   }
   .topbar-title {
     min-width: 0;
     flex: 1 1 auto;
   }
   .app-topbar h1 {
-    font-size: 21px;
-    line-height: 1.05;
+    font-size: 22px;
+    line-height: 1.08;
     letter-spacing: -.045em;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
   .app-topbar p {
-    max-width: calc(100vw - 156px);
-    margin-top: 3px;
-    font-size: 11px;
-    line-height: 1.2;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    display: none;
   }
   .mobile-sidebar-button {
     display: none;
@@ -129,27 +126,34 @@
   .topbar-actions {
     flex: 0 0 auto;
     margin-left: auto;
-    gap: 8px;
+    gap: 10px;
   }
   .topbar-actions > .btn:not(.primary) { display: none; }
-  .topbar-actions > .mobile-alert-button {
+  .topbar-actions > .btn.mobile-alert-button {
     display: inline-flex;
-    width: var(--mobile-touch-target);
-    min-height: var(--mobile-touch-target);
+    width: 44px;
+    min-height: 44px;
     padding: 0;
-    border-radius: 16px;
-    background: rgba(255,255,255,.96);
-    box-shadow: 0 8px 18px rgba(15,23,42,.06);
+    border-radius: 999px;
+    color: var(--muted);
+    background: rgba(255,255,255,.78);
+    box-shadow: 0 8px 18px rgba(15,23,42,.045);
   }
   .profile-menu-wrap > .btn.primary {
-    min-height: var(--mobile-touch-target);
-    padding: 0 13px;
-    border-radius: 15px;
-    box-shadow: 0 12px 26px rgba(16,185,129,.22);
+    width: 46px;
+    min-height: 46px;
+    padding: 0;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #0f172a, #334155);
+    box-shadow: 0 10px 22px rgba(15,23,42,.18);
   }
   .profile-menu-wrap > .btn.primary .app-icon {
-    width: 15px;
-    height: 15px;
+    display: none;
+  }
+  .profile-menu-wrap > .btn.primary .profile-initials {
+    font-size: 13px;
+    font-weight: 950;
+    letter-spacing: 0;
   }
   .app-content {
     padding: 8px 8px calc(112px + env(safe-area-inset-bottom));

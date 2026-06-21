@@ -61,7 +61,7 @@ export function Topbar({ title, description, onMenuClick }: TopbarProps) {
         <Button to="/transactions/new"><AppIcon name="add" /> Quick Add</Button>
         <div className="profile-menu-wrap" ref={profileRef}>
           <Button variant="primary" onClick={() => setProfileOpen((value) => !value)} aria-expanded={profileOpen} aria-haspopup="menu" aria-label="Open profile menu">
-            <AppIcon name="profile" /> {initials}
+            <AppIcon name="profile" /> <span className="profile-initials">{initials}</span>
           </Button>
 
           {profileOpen ? (
