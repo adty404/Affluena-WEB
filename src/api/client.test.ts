@@ -2,6 +2,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { apiFetch } from './client'
 import { setTokens, clearTokens } from '../lib/token'
 
+const expectedBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080'
+
 describe('apiFetch', () => {
   beforeEach(() => {
     clearTokens()
@@ -17,7 +19,7 @@ describe('apiFetch', () => {
     await apiFetch('/api/v1/auth/me')
 
     const [url, init] = fetchMock.mock.calls[0]
-    expect(String(url)).toBe('http://localhost:8080/api/v1/auth/me')
+    expect(String(url)).toBe(`${expectedBaseUrl}/api/v1/auth/me`)
     expect((init?.headers as Headers).get('authorization')).toBe('Bearer tok')
     expect((init?.headers as Headers).get('content-type')).toBe('application/json')
   })
