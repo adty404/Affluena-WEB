@@ -122,6 +122,14 @@ All spacing is based on `4px`.
 - **Spacing**: rows use compact padding and icon size on mobile.
 - **Behavior**: long finance labels wrap inside the available column without causing horizontal overflow.
 
+### Mobile Tables and Filters
+
+- **Structure**: `DataTable` renders desktop tables and mobile cards from the same columns.
+- **Hierarchy**: mobile cards promote title, status-like columns, metadata, and action columns into distinct regions.
+- **Filters**: summary filter cards become horizontal chips on mobile; dedicated filter pages use sticky bottom actions.
+- **Spacing**: mobile filter controls use `--mobile-touch-target`, `--mobile-page-gap`, and safe-area-aware bottom spacing.
+- **Behavior**: table controls must not create horizontal overflow; primary filter apply actions stay reachable above bottom navigation.
+
 ## 6. Motion & Interaction
 
 | Type | Duration | Easing | Usage |

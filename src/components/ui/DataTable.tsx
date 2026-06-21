@@ -32,6 +32,17 @@ type TableRow<T> = Record<string, unknown> & {
   _rowKey: string;
 };
 
+const mobileStatusColumnPattern = /^(status|type|severity|role|akses)$/i;
+const mobileActionColumnPattern = /(action|actions|aksi|option|opsi)$/i;
+
+function isMobileStatusColumn<T>(column: Column<T>) {
+  return mobileStatusColumnPattern.test(column.key) || mobileStatusColumnPattern.test(column.header);
+}
+
+function isMobileActionColumn<T>(column: Column<T>) {
+  return mobileActionColumnPattern.test(column.key) || mobileActionColumnPattern.test(column.header);
+}
+
 function renderDisplayNode(node: ReactNode) {
   if (node === null || node === undefined || typeof node === 'boolean') return '';
   return node;
@@ -50,6 +61,9 @@ function MobileCardList<T>({
 }: Pick<DataTableProps<T>, 'columns' | 'data' | 'getRowKey' | 'emptyMessage'>) {
   const titleColumn = columns[0];
   const detailColumns = columns.slice(1);
+  const statusColumn = detailColumns.find(isMobileStatusColumn);
+  const actionColumns = detailColumns.filter(isMobileActionColumn);
+  const metadataColumns = detailColumns.filter((column) => column !== statusColumn && !isMobileActionColumn(column));
 
   if (data.length === 0) {
     return (
@@ -68,14 +82,21 @@ function MobileCardList<T>({
 
         return (
           <article className="dt-mobile-card" role="listitem" key={rowKey}>
-            {titleColumn ? (
-              <div className="dt-mobile-card-title">
-                {renderDisplayNode(titleColumn.render(row))}
-              </div>
-            ) : null}
-            {detailColumns.length > 0 ? (
+            <div className="dt-mobile-card-head">
+              {titleColumn ? (
+                <div className="dt-mobile-card-title">
+                  {renderDisplayNode(titleColumn.render(row))}
+                </div>
+              ) : null}
+              {statusColumn ? (
+                <div className="dt-mobile-card-status">
+                  {renderDisplayNode(statusColumn.render(row))}
+                </div>
+              ) : null}
+            </div>
+            {metadataColumns.length > 0 ? (
               <dl className="dt-mobile-fields">
-                {detailColumns.map((col) => (
+                {metadataColumns.map((col) => (
                   <div className="dt-mobile-field" key={`${rowKey}-${col.key}`}>
                     <dt>{col.header}</dt>
                     <dd className={col.align === 'right' ? 'dt-mobile-value dt-right' : 'dt-mobile-value'}>
@@ -84,6 +105,15 @@ function MobileCardList<T>({
                   </div>
                 ))}
               </dl>
+            ) : null}
+            {actionColumns.length > 0 ? (
+              <div className="dt-mobile-actions">
+                {actionColumns.map((col) => (
+                  <div className="dt-mobile-action" key={`${rowKey}-${col.key}`}>
+                    {renderDisplayNode(col.render(row))}
+                  </div>
+                ))}
+              </div>
             ) : null}
           </article>
         );
@@ -169,7 +199,6 @@ function DataTableInner<T>({
     return (
       <div className="dt-wrapper">
         <style>{dataTableStyles}</style>
-        <MobileCardList columns={columns} data={data} getRowKey={getRowKey} emptyMessage={emptyMessage} />
         <table id={tableId} className="dt-empty-table">
           <thead>
             <tr>
@@ -188,6 +217,7 @@ function DataTableInner<T>({
             </tr>
           </tbody>
         </table>
+        <MobileCardList columns={columns} data={data} getRowKey={getRowKey} emptyMessage={emptyMessage} />
       </div>
     );
   }
@@ -195,8 +225,8 @@ function DataTableInner<T>({
   return (
     <div className="dt-wrapper">
       <style>{dataTableStyles}</style>
-      <MobileCardList columns={columns} data={data} getRowKey={getRowKey} emptyMessage={emptyMessage} />
       <ReactDataTable id={tableId} data={tableRows} columns={dtColumns} options={options} slots={slots} className="display" />
+      <MobileCardList columns={columns} data={data} getRowKey={getRowKey} emptyMessage={emptyMessage} />
     </div>
   );
 }

@@ -21,7 +21,7 @@ export function TransactionFilterPage() {
 
   return (
     <AppLayout title="Transaction Filter" description="Advanced filters for transaction search and reporting.">
-      <div className="dashboard-page grid-stack">
+      <div className="dashboard-page grid-stack filter-workspace">
         <section className="app-hero-card dashboard-hero">
           <div>
             <span className="badge dark">● Advanced filter</span>
@@ -33,11 +33,11 @@ export function TransactionFilterPage() {
             <Button variant="primary" onClick={handleApply}>Apply Filter</Button>
           </div>
         </section>
-        <Card className="panel-card">
+        <Card className="panel-card filter-criteria-card">
           <div className="panel-head">
             <div><h3>Filter Criteria</h3><p>Form advanced filter.</p></div>
           </div>
-          <form className="form-stack" onSubmit={handleApply}>
+          <form className="form-stack filter-form" onSubmit={handleApply}>
             <div className="form-two">
               <label>
                 <span>Keyword</span>
@@ -90,7 +90,7 @@ export function TransactionFilterPage() {
                 <Input placeholder="Rp 10.000.000" type="number" />
               </label>
             </div>
-            <div className="form-row-between">
+            <div className="form-row-between filter-actions-sticky">
               <Button type="reset">Reset</Button>
               <Button type="submit" variant="primary">Apply Filter</Button>
             </div>
