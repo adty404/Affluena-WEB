@@ -125,10 +125,11 @@ All spacing is based on `4px`.
 ### Mobile Tables and Filters
 
 - **Structure**: `DataTable` renders desktop tables and mobile cards from the same columns.
-- **Hierarchy**: mobile cards promote title, status-like columns, metadata, and action columns into distinct regions.
+- **Hierarchy**: mobile cards promote one title, one status-like badge, and at most three metadata fields into compact list items.
+- **Actions**: first mobile action is the primary row action; secondary row actions live behind a three-dot overflow menu.
 - **Filters**: summary filter cards become horizontal chips on mobile; dedicated filter pages use sticky bottom actions.
 - **Spacing**: mobile filter controls use `--mobile-touch-target`, `--mobile-page-gap`, and safe-area-aware bottom spacing.
-- **Behavior**: table controls must not create horizontal overflow; primary filter apply actions stay reachable above bottom navigation.
+- **Behavior**: table controls must not create horizontal overflow; search controls stay sticky and primary filter apply actions stay reachable above bottom navigation.
 
 ## 6. Motion & Interaction
 

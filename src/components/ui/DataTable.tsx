@@ -1,30 +1,39 @@
-import { useId, useMemo, type ReactNode } from 'react';
-import ReactDataTable, { type DataTableSlots } from 'datatables.net-react';
+import { useCallback, useEffect, useId, useMemo, useRef, useState, type ReactNode } from 'react';
+import ReactDataTable, { type DataTableRef, type DataTableSlots } from 'datatables.net-react';
 import DT from 'datatables.net-dt';
 import type { Config } from 'datatables.net';
+import { MobileCardList } from './DataTable.mobile';
 import { dataTableStyles } from './DataTable.styles';
 
 ReactDataTable.use(DT);
 
+const emptyActiveFilters: readonly string[] = [];
+
+export type MobileColumnRole = 'title' | 'status' | 'meta' | 'primaryAction' | 'secondaryAction' | 'hidden';
+
 export type Column<T> = {
-  key: string;
-  header: string;
-  render: (item: T) => ReactNode;
-  align?: 'left' | 'right';
-  accessor?: (item: T) => string | number;
+  readonly key: string;
+  readonly header: string;
+  readonly render: (item: T) => ReactNode;
+  readonly align?: 'left' | 'right';
+  readonly accessor?: (item: T) => string | number;
+  readonly mobileRole?: MobileColumnRole;
+  readonly mobilePriority?: number;
+  readonly mobileLabel?: string;
 };
 
 export type DataTableProps<T> = {
-  columns: Column<T>[];
-  data: T[];
-  getRowKey: (item: T) => string;
-  sortable?: boolean;
-  pagination?: boolean;
-  pageSize?: number;
-  searchable?: boolean;
-  searchKeys?: (keyof T)[];
-  initialSort?: { key: string; dir: 'asc' | 'desc' };
-  emptyMessage?: string;
+  readonly columns: readonly Column<T>[];
+  readonly data: readonly T[];
+  readonly getRowKey: (item: T) => string;
+  readonly sortable?: boolean;
+  readonly pagination?: boolean;
+  readonly pageSize?: number;
+  readonly searchable?: boolean;
+  readonly searchKeys?: readonly (keyof T)[];
+  readonly initialSort?: { readonly key: string; readonly dir: 'asc' | 'desc' };
+  readonly emptyMessage?: string;
+  readonly activeFilters?: readonly string[];
 };
 
 type TableRow<T> = Record<string, unknown> & {
@@ -32,15 +41,12 @@ type TableRow<T> = Record<string, unknown> & {
   _rowKey: string;
 };
 
-const mobileStatusColumnPattern = /^(status|type|severity|role|akses)$/i;
-const mobileActionColumnPattern = /(action|actions|aksi|option|opsi)$/i;
+type OriginalTableRow<T> = {
+  readonly _row: T;
+};
 
-function isMobileStatusColumn<T>(column: Column<T>) {
-  return mobileStatusColumnPattern.test(column.key) || mobileStatusColumnPattern.test(column.header);
-}
-
-function isMobileActionColumn<T>(column: Column<T>) {
-  return mobileActionColumnPattern.test(column.key) || mobileActionColumnPattern.test(column.header);
+function hasOriginalTableRow<T>(value: unknown): value is OriginalTableRow<T> {
+  return typeof value === 'object' && value !== null && '_row' in value;
 }
 
 function renderDisplayNode(node: ReactNode) {
@@ -53,73 +59,15 @@ function renderDataValue(value: unknown) {
   return value;
 }
 
-function MobileCardList<T>({
-  columns,
-  data,
-  getRowKey,
-  emptyMessage,
-}: Pick<DataTableProps<T>, 'columns' | 'data' | 'getRowKey' | 'emptyMessage'>) {
-  const titleColumn = columns[0];
-  const detailColumns = columns.slice(1);
-  const statusColumn = detailColumns.find(isMobileStatusColumn);
-  const actionColumns = detailColumns.filter(isMobileActionColumn);
-  const metadataColumns = detailColumns.filter((column) => column !== statusColumn && !isMobileActionColumn(column));
+function readObjectValue(value: unknown, key: string) {
+  if (typeof value !== 'object' || value === null) return undefined;
+  return Object.getOwnPropertyDescriptor(value, key)?.value;
+}
 
-  if (data.length === 0) {
-    return (
-      <div className="dt-mobile-list" role="list">
-        <article className="dt-mobile-empty-card" role="listitem">
-          {emptyMessage}
-        </article>
-      </div>
-    );
-  }
-
-  return (
-    <div className="dt-mobile-list" role="list">
-      {data.map((row) => {
-        const rowKey = getRowKey(row);
-
-        return (
-          <article className="dt-mobile-card" role="listitem" key={rowKey}>
-            <div className="dt-mobile-card-head">
-              {titleColumn ? (
-                <div className="dt-mobile-card-title">
-                  {renderDisplayNode(titleColumn.render(row))}
-                </div>
-              ) : null}
-              {statusColumn ? (
-                <div className="dt-mobile-card-status">
-                  {renderDisplayNode(statusColumn.render(row))}
-                </div>
-              ) : null}
-            </div>
-            {metadataColumns.length > 0 ? (
-              <dl className="dt-mobile-fields">
-                {metadataColumns.map((col) => (
-                  <div className="dt-mobile-field" key={`${rowKey}-${col.key}`}>
-                    <dt>{col.header}</dt>
-                    <dd className={col.align === 'right' ? 'dt-mobile-value dt-right' : 'dt-mobile-value'}>
-                      {renderDisplayNode(col.render(row))}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-            ) : null}
-            {actionColumns.length > 0 ? (
-              <div className="dt-mobile-actions">
-                {actionColumns.map((col) => (
-                  <div className="dt-mobile-action" key={`${rowKey}-${col.key}`}>
-                    {renderDisplayNode(col.render(row))}
-                  </div>
-                ))}
-              </div>
-            ) : null}
-          </article>
-        );
-      })}
-    </div>
-  );
+function getSearchLabel(value: unknown) {
+  if (typeof value === 'string') return value.trim();
+  if (value instanceof RegExp) return value.source.trim();
+  return '';
 }
 
 function DataTableInner<T>({
@@ -132,8 +80,12 @@ function DataTableInner<T>({
   searchable = true,
   initialSort,
   emptyMessage = 'No data available',
+  activeFilters = emptyActiveFilters,
 }: DataTableProps<T>) {
   const reactId = useId();
+  const tableRef = useRef<DataTableRef>(null);
+  const [mobileRows, setMobileRows] = useState<readonly T[]>(data);
+  const [mobileSearchValue, setMobileSearchValue] = useState('');
   const tableId = useMemo(() => `affluena-datatable-${reactId.replace(/[^A-Za-z0-9_-]/g, '')}`, [reactId]);
 
   const tableRows = useMemo<TableRow<T>[]>(() => {
@@ -143,7 +95,7 @@ function DataTableInner<T>({
         _rowKey: getRowKey(row),
       };
       columns.forEach((col) => {
-        obj[col.key] = renderDataValue(col.accessor ? col.accessor(row) : (row as Record<string, unknown>)[col.key]);
+        obj[col.key] = renderDataValue(col.accessor ? col.accessor(row) : readObjectValue(row, col.key));
       });
       return obj;
     });
@@ -195,6 +147,38 @@ function DataTableInner<T>({
     };
   }, [columns, emptyMessage, initialSort, pageSize, pagination, searchable, sortable]);
 
+  const syncMobileRows = useCallback(() => {
+    const api = tableRef.current?.dt();
+    if (!api) {
+      setMobileRows(data);
+      setMobileSearchValue('');
+      return;
+    }
+
+    setMobileSearchValue(getSearchLabel(api.search()));
+    const appliedRows = api
+      .rows({ page: 'current', search: 'applied', order: 'applied' })
+      .data()
+      .toArray()
+      .filter(hasOriginalTableRow<T>)
+      .map((row) => row._row);
+    setMobileRows(appliedRows);
+  }, [data]);
+
+  const scheduleMobileRowsSync = useCallback(() => {
+    window.setTimeout(syncMobileRows, 0);
+  }, [syncMobileRows]);
+
+  useEffect(() => {
+    const syncTimer = window.setTimeout(syncMobileRows, 0);
+    return () => window.clearTimeout(syncTimer);
+  }, [syncMobileRows]);
+
+  const mobileActiveFilters = useMemo(() => {
+    if (!mobileSearchValue) return activeFilters;
+    return [...activeFilters, `Search: ${mobileSearchValue}`];
+  }, [activeFilters, mobileSearchValue]);
+
   if (data.length === 0) {
     return (
       <div className="dt-wrapper">
@@ -225,8 +209,27 @@ function DataTableInner<T>({
   return (
     <div className="dt-wrapper">
       <style>{dataTableStyles}</style>
-      <ReactDataTable id={tableId} data={tableRows} columns={dtColumns} options={options} slots={slots} className="display" />
-      <MobileCardList columns={columns} data={data} getRowKey={getRowKey} emptyMessage={emptyMessage} />
+      <ReactDataTable
+        ref={tableRef}
+        id={tableId}
+        data={tableRows}
+        columns={dtColumns}
+        options={options}
+        slots={slots}
+        className="display"
+        onDraw={scheduleMobileRowsSync}
+        onInit={scheduleMobileRowsSync}
+      />
+      {mobileActiveFilters.length > 0 ? (
+        <div className="dt-mobile-active-filters" aria-label="Active table filters">
+          {mobileActiveFilters.map((filter, index) => (
+            <span className="dt-mobile-filter-chip" key={`${filter}-${index}`}>
+              {filter}
+            </span>
+          ))}
+        </div>
+      ) : null}
+      <MobileCardList columns={columns} data={mobileRows} getRowKey={getRowKey} emptyMessage={emptyMessage} />
     </div>
   );
 }
