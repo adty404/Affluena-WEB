@@ -170,12 +170,28 @@ export const dataTableStyles = `
       display: grid;
       gap: 0.75rem;
     }
+    .dt-mobile-card-head {
+      min-width: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 0.75rem;
+      align-items: start;
+    }
     .dt-mobile-card-title {
       min-width: 0;
       font-size: 0.9375rem;
       font-weight: 900;
       color: var(--ink, #0f172a);
       overflow-wrap: anywhere;
+    }
+    .dt-mobile-card-status {
+      min-width: 0;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .dt-mobile-card-status .badge {
+      max-width: 100%;
+      white-space: nowrap;
     }
     .dt-mobile-card-title .table-subtitle {
       margin-top: 0.25rem;
@@ -215,6 +231,26 @@ export const dataTableStyles = `
       color: var(--muted, #64748b);
       font-weight: 850;
       text-align: center;
+    }
+    .dt-mobile-actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
+      gap: 0.5rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid var(--line-soft, #f1f5f9);
+    }
+    .dt-mobile-action {
+      min-width: 0;
+    }
+    .dt-mobile-action .inline-actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+      gap: 0.5rem;
+    }
+    .dt-mobile-action .btn,
+    .dt-mobile-actions .btn {
+      width: 100%;
+      min-height: var(--mobile-touch-target, 48px);
     }
     .dt-wrapper .dt-layout-row:not(.dt-layout-table) {
       flex-direction: column;

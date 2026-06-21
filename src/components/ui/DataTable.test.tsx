@@ -92,4 +92,33 @@ describe('DataTable', () => {
       });
     }).not.toThrow();
   });
+
+  it('promotes status and action columns into mobile card regions', () => {
+    const mobileColumns: Column<Row>[] = [
+      { key: 'name', header: 'Name', render: (row) => row.name },
+      { key: 'status', header: 'Status', render: () => <span className="badge">Active</span> },
+      { key: 'amount', header: 'Amount', render: (row) => row.amount.toLocaleString('id-ID') },
+      { key: 'action', header: 'Action', render: () => <button type="button">Open</button> },
+    ];
+
+    if (!host) {
+      host = document.createElement('div');
+      document.body.appendChild(host);
+      root = createRoot(host);
+    }
+
+    act(() => {
+      root?.render(
+        <DataTable<Row>
+          columns={mobileColumns}
+          data={[{ id: 'row-1', name: 'Wallet', amount: 100_000 }]}
+          getRowKey={(row) => row.id}
+        />,
+      );
+    });
+
+    expect(host.querySelector('.dt-mobile-card-status')?.textContent).toContain('Active');
+    expect(host.querySelector('.dt-mobile-actions')?.textContent).toContain('Open');
+    expect([...host.querySelectorAll('.dt-mobile-field dt')].map((term) => term.textContent)).toEqual(['Amount']);
+  });
 });
