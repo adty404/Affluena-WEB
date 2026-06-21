@@ -137,7 +137,7 @@
     height: 15px;
   }
   .app-content {
-    padding: 14px 12px calc(118px + env(safe-area-inset-bottom));
+    padding: 8px 8px calc(112px + env(safe-area-inset-bottom));
   }
   .bottom-nav {
     left: 0;
