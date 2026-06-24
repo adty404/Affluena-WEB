@@ -24,6 +24,7 @@
 .textarea { min-height: 110px; resize: vertical; }
 .form-stack { display: grid; gap: 14px; margin-top: 18px; }
 .form-stack label span { display: inline-block; color: #334155; font-size: 13px; font-weight: 850; margin-bottom: 8px; }
+.form-stack label small { display: block; color: var(--muted); font-size: 12px; margin-top: 6px; line-height: 1.45; }
 .form-two { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
 .password-field { position: relative; }
 .password-field .form-control { padding-right: 74px; }
