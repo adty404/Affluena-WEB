@@ -6,6 +6,7 @@ import { Badge } from '../../components/ui/Badge';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { useAlerts } from '../../hooks/useAlerts';
 import { ReadStatusBadge, severityIcon, severityTone } from '../../components/reports/ReportCards';
+import { relativeTime } from '../../lib/auditLabels';
 
 export function AlertListPage() {
   const { data, isLoading, isError } = useAlerts();
@@ -34,7 +35,7 @@ export function AlertListPage() {
               {alerts.map((alert) => (
                 <Card className={`alert-message-card ${alert.severity}`} key={alert.id}>
                   <div className={`mini-icon ${alert.severity === 'danger' ? 'danger' : alert.severity === 'warning' ? 'warning' : alert.severity === 'success' ? 'safe' : 'info'}`}><AppIcon name={severityIcon(alert.severity)} /></div>
-                  <div><h3>{alert.title}</h3><p>{alert.description}</p><div className="inline-actions"><Badge tone={severityTone(alert.severity)}>{alert.module}</Badge><ReadStatusBadge read={!!readMap[alert.id]} /><span className="muted-text">{alert.created_at}</span></div></div>
+                  <div><h3>{alert.title}</h3><p>{alert.description}</p><div className="inline-actions"><Badge tone={severityTone(alert.severity)}>{alert.module}</Badge><ReadStatusBadge read={!!readMap[alert.id]} /><span className="muted-text">{relativeTime(alert.created_at)}</span></div></div>
                   <div className="alert-actions"><Button to={`/alerts/${alert.id}`} size="small">Open</Button><Button to={alert.action_path} size="small">Go to Module</Button><Button onClick={() => markRead(alert.id)} size="small" disabled={readMap[alert.id]}>Mark Read</Button></div>
                 </Card>
               ))}

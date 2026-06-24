@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -12,6 +13,7 @@ import { Modal } from '../../components/ui/Modal';
 import { useToast } from '../../components/ui/Toast';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { useMe } from '../../hooks/useMe';
+import { useAuth } from '../../hooks/useAuth';
 import { useUpdateAccount } from '../../hooks/useAuthSettings';
 import { fromRFC3339 } from '../../lib/dates';
 import type { ApiError } from '../../api/types';
@@ -26,9 +28,17 @@ type ProfileValues = z.infer<typeof profileSchema>;
 
 export function ProfileSettingsPage() {
   const { showToast } = useToast();
+  const navigate = useNavigate();
+  const { logout } = useAuth();
   const [securityOpen, setSecurityOpen] = useState(false);
   const { data, isLoading } = useMe();
   const updateMut = useUpdateAccount();
+
+  function handleLogout() {
+    logout();
+    showToast('Anda telah keluar dari akun.');
+    navigate('/login', { replace: true });
+  }
   const user = data?.user;
   const memberSince = user ? fromRFC3339(user.created_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }) : '—';
 
@@ -124,14 +134,14 @@ export function ProfileSettingsPage() {
           <Card className="panel-card">
             <div className="panel-head"><div><h3>Security & Access</h3><p>Kontrol keamanan akun dan session aktif.</p></div></div>
             <div className="readiness-list">
-              <div><span>Two-factor auth</span><Badge tone="blue">Ready to configure</Badge></div>
-              <div><span>Active session</span><strong>Chrome · Jakarta · Today</strong></div>
-              <div><span>Last password change</span><strong>{memberSince}</strong></div>
-              <div><span>Login alerts</span><Badge>Enabled</Badge></div>
+              <div><span>Password policy</span><Badge>Min. 8 characters</Badge></div>
+              <div><span>Active sessions</span><strong>Kelola di halaman Sessions</strong></div>
+              <div><span>Member since</span><strong>{isLoading ? 'Memuat…' : memberSince}</strong></div>
+              <div><span>Session timeout</span><Badge tone="blue">30 days</Badge></div>
             </div>
             <div className="modal-actions left-actions">
               <Button onClick={() => setSecurityOpen(true)}><AppIcon name="settings" /> Security Options</Button>
-              <Button to="/" variant="danger">Logout</Button>
+              <Button onClick={handleLogout} variant="danger"><AppIcon name="back" /> Logout</Button>
             </div>
           </Card>
         </section>
@@ -139,9 +149,9 @@ export function ProfileSettingsPage() {
         <Modal open={securityOpen} title="Security Options" description="Pilih aksi keamanan yang ingin dilakukan." onClose={() => setSecurityOpen(false)}>
           <div className="quick-action-grid two-col">
             <Button to="/settings/security">Change Password</Button>
-            <Button onClick={() => showToast('Two-factor setup opened.')}>Setup 2FA</Button>
             <Button to="/settings/sessions">Sign out devices</Button>
-            <Button onClick={() => showToast('Login alert settings saved.')}>Manage Alerts</Button>
+            <Button to="/settings/notifications">Manage Alerts</Button>
+            <Button to="/settings/privacy">Privacy Controls</Button>
           </div>
           <div className="modal-actions"><Button onClick={() => setSecurityOpen(false)}>Close</Button></div>
         </Modal>

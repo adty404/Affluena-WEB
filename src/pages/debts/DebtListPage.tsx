@@ -1,20 +1,38 @@
+import { useState } from 'react';
 import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { DataTable } from '../../components/ui/DataTable';
+import { Modal } from '../../components/ui/Modal';
+import { EmptyState } from '../../components/ui/EmptyState';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { Amount } from '../../components/finance/Amount';
 import { FinanceOverviewCard } from '../../components/finance/FinanceOverviewCard';
-import { useDebts } from '../../hooks/useDebts';
+import { useToast } from '../../components/ui/Toast';
+import { useDebts, useDeleteDebt } from '../../hooks/useDebts';
 import type { Debt } from '../../types/debt';
 
 const tone = (status: Debt['status']) => status === 'cancelled' ? 'red' : status === 'paid' ? 'green' : 'blue';
 const label = (status: Debt['status']) => status.replace('_', ' ');
 
 export function DebtListPage() {
-  const { data, isLoading } = useDebts();
+  const { data, isLoading, error } = useDebts();
+  const deleteMut = useDeleteDebt();
+  const { showToast } = useToast();
+  const [target, setTarget] = useState<Debt | null>(null);
   const debts = data?.debts ?? [];
+
+  const confirmDelete = () => {
+    if (!target) return;
+    deleteMut.mutate(target.id, {
+      onSuccess: () => {
+        showToast('Debt deleted successfully');
+        setTarget(null);
+      },
+      onError: (err: any) => showToast(err?.message || 'Failed to delete debt'),
+    });
+  };
 
   const totalPayable = debts.filter(d => d.type === 'payable' && d.status === 'open').reduce((acc, d) => acc + d.remaining_amount_minor, 0);
   const totalReceivable = debts.filter(d => d.type === 'receivable' && d.status === 'open').reduce((acc, d) => acc + d.remaining_amount_minor, 0);
@@ -64,11 +82,27 @@ export function DebtListPage() {
                 progressTone={isPayable ? 'orange' : 'green'}
                 metaLeft={`${pct}% settled`}
                 metaRight={label(debt.status)}
-                actions={<><Button to={`/debts/${debt.id}`} size="small">Detail</Button><Button to={`/debts/${debt.id}/pay`} size="small" variant="primary"><AppIcon name="pay" /> Pay</Button></>}
+                actions={<><Button to={`/debts/${debt.id}`} size="small">Detail</Button><Button to={`/debts/${debt.id}/pay`} size="small" variant="primary"><AppIcon name="pay" /> Pay</Button><Button size="small" variant="danger" onClick={() => setTarget(debt)}><AppIcon name="delete" /> Delete</Button></>}
               />
             );
           })}
         </section>
+
+        {isLoading && (
+          <Card className="panel-card">
+            <div className="readiness-list"><div><span>Loading</span><strong>Memuat debt...</strong></div></div>
+          </Card>
+        )}
+        {!isLoading && !error && debts.length === 0 && (
+          <Card className="panel-card">
+            <EmptyState icon={<AppIcon name="empty" />} title="Belum ada utang atau piutang" description="Catat payable atau receivable untuk melacak sisa pembayaran dan histori penagihan." action={<Button to="/debts/new/payable" variant="primary"><AppIcon name="payable" /> Add Payable</Button>} />
+          </Card>
+        )}
+        {error && (
+          <Card className="panel-card">
+            <EmptyState icon={<AppIcon name="empty" />} title="Gagal memuat debt" description="Periksa koneksi lalu coba lagi." />
+          </Card>
+        )}
 
         <Card className="panel-card">
           <div className="panel-head">
@@ -84,11 +118,27 @@ export function DebtListPage() {
               { key: 'remaining', header: 'Remaining', align: 'right', render: (debt) => <Amount value={debt.remaining_amount_minor} type={debt.type === 'payable' ? 'expense' : 'income'} /> },
               { key: 'due', header: 'Due', render: (debt) => debt.due_date || 'N/A' },
               { key: 'status', header: 'Status', render: (debt) => <Badge tone={tone(debt.status)}>{label(debt.status)}</Badge> },
-              { key: 'action', header: 'Action', render: (debt) => <div className="inline-actions"><Button to={`/debts/${debt.id}`} size="small">View</Button><Button to={`/debts/${debt.id}/pay`} size="small">Pay</Button></div> },
+              { key: 'action', header: 'Action', render: (debt) => <div className="inline-actions"><Button to={`/debts/${debt.id}`} size="small">View</Button><Button to={`/debts/${debt.id}/pay`} size="small">Pay</Button><Button size="small" variant="danger" onClick={() => setTarget(debt)}><AppIcon name="delete" /></Button></div> },
             ]}
           />
         </Card>
       </div>
+
+      <Modal
+        open={!!target}
+        title="Delete Debt"
+        description="Tindakan ini menghapus debt beserta histori pembayarannya."
+        onClose={() => (deleteMut.isPending ? null : setTarget(null))}
+      >
+        <div className="readiness-list">
+          <div><span>Counterparty</span><strong>{target?.counterparty_name}</strong></div>
+          <div><span>Remaining</span><strong>{target ? <Amount value={target.remaining_amount_minor} type={target.type === 'payable' ? 'expense' : 'income'} /> : null}</strong></div>
+        </div>
+        <div className="modal-actions">
+          <Button onClick={() => setTarget(null)} disabled={deleteMut.isPending}>Cancel</Button>
+          <Button variant="danger" onClick={confirmDelete} disabled={deleteMut.isPending}>{deleteMut.isPending ? 'Deleting...' : 'Delete Debt'}</Button>
+        </div>
+      </Modal>
     </AppLayout>
   );
 }

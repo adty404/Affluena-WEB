@@ -25,9 +25,9 @@ export function OnboardingPage() {
       </aside>
       <section className="onboarding-main">
         <form className="onboarding-card" onSubmit={handleSubmit}>
-          <span className="step-label">Step 1 of 1</span>
+          <span className="step-label">Langkah 1 dari 1</span>
           <h2>Apa tujuan utama kamu?</h2>
-          <p>Pilihan ini hanya untuk preview UI. Nanti bisa diubah dari settings.</p>
+          <p>Pilihan ini menyesuaikan dashboard dan rekomendasi module. Bisa diubah kapan saja dari Settings.</p>
           <div className="onboarding-grid">
             {onboardingOptions.map((option) => (
               <button

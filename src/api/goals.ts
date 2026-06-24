@@ -1,5 +1,5 @@
 import { apiFetch } from './client';
-import type { Goal } from '../types/goal';
+import type { Goal, GoalStatus } from '../types/goal';
 
 export async function getGoals(): Promise<Goal[]> {
   return apiFetch<Goal[]>('/api/v1/goals');
@@ -13,7 +13,7 @@ export async function createGoal(data: { name: string; target_amount_minor: numb
   return apiFetch<Goal>('/api/v1/goals', { method: 'POST', body: data });
 }
 
-export async function updateGoal(id: string, data: { name: string; target_amount_minor: number; deadline?: string }): Promise<Goal> {
+export async function updateGoal(id: string, data: { name: string; target_amount_minor: number; deadline?: string; status?: GoalStatus }): Promise<Goal> {
   return apiFetch<Goal>(`/api/v1/goals/${id}`, { method: 'PUT', body: data });
 }
 

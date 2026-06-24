@@ -1,21 +1,26 @@
+import { useState } from 'react';
 import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
+import { Modal } from '../../components/ui/Modal';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { Amount } from '../../components/finance/Amount';
-import { useQuickEntryTemplates, useExecuteQuickEntryTemplate } from '../../hooks/useQuickEntry';
+import { useQuickEntryTemplates, useExecuteQuickEntryTemplate, useDeleteQuickEntryTemplate } from '../../hooks/useQuickEntry';
 import { useWallets } from '../../hooks/useWallets';
 import { useCategories } from '../../hooks/useCategories';
 import { useToast } from '../../components/ui/Toast';
 import { categoryLabel, createNameById, walletPairLabel } from '../../lib/financeLabels';
+import type { QuickEntryTemplate } from '../../types/quickEntry';
 
 export function QuickEntryPage() {
   const { data, isLoading, error } = useQuickEntryTemplates();
   const { data: walletsData } = useWallets();
   const { data: categoriesData } = useCategories();
   const executeMutation = useExecuteQuickEntryTemplate();
+  const deleteMutation = useDeleteQuickEntryTemplate();
   const { showToast } = useToast();
+  const [target, setTarget] = useState<QuickEntryTemplate | null>(null);
 
   if (isLoading) return <AppLayout title="Quick Entry" description="Loading..."><div className="p-8">Loading...</div></AppLayout>;
   if (error) return <AppLayout title="Quick Entry" description="Loading..."><div className="p-8 text-red-500">Error loading quick entry templates</div></AppLayout>;
@@ -31,6 +36,17 @@ export function QuickEntryPage() {
     } catch (error) {
       showToast('Failed to create transaction');
     }
+  };
+
+  const confirmDelete = () => {
+    if (!target) return;
+    deleteMutation.mutate(target.id, {
+      onSuccess: () => {
+        showToast('Template deleted successfully');
+        setTarget(null);
+      },
+      onError: (err: any) => showToast(err?.message || 'Failed to delete template'),
+    });
   };
 
   return (
@@ -50,7 +66,10 @@ export function QuickEntryPage() {
                     <span className="mini-icon info"><AppIcon name={item.type === 'income' ? 'receivable' : item.type === 'expense' ? 'payable' : 'transactions'} /></span>
                     <strong>{item.name}</strong>
                   </div>
-                  <Button to={`/quick-entry/${item.id}/edit`} size="small" variant="ghost"><AppIcon name="edit" /></Button>
+                  <div className="inline-actions">
+                    <Button to={`/quick-entry/${item.id}/edit`} size="small" variant="ghost"><AppIcon name="edit" /></Button>
+                    <Button size="small" variant="ghost" onClick={() => setTarget(item)} aria-label="Delete template"><AppIcon name="delete" /></Button>
+                  </div>
                 </div>
                 <div className="qe-amount">
                   <Amount value={item.amount_minor} type={item.type === 'income' ? 'income' : 'expense'} />
@@ -75,10 +94,26 @@ export function QuickEntryPage() {
         ) : (
           <Card className="panel-card">
             <div className="panel-head"><div><h3>Empty State Pattern</h3><p>Untuk user baru yang belum punya template.</p></div></div>
-            <EmptyState icon="⚡" title="Belum ada quick entry template" description="Buat template untuk transaksi yang sering kamu catat, seperti makan siang, transportasi, atau freelance income." action={<Button to="/quick-entry/new" variant="primary">+ Create Template</Button>} />
+            <EmptyState icon={<AppIcon name="run" />} title="Belum ada quick entry template" description="Buat template untuk transaksi yang sering kamu catat, seperti makan siang, transportasi, atau freelance income." action={<Button to="/quick-entry/new" variant="primary">+ Create Template</Button>} />
           </Card>
         )}
       </div>
+
+      <Modal
+        open={!!target}
+        title="Delete Template"
+        description="Tindakan ini menghapus quick entry template. Transaksi yang sudah dibuat tidak terpengaruh."
+        onClose={() => (deleteMutation.isPending ? null : setTarget(null))}
+      >
+        <div className="readiness-list">
+          <div><span>Template</span><strong>{target?.name}</strong></div>
+          <div><span>Amount</span><strong>{target ? <Amount value={target.amount_minor} type={target.type === 'income' ? 'income' : 'expense'} /> : null}</strong></div>
+        </div>
+        <div className="modal-actions">
+          <Button onClick={() => setTarget(null)} disabled={deleteMutation.isPending}>Cancel</Button>
+          <Button variant="danger" onClick={confirmDelete} disabled={deleteMutation.isPending}>{deleteMutation.isPending ? 'Deleting...' : 'Delete Template'}</Button>
+        </div>
+      </Modal>
     </AppLayout>
   );
 }

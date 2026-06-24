@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -6,7 +5,6 @@ import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
 import { Input } from '../../components/ui/Input';
-import { Modal } from '../../components/ui/Modal';
 import { useToast } from '../../components/ui/Toast';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { SettingRow, SettingsCard, SettingsHero } from './SettingsShared';
@@ -24,7 +22,6 @@ export function AccountSettingsPage() {
   const { showToast } = useToast();
   const { data: meData } = useMe();
   const updateMut = useUpdateAccount();
-  const [planOpen, setPlanOpen] = useState(false);
 
   const form = useForm<AccountValues>({
     resolver: zodResolver(accountSchema),
@@ -85,14 +82,6 @@ export function AccountSettingsPage() {
             </div>
           </SettingsCard>
         </section>
-
-        <Modal open={planOpen} title="Plan" description="Fitur plan belum didukung backend." onClose={() => setPlanOpen(false)}>
-          <div className="readiness-list">
-            <div><span>Backend</span><strong>Endpoint plan belum tersedia</strong></div>
-            <div><span>UI</span><strong>Plan selector disabled</strong></div>
-          </div>
-          <div className="modal-actions"><Button onClick={() => setPlanOpen(false)}>Close</Button></div>
-        </Modal>
       </div>
     </AppLayout>
   );

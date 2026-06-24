@@ -6,13 +6,14 @@ import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
-import { Input } from '../../components/ui/Input';
+import { Input, Select } from '../../components/ui/Input';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { Amount } from '../../components/finance/Amount';
 import { ProgressBar } from '../../components/finance/ProgressBar';
 import { useToast } from '../../components/ui/Toast';
 import { useGoal, useCreateGoal, useUpdateGoal } from '../../hooks/useGoals';
 import { goalSchema, type GoalFormData } from '../../schemas/goal';
+import { goalStatusBadgeTone, goalStatusLabel } from '../../lib/goalStatus';
 
 export function GoalFormPage() {
   const { id } = useParams();
@@ -30,6 +31,7 @@ export function GoalFormPage() {
       name: '',
       target_amount_minor: 0,
       deadline: '',
+      status: 'active',
     }
   });
 
@@ -39,22 +41,32 @@ export function GoalFormPage() {
         name: goal.name,
         target_amount_minor: goal.target_amount_minor,
         deadline: goal.deadline ? new Date(goal.deadline).toISOString().slice(0, 16) : '',
+        status: goal.status,
       });
     }
   }, [goal, isEdit, reset]);
 
   const onSubmit = async (data: GoalFormData) => {
     try {
-      const payload = {
-        ...data,
-        deadline: data.deadline ? new Date(data.deadline).toISOString() : undefined,
-      };
+      const deadline = data.deadline ? new Date(data.deadline).toISOString() : undefined;
 
       if (isEdit && id) {
-        await updateGoal.mutateAsync({ id, data: payload });
+        await updateGoal.mutateAsync({
+          id,
+          data: {
+            name: data.name,
+            target_amount_minor: data.target_amount_minor,
+            deadline,
+            status: data.status,
+          },
+        });
         showToast('Goal updated successfully.');
       } else {
-        await createGoal.mutateAsync(payload);
+        await createGoal.mutateAsync({
+          name: data.name,
+          target_amount_minor: data.target_amount_minor,
+          deadline,
+        });
         showToast('Goal created successfully.');
       }
       navigate('/goals');
@@ -66,7 +78,7 @@ export function GoalFormPage() {
   const watchTarget = watch('target_amount_minor') || 0;
   const currentAmount = goal?.collected_amount_minor || 0;
   const progress = watchTarget > 0 ? Math.round((currentAmount / watchTarget) * 100) : 0;
-  const status = goal?.status || 'active';
+  const watchStatus = watch('status') || 'active';
 
   if (isEdit && isLoading) {
     return <AppLayout title="Edit Goal" description="Loading..."><div className="loading-state">Loading...</div></AppLayout>;
@@ -102,13 +114,24 @@ export function GoalFormPage() {
                   <Input type="datetime-local" {...register('deadline')} />
                   {errors.deadline && <small className="field-error">{errors.deadline.message}</small>}
                 </label>
+                {isEdit && (
+                  <label>
+                    <span>Status</span>
+                    <Select {...register('status')}>
+                      <option value="active">Active</option>
+                      <option value="achieved">Achieved</option>
+                      <option value="cancelled">Cancelled</option>
+                    </Select>
+                    <small className="field-help">Achieved marks the goal complete; cancelled stops tracking.</small>
+                  </label>
+                )}
               </div>
               <div className="form-row-between"><Button to="/goals">Cancel</Button><Button type="submit" variant="primary" disabled={isSubmitting}><AppIcon name="save" /> Save Goal</Button></div>
             </form>
           </Card>
 
           <Card className="panel-card side-metrics-card goal-preview-card">
-            <div className="panel-head"><div><h3>Goal Preview</h3><p>Progress dan target yang akan tampil ke user.</p></div><Badge tone={status === 'at_risk' ? 'orange' : 'green'}>{status.replace('_', ' ')}</Badge></div>
+            <div className="panel-head"><div><h3>Goal Preview</h3><p>Progress dan target yang akan tampil ke user.</p></div><Badge tone={goalStatusBadgeTone(watchStatus)}>{goalStatusLabel(watchStatus)}</Badge></div>
             <div className="preview-icon"><AppIcon name="goal" /></div>
             <h3>{watch('name') || 'New Goal'}</h3>
             <div className="metric-list">
@@ -116,7 +139,7 @@ export function GoalFormPage() {
               <div><span>Target</span><strong><Amount value={watchTarget} /></strong></div>
               <div><span>Progress</span><strong>{progress}% funded</strong></div>
             </div>
-            <ProgressBar value={progress} tone={status === 'at_risk' ? 'orange' : 'green'} />
+            <ProgressBar value={progress} tone={watchStatus === 'cancelled' ? 'orange' : 'green'} />
           </Card>
         </section>
       </div>

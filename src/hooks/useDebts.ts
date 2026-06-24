@@ -48,6 +48,7 @@ export function useDeleteDebt() {
     mutationFn: (id: string) => debtsApi.deleteDebt(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: DEBTS_QUERY_KEY });
+      invalidateFinancialQueries(queryClient);
     },
   });
 }

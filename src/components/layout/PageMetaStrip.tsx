@@ -11,7 +11,8 @@ type MetaItem = {
 
 type MetaAction = {
   label: string;
-  to: string;
+  to?: string;
+  onClick?: () => void;
   icon?: AppIconName;
   variant?: 'default' | 'primary' | 'ghost' | 'danger';
 };
@@ -38,12 +39,19 @@ export function PageMetaStrip({ title, items, actions = [] }: PageMetaStripProps
       </div>
       {actions.length > 0 ? (
         <div className="page-meta-actions">
-          {actions.map((action) => (
-            <Button key={`${action.to}-${action.label}`} to={action.to} size="small" variant={action.variant}>
-              {action.icon ? <AppIcon name={action.icon} /> : null}
-              {action.label}
-            </Button>
-          ))}
+          {actions.map((action) =>
+            action.to ? (
+              <Button key={`${action.to}-${action.label}`} to={action.to} size="small" variant={action.variant}>
+                {action.icon ? <AppIcon name={action.icon} /> : null}
+                {action.label}
+              </Button>
+            ) : (
+              <Button key={`action-${action.label}`} onClick={action.onClick} size="small" variant={action.variant}>
+                {action.icon ? <AppIcon name={action.icon} /> : null}
+                {action.label}
+              </Button>
+            ),
+          )}
         </div>
       ) : null}
     </section>

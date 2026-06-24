@@ -1,13 +1,16 @@
-import { useParams } from 'react-router-dom';
+import { useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { DataTable } from '../../components/ui/DataTable';
+import { Modal } from '../../components/ui/Modal';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { Amount } from '../../components/finance/Amount';
+import { useToast } from '../../components/ui/Toast';
 import { useCategories } from '../../hooks/useCategories';
-import { useRecurringRule } from '../../hooks/useRecurring';
+import { useRecurringRule, useDeleteRecurringRule } from '../../hooks/useRecurring';
 import { useWallets } from '../../hooks/useWallets';
 import { categoryLabel, createNameById, walletLabel } from '../../lib/financeLabels';
 import type { RecurringRun } from '../../types/recurring';
@@ -16,7 +19,11 @@ const statusTone = (status: string) => status === 'active' || status === 'succes
 
 export function RecurringDetailPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { showToast } = useToast();
   const { data: rule, isLoading, error } = useRecurringRule(id || '');
+  const deleteMut = useDeleteRecurringRule();
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const { data: walletsData } = useWallets();
   const { data: categoriesData } = useCategories();
   const walletNameById = createNameById(walletsData?.wallets ?? []);
@@ -32,12 +39,22 @@ export function RecurringDetailPage() {
   const destinationWallet = walletLabel(walletNameById, rule.to_wallet_id);
   const ruleCategory = categoryLabel(categoryNameById, rule.category_id, rule.type);
 
+  const handleDelete = () => {
+    deleteMut.mutate(rule.id, {
+      onSuccess: () => {
+        showToast('Recurring rule deleted successfully');
+        navigate('/recurring');
+      },
+      onError: (err: any) => showToast(err?.message || 'Failed to delete recurring rule'),
+    });
+  };
+
   return (
     <AppLayout title="Recurring Detail" description="Rule configuration, next run, and recent execution history.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div><span className="badge dark">● {rule.status}</span><h2>{rule.name}</h2><p>{rule.note}</p></div>
-          <div className="app-hero-actions"><Button to="/recurring">Back</Button><Button to={`/recurring/${rule.id}/edit`}><AppIcon name="edit" /> Edit</Button><Button to={`/recurring/${rule.id}/run`} variant="primary"><AppIcon name="run" /> Manual Run</Button></div>
+          <div className="app-hero-actions"><Button to="/recurring">Back</Button><Button to={`/recurring/${rule.id}/edit`}><AppIcon name="edit" /> Edit</Button><Button to={`/recurring/${rule.id}/run`} variant="primary"><AppIcon name="run" /> Manual Run</Button><Button variant="danger" onClick={() => setDeleteOpen(true)}><AppIcon name="delete" /> Delete</Button></div>
         </section>
         
         <section className="stat-grid">
@@ -73,6 +90,22 @@ export function RecurringDetailPage() {
           </Card>
         </section>
       </div>
+
+      <Modal
+        open={deleteOpen}
+        title="Delete Recurring Rule"
+        description="Tindakan ini menghapus rule. Run history yang sudah tercatat tidak ikut terhapus."
+        onClose={() => (deleteMut.isPending ? null : setDeleteOpen(false))}
+      >
+        <div className="readiness-list">
+          <div><span>Rule</span><strong>{rule.name}</strong></div>
+          <div><span>Amount</span><strong><Amount value={rule.amount_minor} type={rule.type === 'income' ? 'income' : 'expense'} /></strong></div>
+        </div>
+        <div className="modal-actions">
+          <Button onClick={() => setDeleteOpen(false)} disabled={deleteMut.isPending}>Cancel</Button>
+          <Button variant="danger" onClick={handleDelete} disabled={deleteMut.isPending}>{deleteMut.isPending ? 'Deleting...' : 'Delete Rule'}</Button>
+        </div>
+      </Modal>
     </AppLayout>
   );
 }

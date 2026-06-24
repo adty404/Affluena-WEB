@@ -5,17 +5,47 @@ import { Badge } from '../../components/ui/Badge';
 import { DataTable } from '../../components/ui/DataTable';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { PageMetaStrip } from '../../components/layout/PageMetaStrip';
+import { useToast } from '../../components/ui/Toast';
 import { useExportJobs } from '../../hooks/useExportJobs';
+import { getExportCSV } from '../../api/export';
+import { formatTimestamp } from '../../lib/auditLabels';
+import type { ApiError } from '../../api/types';
 import type { ExportJob } from '../../types/reporting';
 
 const statusTone = (status: 'ready' | 'failed') => status === 'ready' ? 'green' : 'red';
 
+function jobPeriod(job: ExportJob): string {
+  if (job.from_at && job.to_at) {
+    return `${formatTimestamp(job.from_at)} – ${formatTimestamp(job.to_at)}`;
+  }
+  return 'All time';
+}
+
 export function ExportCenterPage() {
   const { data, isLoading, isError } = useExportJobs();
+  const { showToast } = useToast();
   const jobs = data?.jobs ?? [];
 
   const readyCount = jobs.filter((job) => job.status === 'completed').length;
   const totalRows = jobs.reduce((sum, job) => sum + job.row_count, 0);
+
+  const handleDownload = async (job: ExportJob) => {
+    try {
+      const blob = await getExportCSV(job.from_at || undefined, job.to_at || undefined);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `export-${job.id}.${job.format.toLowerCase()}`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+      showToast('Export berhasil diunduh.');
+    } catch (err) {
+      const apiErr = err as ApiError;
+      showToast(apiErr.error || 'Gagal mengunduh export.');
+    }
+  };
 
   return (
     <AppLayout title="Export Center" description="Generate, download, and review CSV/XLSX exports.">
@@ -47,20 +77,19 @@ export function ExportCenterPage() {
                   key: 'name', 
                   header: 'Export', 
                   render: (job) => {
-                    const period = job.from_at && job.to_at ? `${job.from_at} - ${job.to_at}` : 'All time';
-                    const name = `Export ${new Date(job.created_at).toLocaleDateString('id-ID')}`;
+                    const name = `Export ${formatTimestamp(job.created_at)}`;
                     return (
                       <div className="table-title">
                         <span className="mini-icon info"><AppIcon name="download" /></span>
                         <strong>{name}</strong>
-                        <small>{period} · {job.format.toUpperCase()}</small>
+                        <small>{jobPeriod(job)} · {job.format.toUpperCase()}</small>
                       </div>
                     );
-                  } 
+                  }
                 },
                 { key: 'module', header: 'Module', render: () => 'Transactions' },
                 { key: 'rows', header: 'Rows', align: 'right', render: (job) => job.row_count.toLocaleString('id-ID') },
-                { key: 'size', header: 'Size', render: (job) => `~${(job.row_count * 50 / 1024).toFixed(1)} KB` },
+                { key: 'size', header: 'Est. size', render: (job) => `~${(job.row_count * 50 / 1024).toFixed(1)} KB` },
                 { 
                   key: 'status', 
                   header: 'Status', 
@@ -76,10 +105,10 @@ export function ExportCenterPage() {
                     <div className="inline-actions">
                       <Button to={`/exports/${job.id}`} size="small">Open</Button>
                       {job.status === 'completed' && (
-                        <Button to={`/exports/${job.id}`} size="small"><AppIcon name="download" /> Download</Button>
+                        <Button onClick={() => handleDownload(job)} size="small"><AppIcon name="download" /> Download</Button>
                       )}
                     </div>
-                  ) 
+                  )
                 },
               ]}
             />

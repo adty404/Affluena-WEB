@@ -67,9 +67,9 @@ export function SecuritySettingsPage() {
             </div>
           </SettingsCard>
 
-          <SettingsCard icon="history" title="Recent Security Events" description="Lewat activity log (integrasi penuh di Plan 11).">
+          <SettingsCard icon="history" title="Recent Security Events" description="Pantau aktivitas keamanan lewat activity log.">
             <div className="settings-timeline">
-              <div><Badge>Lihat</Badge><strong>Activity Log</strong><span>Endpoint /activities tersedia</span></div>
+              <div><Badge>Lihat</Badge><strong>Activity Log</strong><span>Riwayat aktivitas akun tersedia di halaman Activities</span></div>
             </div>
             <div className="modal-actions left-actions"><Button to="/activities"><AppIcon name="list" /> View Activities</Button></div>
           </SettingsCard>

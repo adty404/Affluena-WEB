@@ -1,22 +1,59 @@
+import { useSearchParams } from 'react-router-dom';
 import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { DataTable } from '../../components/ui/DataTable';
+import { AppIcon } from '../../components/ui/AppIcon';
 import { Amount } from '../../components/finance/Amount';
 import { TransactionItem } from '../../components/transactions/TransactionItem';
 import { transactionTypeLabels } from '../../data/mockTransactions';
 import type { Transaction } from '../../types/transaction';
+import type { TransactionListParams } from '../../api/transactions';
 import { useTransactions } from '../../hooks/useTransactions';
 import { useWallets } from '../../hooks/useWallets';
 import { useCategories } from '../../hooks/useCategories';
+import { useTags } from '../../hooks/useTags';
 
 export function TransactionListPage() {
-  const { data, isLoading, error } = useTransactions();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { data: walletsData } = useWallets();
   const { data: categoriesData } = useCategories();
+  const { data: tagsData } = useTags();
 
+  const filterParams: TransactionListParams = {};
+  const type = searchParams.get('type');
+  const walletId = searchParams.get('wallet_id');
+  const categoryId = searchParams.get('category_id');
+  const tagId = searchParams.get('tag_id');
+  const from = searchParams.get('from');
+  const to = searchParams.get('to');
+  if (type) filterParams.type = type;
+  if (walletId) filterParams.wallet_id = walletId;
+  if (categoryId) filterParams.category_id = categoryId;
+  if (tagId) filterParams.tag_id = tagId;
+  if (from) filterParams.from = from;
+  if (to) filterParams.to = to;
+
+  const hasFilters = Object.keys(filterParams).length > 0;
+  const filterTo = hasFilters ? `/transactions/filter?${searchParams.toString()}` : '/transactions/filter';
+
+  const { data, isLoading, error } = useTransactions(filterParams);
   const transactions = data?.transactions || [];
+
+  const walletName = (id: string | null) => (walletsData?.wallets ?? []).find((w) => w.id === id)?.name;
+  const categoryName = (id: string | null) => (categoriesData?.categories ?? []).find((c) => c.id === id)?.name;
+  const tagName = (id: string | null) => (tagsData?.tags ?? []).find((t) => t.id === id)?.name;
+
+  const activeFilterChips: string[] = [];
+  if (type) activeFilterChips.push(transactionTypeLabels[type as Transaction['type']] ?? type);
+  if (walletId) activeFilterChips.push(walletName(walletId) ?? 'Wallet');
+  if (categoryId) activeFilterChips.push(categoryName(categoryId) ?? 'Category');
+  if (tagId) activeFilterChips.push(`#${tagName(tagId) ?? 'Tag'}`);
+  if (from) activeFilterChips.push(`From ${from}`);
+  if (to) activeFilterChips.push(`To ${to}`);
+
+  const clearFilters = () => setSearchParams({});
   
   const income = transactions.filter((tx) => tx.type === 'income').reduce((sum, tx) => sum + tx.amount_minor, 0);
   const expenses = transactions.filter((tx) => tx.type === 'expense').reduce((sum, tx) => sum + tx.amount_minor, 0);
@@ -104,13 +141,30 @@ export function TransactionListPage() {
           <Card className="stat-card purple"><span>Net Flow</span><strong><Amount value={income - expenses} variant="income" /></strong><small>Income - expense</small></Card>
         </section>
 
+        {hasFilters && (
+          <Card className="panel-card filter-active-bar">
+            <div className="panel-head">
+              <div>
+                <h3>Filtered view</h3>
+                <div className="tag-row">
+                  {activeFilterChips.map((chip) => <Badge key={chip} tone="blue">{chip}</Badge>)}
+                </div>
+              </div>
+              <div className="inline-actions">
+                <Button to={filterTo} size="small"><AppIcon name="filter" /> Edit Filter</Button>
+                <Button size="small" onClick={clearFilters}>Clear</Button>
+              </div>
+            </div>
+          </Card>
+        )}
+
         <section className="dashboard-grid">
           <Card className="panel-card">
-            <div className="panel-head"><div><h3>Recent Transactions</h3><p>List pattern untuk mobile-friendly transaction feed.</p></div><Button to="/transactions/filter" size="small">Filter</Button></div>
+            <div className="panel-head"><div><h3>Recent Transactions</h3><p>List pattern untuk mobile-friendly transaction feed.</p></div><Button to={filterTo} size="small"><AppIcon name="filter" /> Filter</Button></div>
             <div className="transaction-list">
               {isLoading && <p>Loading transactions...</p>}
               {error && <p>Error loading transactions.</p>}
-              {!isLoading && !error && transactions.length === 0 && <p>No transactions found.</p>}
+              {!isLoading && !error && transactions.length === 0 && <p>{hasFilters ? 'No transactions match the current filters.' : 'No transactions found.'}</p>}
               {transactions.slice(0, 4).map((tx) => <TransactionItem key={tx.id} transaction={tx} />)}
             </div>
           </Card>

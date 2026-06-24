@@ -5,12 +5,16 @@ import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { PageMetaStrip } from '../../components/layout/PageMetaStrip';
+import { useToast } from '../../components/ui/Toast';
 import { useExportJob } from '../../hooks/useExportJob';
 import { getExportCSV } from '../../api/export';
+import { formatTimestamp } from '../../lib/auditLabels';
+import type { ApiError } from '../../api/types';
 
 export function ExportDetailPage() {
   const { id } = useParams();
   const { data: job, isLoading, isError } = useExportJob(id || '');
+  const { showToast } = useToast();
 
   if (isLoading) {
     return (
@@ -33,8 +37,8 @@ export function ExportDetailPage() {
   }
 
   const ready = job.status === 'completed';
-  const period = job.from_at && job.to_at ? `${job.from_at} - ${job.to_at}` : 'All time';
-  const name = `Export ${new Date(job.created_at).toLocaleDateString('id-ID')}`;
+  const period = job.from_at && job.to_at ? `${formatTimestamp(job.from_at)} – ${formatTimestamp(job.to_at)}` : 'All time';
+  const name = `Export ${formatTimestamp(job.created_at)}`;
   const size = `~${(job.row_count * 50 / 1024).toFixed(1)} KB`;
 
   const handleDownload = async () => {
@@ -48,8 +52,10 @@ export function ExportDetailPage() {
       a.click();
       a.remove();
       window.URL.revokeObjectURL(url);
+      showToast('Export berhasil diunduh.');
     } catch (err) {
-      console.error('Download failed', err);
+      const apiErr = err as ApiError;
+      showToast(apiErr.error || 'Gagal mengunduh export.');
     }
   };
 
