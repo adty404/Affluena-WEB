@@ -5,7 +5,6 @@ import type {
   AuthUser,
   ChangePasswordRequest,
   LoginRequest,
-  RefreshRequest,
   RegisterRequest,
   UpdateAccountRequest,
 } from '../types/auth'
@@ -20,14 +19,6 @@ export function register(payload: RegisterRequest) {
 
 export function login(payload: LoginRequest) {
   return apiFetch<AuthSession>('/api/v1/auth/login', {
-    method: 'POST',
-    body: payload,
-    anonymous: true,
-  })
-}
-
-export function refresh(payload: RefreshRequest) {
-  return apiFetch<AuthSession>('/api/v1/auth/refresh', {
     method: 'POST',
     body: payload,
     anonymous: true,

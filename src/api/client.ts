@@ -1,5 +1,6 @@
 import { getAccessToken, getRefreshToken, setTokens, clearTokens } from '../lib/token'
 import type { ApiError, EmptyBody } from './types'
+import type { AuthSession } from '../types/auth'
 
 const ENV: ImportMetaEnv | undefined = (import.meta as { env?: ImportMetaEnv }).env
 const BASE_URL = ENV?.VITE_API_BASE_URL ?? 'http://localhost:8080'
@@ -22,9 +23,7 @@ async function doRefresh(): Promise<boolean> {
     }
     return false
   }
-  const data = (await res.json()) as {
-    tokens: { access_token: string; refresh_token: string }
-  }
+  const data = (await res.json()) as AuthSession
   setTokens(data.tokens)
   return true
 }
