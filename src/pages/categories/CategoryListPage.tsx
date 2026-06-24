@@ -1,83 +1,112 @@
-import { useMemo } from 'react';
+import { useState } from 'react';
 import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
-import { DataTable } from '../../components/ui/DataTable';
-import { Badge } from '../../components/ui/Badge';
+import { Modal } from '../../components/ui/Modal';
+import { EmptyState } from '../../components/ui/EmptyState';
+import { AppIcon } from '../../components/ui/AppIcon';
+import { useToast } from '../../components/ui/Toast';
 import { CategoryTree } from '../../components/master-data/CategoryTree';
-import { useCategories } from '../../hooks/useCategories';
+import { useCategories, useDeleteCategory } from '../../hooks/useCategories';
 import { categoryTypeLabels } from '../../schemas/category';
+import type { ApiError } from '../../api/types';
 import type { Category } from '../../types/category';
 
 export function CategoryListPage() {
+  const { showToast } = useToast();
   const { data, isLoading, error } = useCategories({ limit: 100 });
+  const deleteMut = useDeleteCategory();
+  const [pendingDelete, setPendingDelete] = useState<Category | null>(null);
+
   const categories = data?.categories ?? [];
-  const categoryNameById = useMemo(
-    () => new Map(categories.map((category) => [category.id, category.name])),
-    [categories]
-  );
   const incomeCount = categories.filter((c) => c.type === 'income').length;
   const expenseCount = categories.filter((c) => c.type === 'expense').length;
 
-  const columns = [
-    { key: 'name', header: 'Category', render: (category: Category) => (
-      <div>
-        <strong>{category.name}</strong>
-        <span className="table-subtitle">{category.parent_id ? `Child of ${categoryNameById.get(category.parent_id) ?? 'unknown parent'}` : 'Parent category'}</span>
-      </div>
-    ) },
-    { key: 'type', header: 'Type', render: (category: Category) => <Badge tone={category.type === 'income' ? 'green' : 'orange'}>{categoryTypeLabels[category.type]}</Badge> },
-    { key: 'action', header: 'Action', render: (category: Category) => <Button size="small" to={`/categories/${category.id}/edit`}>Edit</Button> },
-  ];
+  async function confirmDelete() {
+    if (!pendingDelete) return;
+    try {
+      await deleteMut.mutateAsync(pendingDelete.id);
+      showToast(`Category "${pendingDelete.name}" deleted.`);
+      setPendingDelete(null);
+    } catch (err) {
+      showToast((err as ApiError).error || 'Failed to delete category.');
+    }
+  }
 
   return (
-    <AppLayout title="Categories" description="Manage income and expense category hierarchy.">
+    <AppLayout title="Categories" description="Manage your income and expense category hierarchy.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
             <span className="badge dark">● Category hierarchy</span>
-            <h2>Category tree rapi sampai 3 level untuk income dan expense.</h2>
-            <p>Category dipakai oleh transactions, budget, forecast, and analytics. Parent harus same type dan tidak boleh cycle.</p>
+            <h2>Organise income and expense into a clean tree, up to three levels deep.</h2>
+            <p>Categories power your transactions, budgets, forecasts, and analytics. A subcategory always shares its parent's type, and the structure can never loop back on itself.</p>
           </div>
-          <div className="app-hero-actions"><Button to="/categories/new" variant="primary">+ Create Category</Button></div>
+          <div className="app-hero-actions"><Button to="/categories/new" variant="primary"><AppIcon name="add" /> New Category</Button></div>
         </section>
 
         {error ? (
           <Card className="panel-card">
             <div className="readiness-list">
-              <div><span>Error</span><strong>{(error as { error?: string }).error ?? 'Gagal memuat kategori'}</strong></div>
+              <div><span>Error</span><strong>{(error as { error?: string }).error ?? 'Failed to load categories'}</strong></div>
             </div>
           </Card>
         ) : null}
 
         <section className="stat-grid">
-          <Card className="stat-card"><span>Total Categories</span><strong>{isLoading ? '…' : categories.length}</strong><small>All categories</small></Card>
+          <Card className="stat-card"><span>Total Categories</span><strong>{isLoading ? '…' : categories.length}</strong><small>Across all types</small></Card>
           <Card className="stat-card green"><span>Income</span><strong>{isLoading ? '…' : incomeCount}</strong><small>Income categories</small></Card>
           <Card className="stat-card orange"><span>Expense</span><strong>{isLoading ? '…' : expenseCount}</strong><small>Expense categories</small></Card>
         </section>
 
         {isLoading ? (
-          <Card className="panel-card"><div className="readiness-list"><div><span>Memuat</span><strong>…</strong></div></div></Card>
+          <Card className="panel-card"><div className="readiness-list"><div><span>Loading categories</span><strong>…</strong></div></div></Card>
         ) : categories.length === 0 ? (
           <Card className="panel-card">
-            <div className="panel-head"><div><h3>Belum ada kategori</h3><p>Buat kategori pertama untuk mulai mencatat transaksi.</p></div></div>
-            <div className="modal-actions"><Button to="/categories/new" variant="primary">+ Create Category</Button></div>
+            <EmptyState
+              icon={<div className="category-icon green"><AppIcon name="categories" /></div>}
+              title="No categories yet"
+              description="Start with a top-level category like Salary or Groceries, then nest subcategories under it (for example Groceries → Supermarket → Weekly shop). You can go up to three levels deep per type."
+              action={(
+                <div className="modal-actions">
+                  <Button to="/categories/new?type=income"><AppIcon name="add" /> Income category</Button>
+                  <Button to="/categories/new?type=expense" variant="primary"><AppIcon name="add" /> Expense category</Button>
+                </div>
+              )}
+            />
           </Card>
         ) : (
-          <>
-            <section className="dashboard-grid">
-              <Card className="panel-card category-tree-card">
-                <div className="panel-head"><div><h3>Category Tree</h3><p>Parent, child, dan grandchild terlihat sebagai cabang.</p></div></div>
-                <CategoryTree categories={categories} />
-              </Card>
-            </section>
-            <Card className="panel-card">
-              <div className="panel-head"><div><h3>Category Table</h3><p>{data?.pagination.total ?? categories.length} kategori terdaftar.</p></div><Button to="/categories/new" size="small" variant="primary">+ Category</Button></div>
-              <DataTable columns={columns} data={categories} getRowKey={(category) => category.id} />
-            </Card>
-          </>
+          <Card className="panel-card category-tree-card">
+            <div className="panel-head">
+              <div>
+                <h3>Category Tree</h3>
+                <p>Expand a branch to see its subcategories. Use the row actions to add a subcategory, edit, or delete.</p>
+              </div>
+              <Button to="/categories/new" size="small" variant="primary"><AppIcon name="add" /> New Category</Button>
+            </div>
+            <CategoryTree categories={categories} onDelete={setPendingDelete} />
+          </Card>
         )}
       </div>
+
+      <Modal
+        open={Boolean(pendingDelete)}
+        title="Delete Category"
+        description="This action cannot be undone."
+        onClose={() => setPendingDelete(null)}
+      >
+        <div className="readiness-list">
+          <div><span>Category</span><strong>{pendingDelete?.name ?? '—'}</strong></div>
+          <div><span>Type</span><strong>{pendingDelete ? categoryTypeLabels[pendingDelete.type] : '—'}</strong></div>
+          <div><span>Note</span><strong>Deleting a parent may affect its subcategories.</strong></div>
+        </div>
+        <div className="modal-actions">
+          <Button onClick={() => setPendingDelete(null)}>Cancel</Button>
+          <Button variant="danger" onClick={confirmDelete} disabled={deleteMut.isPending}>
+            <AppIcon name="delete" /> Delete Category
+          </Button>
+        </div>
+      </Modal>
     </AppLayout>
   );
 }

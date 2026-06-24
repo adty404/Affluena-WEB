@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AppLayout } from '../../layouts/AppLayout';
@@ -10,7 +10,7 @@ import { Input, Select, Textarea } from '../../components/ui/Input';
 import { useToast } from '../../components/ui/Toast';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { useCategories, useCategory, useCreateCategory, useDeleteCategory, useUpdateCategory } from '../../hooks/useCategories';
-import { categoryCreateSchema, categoryUpdateSchema, categoryTypeOptions, type CategoryCreateFormValues, type CategoryUpdateFormValues } from '../../schemas/category';
+import { categoryCreateSchema, categoryUpdateSchema, categoryTypeOptions, categoryTypeLabels, type CategoryCreateFormValues, type CategoryUpdateFormValues } from '../../schemas/category';
 import type { ApiError } from '../../api/types';
 import type { Category } from '../../types/category';
 
@@ -29,10 +29,15 @@ function computeDepth(categories: Category[], categoryId: string | undefined, me
 
 export function CategoryFormPage() {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { showToast } = useToast();
   const [deleteOpen, setDeleteOpen] = useState(false);
   const isEdit = Boolean(id);
+
+  const prefillType = searchParams.get('type');
+  const prefillParentId = searchParams.get('parent_id') ?? undefined;
+  const defaultType: Category['type'] = prefillType === 'income' || prefillType === 'expense' ? prefillType : 'expense';
 
   const { data: existing, isLoading } = useCategory(id);
   const { data: allCategoriesData } = useCategories({ limit: 200 });
@@ -44,7 +49,7 @@ export function CategoryFormPage() {
 
   const createForm = useForm<CategoryCreateFormValues>({
     resolver: zodResolver(categoryCreateSchema),
-    defaultValues: { name: '', type: 'expense', parent_id: undefined },
+    defaultValues: { name: '', type: defaultType, parent_id: prefillParentId },
   });
 
   const updateForm = useForm<CategoryUpdateFormValues>({
@@ -75,11 +80,11 @@ export function CategoryFormPage() {
   async function onCreate(values: CategoryCreateFormValues) {
     try {
       await createMut.mutateAsync(values);
-      showToast('Kategori dibuat.');
+      showToast('Category created.');
       navigate('/categories', { replace: true });
     } catch (err) {
       const apiErr = err as ApiError;
-      showToast(apiErr.error || 'Gagal membuat kategori.');
+      showToast(apiErr.error || 'Failed to create category.');
     }
   }
 
@@ -87,11 +92,11 @@ export function CategoryFormPage() {
     if (!id) return;
     try {
       await updateMut.mutateAsync(values);
-      showToast('Kategori diperbarui.');
+      showToast('Category updated.');
       navigate('/categories', { replace: true });
     } catch (err) {
       const apiErr = err as ApiError;
-      showToast(apiErr.error || 'Gagal memperbarui kategori.');
+      showToast(apiErr.error || 'Failed to update category.');
     }
   }
 
@@ -100,54 +105,61 @@ export function CategoryFormPage() {
     try {
       await deleteMut.mutateAsync(id);
       setDeleteOpen(false);
-      showToast('Kategori dihapus.');
+      showToast('Category deleted.');
       navigate('/categories', { replace: true });
     } catch (err) {
       const apiErr = err as ApiError;
-      showToast(apiErr.error || 'Gagal menghapus kategori.');
+      showToast(apiErr.error || 'Failed to delete category.');
     }
   }
 
   if (isEdit && isLoading) {
     return (
-      <AppLayout title="Edit Category" description="Memuat…">
-        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Memuat kategori</span><strong>…</strong></div></div></Card></div>
+      <AppLayout title="Edit Category" description="Loading…">
+        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Loading category</span><strong>…</strong></div></div></Card></div>
       </AppLayout>
     );
   }
 
   if (isEdit && !existing) {
     return (
-      <AppLayout title="Edit Category" description="Kategori tidak ditemukan.">
-        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Error</span><strong>Kategori tidak ditemukan.</strong></div></div><div className="modal-actions"><Button to="/categories">Back to list</Button></div></Card></div>
+      <AppLayout title="Edit Category" description="Category not found.">
+        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Error</span><strong>Category not found.</strong></div></div><div className="modal-actions"><Button to="/categories">Back to list</Button></div></Card></div>
       </AppLayout>
     );
   }
 
+  const prefillParentName = prefillParentId
+    ? allCategories.find((c) => c.id === prefillParentId)?.name
+    : undefined;
+
   const renderParentSelect = (field: ReturnType<typeof activeForm.register>) => (
-    <Select {...field}>
-      <option value="">No parent</option>
-      {eligibleParents.map((cat) => (
-        <option key={cat.id} value={cat.id}>{cat.name}</option>
-      ))}
-    </Select>
+    <>
+      <Select {...field}>
+        <option value="">No parent (top level)</option>
+        {eligibleParents.map((cat) => (
+          <option key={cat.id} value={cat.id}>{cat.name}</option>
+        ))}
+      </Select>
+      <small>Only categories with room for another level are listed.</small>
+    </>
   );
 
   return (
-    <AppLayout title={isEdit ? 'Edit Category' : 'Create Category'} description="Buat atau edit income/expense category.">
+    <AppLayout title={isEdit ? 'Edit Category' : 'Create Category'} description="Create or edit an income or expense category.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
             <span className="badge dark">● Category Form</span>
-            <h2>{isEdit ? `Edit ${existing?.name ?? ''}` : 'Buat category baru.'}</h2>
-            <p>Parent category harus same type, same user, dan tidak boleh cycle.</p>
+            <h2>{isEdit ? `Edit ${existing?.name ?? ''}` : prefillParentName ? `New subcategory under ${prefillParentName}` : 'Create a new category'}</h2>
+            <p>A subcategory must share its parent's type, belong to you, and never form a loop. The tree supports up to three levels.</p>
           </div>
           <div className="app-hero-actions"><Button to="/categories"><AppIcon name="back" /> Back</Button></div>
         </section>
 
         <section className="dashboard-grid">
           <Card className="panel-card">
-            <div className="panel-head"><div><h3>Category Information</h3><p>Field utama categories table.</p></div></div>
+            <div className="panel-head"><div><h3>Category Information</h3><p>Name, type, and where it sits in the hierarchy.</p></div></div>
             {isEdit ? (
               <form className="form-stack" onSubmit={updateForm.handleSubmit(onUpdate)} noValidate>
                 <label>
@@ -168,8 +180,8 @@ export function CategoryFormPage() {
                   </label>
                 </div>
                 <label>
-                  <span>Description</span>
-                  <Textarea rows={3} defaultValue="Digunakan untuk klasifikasi transaksi dan ringkasan budget bulanan." />
+                  <span>Notes</span>
+                  <Textarea rows={3} placeholder="Optional notes, e.g. what this category is used for." />
                 </label>
                 <div className="form-row-between">
                   <Button to="/categories">Cancel</Button>
@@ -199,8 +211,8 @@ export function CategoryFormPage() {
                   </label>
                 </div>
                 <label>
-                  <span>Description</span>
-                  <Textarea rows={3} defaultValue="Digunakan untuk klasifikasi transaksi dan ringkasan budget bulanan." />
+                  <span>Notes</span>
+                  <Textarea rows={3} placeholder="Optional notes, e.g. what this category is used for." />
                 </label>
                 <div className="form-row-between">
                   <Button to="/categories">Cancel</Button>
@@ -210,7 +222,7 @@ export function CategoryFormPage() {
             )}
           </Card>
           <Card className="panel-card">
-            <div className="panel-head"><div><h3>Validation</h3><p>Rules penting untuk backend.</p></div></div>
+            <div className="panel-head"><div><h3>Rules</h3><p>What keeps the hierarchy valid.</p></div></div>
             <div className="readiness-list">
               <div><span>Max depth</span><strong>3 levels</strong></div>
               <div><span>Parent type</span><strong>same type</strong></div>
@@ -221,11 +233,11 @@ export function CategoryFormPage() {
         </section>
       </div>
 
-      <Modal open={deleteOpen} title="Delete Category" description="Konfirmasi sebelum kategori dihapus." onClose={() => setDeleteOpen(false)}>
+      <Modal open={deleteOpen} title="Delete Category" description="This action cannot be undone." onClose={() => setDeleteOpen(false)}>
         <div className="readiness-list">
           <div><span>Category</span><strong>{existing?.name ?? id}</strong></div>
-          <div><span>Type</span><strong>{existing?.type ?? '—'}</strong></div>
-          <div><span>Rekomendasi</span><strong>Hapus kalau nggak ada transaksi terkait</strong></div>
+          <div><span>Type</span><strong>{existing ? categoryTypeLabels[existing.type] : '—'}</strong></div>
+          <div><span>Note</span><strong>Best removed when no transactions reference it.</strong></div>
         </div>
         <div className="modal-actions">
           <Button onClick={() => setDeleteOpen(false)}>Cancel</Button>
