@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
@@ -10,12 +11,14 @@ import { useToast } from '../../components/ui/Toast';
 import { useGoal } from '../../hooks/useGoals';
 import { useWallets } from '../../hooks/useWallets';
 import { useCreateTransaction } from '../../hooks/useTransactions';
+import { invalidateFinancialQueries, queryKeys } from '../../lib/queryClient';
 
 export function GoalContributionPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { showToast } = useToast();
-  
+  const queryClient = useQueryClient();
+
   const { data: goal, isLoading: isLoadingGoal } = useGoal(id || '');
   const { data: walletsData, isLoading: isLoadingWallets } = useWallets();
   const createTransaction = useCreateTransaction();
@@ -54,6 +57,14 @@ export function GoalContributionPage() {
         transaction_at: new Date(date).toISOString(),
         note: note || `Contribution to ${goal?.name}`,
       });
+      // The contribution is a transfer transaction that moves money into the
+      // goal wallet, so refresh wallet balances, the dashboard, and budgets.
+      invalidateFinancialQueries(queryClient);
+      // Also refresh the goal so its collected amount reflects the contribution.
+      queryClient.invalidateQueries({ queryKey: queryKeys.goals.all });
+      if (id) {
+        queryClient.invalidateQueries({ queryKey: queryKeys.goals.detail(id) });
+      }
       showToast('Goal contribution recorded successfully.');
       navigate(`/goals/${id}`);
     } catch (error) {

@@ -13,7 +13,7 @@ import type {
   TransactionUpdateRequest,
   SplitTransactionRequest,
 } from '../types/transaction'
-import { queryKeys } from '../lib/queryClient'
+import { queryKeys, invalidateFinancialQueries } from '../lib/queryClient'
 
 export function useTransactions(params: TransactionListParams = {}) {
   return useQuery({
@@ -35,9 +35,7 @@ export function useCreateTransaction() {
   return useMutation({
     mutationFn: (payload: TransactionCreateRequest) => createTransaction(payload),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: queryKeys.transactions.all })
-      qc.invalidateQueries({ queryKey: queryKeys.wallets.all })
-      qc.invalidateQueries({ queryKey: queryKeys.dashboard.summary(new Date().toISOString().slice(0, 7)) })
+      invalidateFinancialQueries(qc)
     },
   })
 }
@@ -48,9 +46,7 @@ export function useUpdateTransaction(id: string) {
     mutationFn: (payload: TransactionUpdateRequest) => updateTransaction(id, payload),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.transactions.detail(id) })
-      qc.invalidateQueries({ queryKey: queryKeys.transactions.all })
-      qc.invalidateQueries({ queryKey: queryKeys.wallets.all })
-      qc.invalidateQueries({ queryKey: queryKeys.dashboard.summary(new Date().toISOString().slice(0, 7)) })
+      invalidateFinancialQueries(qc)
     },
   })
 }
@@ -60,9 +56,7 @@ export function useDeleteTransaction() {
   return useMutation({
     mutationFn: (id: string) => deleteTransaction(id),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: queryKeys.transactions.all })
-      qc.invalidateQueries({ queryKey: queryKeys.wallets.all })
-      qc.invalidateQueries({ queryKey: queryKeys.dashboard.summary(new Date().toISOString().slice(0, 7)) })
+      invalidateFinancialQueries(qc)
     },
   })
 }
@@ -72,10 +66,8 @@ export function useSplitBill() {
   return useMutation({
     mutationFn: (payload: SplitTransactionRequest) => splitBill(payload),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: queryKeys.transactions.all })
-      qc.invalidateQueries({ queryKey: queryKeys.wallets.all })
       qc.invalidateQueries({ queryKey: queryKeys.debts.all })
-      qc.invalidateQueries({ queryKey: queryKeys.dashboard.summary(new Date().toISOString().slice(0, 7)) })
+      invalidateFinancialQueries(qc)
     },
   })
 }
