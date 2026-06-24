@@ -135,9 +135,9 @@ All spacing is based on `4px`.
 
 | Type | Duration | Easing | Usage |
 |------|----------|--------|-------|
-| Micro | `150-200ms` | `ease` / `ease-out` | Buttons, nav, compact hover |
-| Standard | `200-300ms` | `ease-in-out` | Sidebar, drawer, modal |
-| Emphasis | `400-600ms` | `cubic-bezier(0.16, 1, 0.3, 1)` | Large page transitions only |
+| Micro | `160-220ms` | `ease` | Buttons, nav, compact hover, sidebar/drawer transitions |
+| Entrance | `160-200ms` | `ease` | Modal/sheet (`modalSheetIn`), page `fadeIn` |
+| Loop | `1.4s` | `linear` | Skeleton `shimmer` loading state |
 
 ### Rules
 
