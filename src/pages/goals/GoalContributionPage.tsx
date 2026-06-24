@@ -27,17 +27,21 @@ export function GoalContributionPage() {
 
   const wallets = walletsData?.wallets || [];
   const sourceWallets = wallets.filter(w => w.type !== 'goal');
-  
-  // Find the goal wallet. It might have the same ID as the goal, or the same name.
-  // Let's assume the goal wallet has the same ID as the goal, or we can just use the goal ID as to_wallet_id.
-  // Actually, if the backend creates it atomically, it might just use the goal ID as the wallet ID.
-  const goalWallet = wallets.find(w => w.id === id || (w.type === 'goal' && w.name === goal?.name));
-  const toWalletId = goalWallet?.id || id;
+
+  // The API funds a goal by transferring into its dedicated `goal`-type wallet,
+  // which carries the parent goal id in `goal_id`. Match on that — never the goal
+  // id directly (a goal id is not a wallet id) nor the wallet name.
+  const goalWallet = wallets.find(w => w.type === 'goal' && w.goal_id === id);
+  const toWalletId = goalWallet?.id;
 
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (!sourceWalletId || !amount || !toWalletId) {
+    if (!sourceWalletId || !amount) {
       showToast('Please fill all required fields');
+      return;
+    }
+    if (!toWalletId) {
+      showToast('Goal wallet not found. Cannot record contribution.');
       return;
     }
 
@@ -76,6 +80,9 @@ export function GoalContributionPage() {
           <Card className="panel-card">
             <div className="panel-head"><div><h3>Contribution Information</h3><p>Pilih wallet sumber, amount, tanggal, dan note kontribusi.</p></div></div>
             <form className="form-stack" onSubmit={onSubmit}>
+              {!goalWallet && (
+                <span className="error-text">Goal wallet belum tersedia, kontribusi tidak dapat dicatat.</span>
+              )}
               <div className="form-two">
                 <label>
                   <span>Goal</span>
@@ -105,7 +112,7 @@ export function GoalContributionPage() {
               </label>
               <div className="form-row-between">
                 <Button to={`/goals/${goal.id}`}>Cancel</Button>
-                <Button type="submit" variant="primary" disabled={createTransaction.isPending}><AppIcon name="save" /> Save Contribution</Button>
+                <Button type="submit" variant="primary" disabled={createTransaction.isPending || !goalWallet}><AppIcon name="save" /> Save Contribution</Button>
               </div>
             </form>
           </Card>
