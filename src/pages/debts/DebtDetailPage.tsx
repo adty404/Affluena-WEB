@@ -1,18 +1,36 @@
-import { useParams } from 'react-router-dom';
+import { useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { DataTable } from '../../components/ui/DataTable';
+import { Modal } from '../../components/ui/Modal';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { Amount } from '../../components/finance/Amount';
 import { ProgressBar } from '../../components/finance/ProgressBar';
-import { useDebt } from '../../hooks/useDebts';
+import { useToast } from '../../components/ui/Toast';
+import { useDebt, useDeleteDebt } from '../../hooks/useDebts';
 import type { DebtPayment } from '../../types/debt';
 
 export function DebtDetailPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { showToast } = useToast();
   const { data: debt, isLoading } = useDebt(id ?? '');
+  const deleteMut = useDeleteDebt();
+  const [deleteOpen, setDeleteOpen] = useState(false);
+
+  const handleDelete = () => {
+    if (!debt) return;
+    deleteMut.mutate(debt.id, {
+      onSuccess: () => {
+        showToast('Debt deleted successfully');
+        navigate('/debts');
+      },
+      onError: (err: any) => showToast(err?.message || 'Failed to delete debt'),
+    });
+  };
 
   if (isLoading) {
     return (
@@ -41,7 +59,7 @@ export function DebtDetailPage() {
             <h2>{debt.counterparty_name}</h2>
             <p>{debt.note}</p>
           </div>
-          <div className="app-hero-actions"><Button to="/debts">Back</Button><Button to={`/debts/${debt.id}/pay`} variant="primary"><AppIcon name="pay" /> Record Payment</Button></div>
+          <div className="app-hero-actions"><Button to="/debts">Back</Button><Button to={`/debts/${debt.id}/pay`} variant="primary"><AppIcon name="pay" /> Record Payment</Button><Button variant="danger" onClick={() => setDeleteOpen(true)}><AppIcon name="delete" /> Delete</Button></div>
         </section>
 
         <section className="stat-grid">
@@ -77,6 +95,22 @@ export function DebtDetailPage() {
           </Card>
         </section>
       </div>
+
+      <Modal
+        open={deleteOpen}
+        title="Delete Debt"
+        description="Tindakan ini menghapus debt beserta histori pembayarannya."
+        onClose={() => (deleteMut.isPending ? null : setDeleteOpen(false))}
+      >
+        <div className="readiness-list">
+          <div><span>Counterparty</span><strong>{debt.counterparty_name}</strong></div>
+          <div><span>Remaining</span><strong><Amount value={debt.remaining_amount_minor} type={debt.type === 'payable' ? 'expense' : 'income'} /></strong></div>
+        </div>
+        <div className="modal-actions">
+          <Button onClick={() => setDeleteOpen(false)} disabled={deleteMut.isPending}>Cancel</Button>
+          <Button variant="danger" onClick={handleDelete} disabled={deleteMut.isPending}>{deleteMut.isPending ? 'Deleting...' : 'Delete Debt'}</Button>
+        </div>
+      </Modal>
     </AppLayout>
   );
 }

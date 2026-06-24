@@ -1147,6 +1147,32 @@ input.form-control {
   font-size: 12px;
   font-weight: 850;
 }
+.filter-card-input {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  cursor: pointer;
+}
+.filter-card-input .form-control {
+  padding: 8px 10px;
+  font-weight: 750;
+}
+.code-block {
+  margin: 0;
+  padding: 14px 16px;
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--ink, #0f172a);
+  overflow-x: auto;
+  white-space: pre;
+  max-height: 320px;
+  overflow-y: auto;
+}
 .filter-criteria-card {
   overflow: clip;
 }

@@ -7,11 +7,45 @@ import { Modal } from '../../components/ui/Modal';
 import { useToast } from '../../components/ui/Toast';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { SettingsCard, SettingsHero } from './SettingsShared';
+import { useExportCSV } from '../../hooks/useExports';
+import type { ApiError } from '../../api/types';
+
+function rangeToDates(range: string): { from?: string; to?: string } {
+  if (range === 'this-year') {
+    const now = new Date();
+    const from = new Date(now.getFullYear(), 0, 1).toISOString();
+    const to = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999).toISOString();
+    return { from, to };
+  }
+  return {};
+}
 
 export function DataSettingsPage() {
   const { showToast } = useToast();
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [confirmText, setConfirmText] = useState('');
+  const [dateRange, setDateRange] = useState('all-time');
+  const exportMut = useExportCSV();
+
+  async function handleExport(event: React.FormEvent) {
+    event.preventDefault();
+    try {
+      const { from, to } = rangeToDates(dateRange);
+      const blob = await exportMut.mutateAsync({ from, to });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `affluena-export-${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+      showToast('Personal data export berhasil diunduh.');
+    } catch (err) {
+      const apiErr = err as ApiError;
+      showToast(apiErr.error || 'Gagal membuat export.');
+    }
+  }
 
   return (
     <AppLayout title="Data & Account Lifecycle" description="Export personal data, retention, dan delete account.">
@@ -22,17 +56,14 @@ export function DataSettingsPage() {
         </SettingsHero>
 
         <section className="dashboard-grid">
-          <SettingsCard icon="download" title="Personal Data Export" description="Export semua data penting dari module Affluena.">
-            <form className="form-stack" onSubmit={(event) => { event.preventDefault(); showToast('Personal data export job created. Open Export Center to download when ready.'); }}>
+          <SettingsCard icon="download" title="Personal Data Export" description="Unduh transaksi dan data penting dari Affluena sebagai file CSV.">
+            <form className="form-stack" onSubmit={handleExport}>
               <div className="form-two">
-                <label><span>Export scope</span><Select defaultValue="all"><option value="all">All personal finance data</option><option value="transactions">Transactions only</option><option value="audit">Activity and API logs</option></Select></label>
-                <label><span>Format</span><Select defaultValue="csv"><option value="csv">CSV bundle</option><option value="json">JSON archive</option></Select></label>
+                <label><span>Date range</span><Select value={dateRange} onChange={(e) => setDateRange(e.target.value)}><option value="all-time">All time</option><option value="this-year">This year</option></Select></label>
+                <label><span>Format</span><Select value="csv" disabled><option value="csv">CSV bundle</option></Select></label>
               </div>
-              <div className="form-two">
-                <label><span>Date range</span><Select defaultValue="all-time"><option value="all-time">All time</option><option value="this-year">This year</option><option value="custom">Custom range</option></Select></label>
-                <label><span>Delivery</span><Select defaultValue="download-center"><option value="download-center">Export Center</option><option value="email-link">Email secure link</option></Select></label>
-              </div>
-              <Button type="submit" variant="primary"><AppIcon name="download" /> Generate Export</Button>
+              <Button type="submit" variant="primary" disabled={exportMut.isPending}><AppIcon name="download" /> {exportMut.isPending ? 'Menyiapkan…' : 'Generate Export'}</Button>
+              <span className="muted-text">Butuh format atau filter modul lain? Gunakan Export Center.</span>
             </form>
           </SettingsCard>
 
@@ -50,8 +81,8 @@ export function DataSettingsPage() {
 
         <Modal open={deleteOpen} title="Delete Account" description="Ketik DELETE untuk mengaktifkan tombol delete account." onClose={() => setDeleteOpen(false)}>
           <div className="notice-card danger-note"><strong>Important:</strong> akun akan masuk 7-day soft-delete window. Semua refresh token dicabut dan wallet sharing direvoke.</div>
-          <form className="form-stack" onSubmit={(event) => { event.preventDefault(); setDeleteOpen(false); showToast('Account deletion request created with 7-day recovery window.'); }}>
-            <label><span>Confirmation</span><Input value={confirmText} onChange={(event) => setConfirmText(event.target.value)} /></label>
+          <form className="form-stack" onSubmit={(event) => { event.preventDefault(); setDeleteOpen(false); setConfirmText(''); showToast('Permintaan hapus akun tercatat. Tim Affluena akan memproses penutupan akun.'); }}>
+            <label><span>Confirmation</span><Input value={confirmText} onChange={(event) => setConfirmText(event.target.value)} placeholder="DELETE" /></label>
             <div className="modal-actions"><Button onClick={() => setDeleteOpen(false)}>Cancel</Button><Button type="submit" variant="danger" disabled={confirmText !== 'DELETE'}><AppIcon name="delete" /> Confirm Delete</Button></div>
           </form>
         </Modal>

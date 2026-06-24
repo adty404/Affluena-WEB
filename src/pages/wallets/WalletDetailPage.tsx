@@ -46,6 +46,14 @@ export function WalletDetailPage() {
     : 'Belum ada aktivitas';
   const memberCount = wallet.members?.length ?? (shared ? 2 : 1);
 
+  const inflow = analytics?.inflow_minor ?? 0;
+  const outflow = analytics?.outflow_minor ?? 0;
+  const net = inflow - outflow;
+  const transactionCount = analytics?.transaction_count ?? 0;
+  const flowMax = Math.max(inflow, outflow, 1);
+  const inflowPct = Math.round((inflow / flowMax) * 100);
+  const outflowPct = Math.round((outflow / flowMax) * 100);
+
   return (
     <AppLayout title="Wallet Detail" description={`${walletTypeLabels[wallet.type]} · ${wallet.currency_code}`}>
       <div className="dashboard-page grid-stack">
@@ -70,17 +78,32 @@ export function WalletDetailPage() {
         </section>
 
         <section className="dashboard-grid">
-          <Card className="panel-card chart-panel">
-            <div className="panel-head"><div><h3>Balance Movement</h3><p>{analytics?.transaction_count ?? 0} transaksi bulan {month}.</p></div></div>
-            <div className="cashflow-chart">
-              <svg viewBox="0 0 760 250" preserveAspectRatio="none">
-                <path d="M40 210 C110 170, 170 190, 240 140 C310 94, 380 122, 450 76 C540 18, 620 68, 720 38" fill="none" stroke="#10b981" strokeWidth="5" strokeLinecap="round"/>
-                <path d="M40 210 C110 170, 170 190, 240 140 C310 94, 380 122, 450 76 C540 18, 620 68, 720 38 L720 250 L40 250 Z" fill="rgba(16,185,129,.13)"/>
-              </svg>
-            </div>
-            <div className="readiness-list">
-              <div><span>Last activity</span><strong>{lastActivity}</strong></div>
-            </div>
+          <Card className="panel-card">
+            <div className="panel-head"><div><h3>Balance Movement</h3><p>{transactionCount} transaksi tercatat bulan {month}.</p></div></div>
+            {transactionCount === 0 ? (
+              <div className="readiness-list">
+                <div><span>Status</span><strong>Belum ada aktivitas bulan ini</strong></div>
+                <div><span>Last activity</span><strong>{lastActivity}</strong></div>
+              </div>
+            ) : (
+              <>
+                <div className="portfolio-list" style={{ marginBottom: 18 }}>
+                  <div>
+                    <div className="portfolio-head"><span>Inflow</span><Amount value={inflow} /></div>
+                    <div className="progress-bar"><span style={{ width: `${inflowPct}%` }} /></div>
+                  </div>
+                  <div>
+                    <div className="portfolio-head"><span>Outflow</span><Amount value={outflow} variant="expense" /></div>
+                    <div className="progress-bar orange"><span style={{ width: `${outflowPct}%` }} /></div>
+                  </div>
+                </div>
+                <div className="readiness-list">
+                  <div><span>Net bulan ini</span><Amount value={net} variant={net >= 0 ? 'income' : 'expense'} /></div>
+                  <div><span>Transaksi</span><strong>{transactionCount}</strong></div>
+                  <div><span>Last activity</span><strong>{lastActivity}</strong></div>
+                </div>
+              </>
+            )}
           </Card>
 
           <Card className="panel-card">
@@ -101,16 +124,20 @@ export function WalletDetailPage() {
           <div className="panel-head"><div><h3>Anggota Wallet</h3><p>{memberCount} user dengan akses.</p></div></div>
           {wallet.members && wallet.members.length > 0 ? (
             <div className="member-list">
-              {wallet.members.map((m) => (
-                <div className="member-row" key={m.user_id}>
-                  <div className="avatar">{m.email.slice(0, 2).toUpperCase()}</div>
-                  <div>
-                    <strong>{m.email}</strong>
-                    <span>{m.role} · {m.status}</span>
+              {wallet.members.map((m) => {
+                const local = m.email.split('@')[0] ?? m.email;
+                const name = local.charAt(0).toUpperCase() + local.slice(1);
+                return (
+                  <div className="member-row" key={m.user_id}>
+                    <div className="avatar">{m.email.slice(0, 2).toUpperCase()}</div>
+                    <div>
+                      <strong>{name}</strong>
+                      <span>{m.email} · {m.role}</span>
+                    </div>
+                    <Badge tone={m.role === 'owner' ? 'green' : m.status === 'joined' ? 'green' : m.status === 'pending' ? 'orange' : 'red'}>{m.role === 'owner' ? 'owner' : m.status}</Badge>
                   </div>
-                  <Badge tone={m.status === 'joined' ? 'green' : m.status === 'pending' ? 'orange' : 'red'}>{m.status}</Badge>
-                </div>
-              ))}
+                );
+              })}
             </div>
           ) : (
             <div className="readiness-list">

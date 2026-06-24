@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
@@ -7,11 +9,18 @@ import { Input, Select } from '../../components/ui/Input';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { useToast } from '../../components/ui/Toast';
 import { useExportCSV } from '../../hooks/useExports';
+import { listExportJobs } from '../../api/export';
+import { queryKeys } from '../../lib/queryClient';
 import type { ApiError } from '../../api/types';
 
 export function ExportNewPage() {
   const [created, setCreated] = useState(false);
+  const [resultRows, setResultRows] = useState(0);
+  const [resultSize, setResultSize] = useState('');
+  const [latestJobId, setLatestJobId] = useState<string | null>(null);
   const { showToast } = useToast();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const exportMut = useExportCSV();
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -34,6 +43,8 @@ export function ExportNewPage() {
 
     try {
       const blob = await exportMut.mutateAsync({ from, to });
+
+      // Trigger the browser download of the actual CSV bytes.
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -42,7 +53,27 @@ export function ExportNewPage() {
       a.click();
       a.remove();
       window.URL.revokeObjectURL(url);
-      
+
+      // Derive a real row count from the downloaded CSV (header line excluded).
+      const text = await blob.text();
+      const lineCount = text.split('\n').filter((line) => line.trim().length > 0).length;
+      const rows = Math.max(0, lineCount - 1);
+      setResultRows(rows);
+      setResultSize(`${(blob.size / 1024).toFixed(1)} KB`);
+
+      // The API records an export_jobs audit row; refresh the list and grab the
+      // real job id so "Open Result" routes to a genuine export detail page.
+      queryClient.invalidateQueries({ queryKey: ['exportJobs'] });
+      try {
+        const jobs = await queryClient.fetchQuery({
+          queryKey: queryKeys.exportJobs.list(1, 0),
+          queryFn: () => listExportJobs(1, 0),
+        });
+        setLatestJobId(jobs.jobs[0]?.id ?? null);
+      } catch {
+        setLatestJobId(null);
+      }
+
       setCreated(true);
       showToast('Export berhasil diunduh.');
     } catch (err) {
@@ -51,30 +82,37 @@ export function ExportNewPage() {
     }
   }
 
+  const openLatest = () => {
+    if (latestJobId) {
+      navigate(`/exports/${latestJobId}`);
+    } else {
+      navigate('/exports');
+    }
+  };
+
   return (
     <AppLayout title="Create Export" description="Generate CSV/XLSX data export with clear module and period filters.">
       <div className="dashboard-page grid-stack">
-        <section className="app-hero-card dashboard-hero"><div><Badge>● New Export</Badge><h2>Pilih modul, periode, format, lalu generate file export.</h2><p>Form ini siap disambungkan ke endpoint export/csv saat backend aktif.</p></div><div className="app-hero-actions"><Button to="/exports">Back</Button><Button to="/exports/export-cashflow-jun" variant="primary"><AppIcon name="download" /> Open Latest</Button></div></section>
+        <section className="app-hero-card dashboard-hero"><div><Badge>● New Export</Badge><h2>Pilih modul, periode, format, lalu generate file export.</h2><p>File CSV langsung terunduh dan tercatat di export history dengan status dan jumlah row sebenarnya.</p></div><div className="app-hero-actions"><Button to="/exports">Back</Button><Button onClick={openLatest} variant="primary" disabled={!created}><AppIcon name="download" /> Open Latest</Button></div></section>
         <section className="dashboard-grid two-col form-dashboard-grid">
           <Card className="panel-card">
             <div className="panel-head"><div><h3>Export Configuration</h3><p>Semua field diberi label dan helper agar jelas di desktop maupun mobile.</p></div></div>
             <form className="form-grid" onSubmit={handleSubmit}>
-              <div className="form-two"><label className="field"><span>Module</span><Select defaultValue="Transactions"><option>Transactions</option><option>Reports</option><option>Budgets</option><option>Debts</option><option>Goals</option></Select></label><label className="field"><span>Format</span><Select defaultValue="CSV"><option>CSV</option><option>XLSX</option></Select></label></div>
+              <div className="form-two"><label className="field"><span>Module</span><Select defaultValue="Transactions"><option>Transactions</option></Select></label><label className="field"><span>Format</span><Select defaultValue="CSV"><option>CSV</option></Select></label></div>
               <div className="form-two"><label className="field"><span>Start date</span><Input type="date" name="from" defaultValue="2026-06-01" /></label><label className="field"><span>End date</span><Input type="date" name="to" defaultValue="2026-06-30" /></label></div>
-              <div className="form-two"><label className="field"><span>Wallet filter</span><Select defaultValue="All wallets"><option>All wallets</option><option>Bank BCA</option><option>Cash Wallet</option><option>OVO</option></Select></label><label className="field"><span>Category filter</span><Select defaultValue="All categories"><option>All categories</option><option>Food & Drink</option><option>Transportation</option><option>Shopping</option></Select></label></div>
-              <label className="field"><span>Export name</span><Input defaultValue="Transactions June 2026" /></label>
+              <label className="field"><span>Export name</span><Input defaultValue="Transactions June 2026" /><small>Used as the suggested download file name.</small></label>
               <div className="form-actions"><Button to="/exports">Cancel</Button><Button type="submit" variant="primary" disabled={exportMut.isPending}><AppIcon name="export" /> {exportMut.isPending ? 'Generating...' : 'Generate Export'}</Button></div>
             </form>
           </Card>
           <Card className="panel-card export-result-card">
             <div className="mini-icon safe"><AppIcon name={created ? 'success' : 'export'} /></div>
             <h3>{created ? 'Export generated' : 'Export preview'}</h3>
-            <p>{created ? 'File sudah masuk export history dan siap dibuka dari detail export.' : 'Konfigurasi export akan menghasilkan file dengan filter yang dipilih.'}</p>
+            <p>{created ? 'File sudah diunduh dan tercatat di export history. Buka detail untuk download ulang.' : 'Konfigurasi export akan menghasilkan file CSV untuk periode yang dipilih.'}</p>
             <div className="metric-list compact-metrics">
-              <div className="metric-cell"><span>Rows</span><strong>{created ? '842' : 'Estimated 800+'}</strong><small>Based on current filters</small></div>
-              <div className="metric-cell"><span>Format</span><strong>CSV</strong><small>Compatible with spreadsheet tools</small></div>
+              <div className="metric-cell"><span>Rows</span><strong>{created ? resultRows.toLocaleString('id-ID') : 'Generated on export'}</strong><small>{created ? 'Included records' : 'Based on selected period'}</small></div>
+              <div className="metric-cell"><span>{created ? 'Size' : 'Format'}</span><strong>{created ? resultSize : 'CSV'}</strong><small>{created ? 'Downloaded file' : 'Compatible with spreadsheet tools'}</small></div>
             </div>
-            <div className="inline-actions"><Button to="/exports/export-transactions-q2" variant={created ? 'primary' : 'default'}>Open Result</Button><Button to="/exports">History</Button></div>
+            <div className="inline-actions"><Button onClick={openLatest} variant={created ? 'primary' : 'default'} disabled={!created}>Open Result</Button><Button to="/exports">History</Button></div>
           </Card>
         </section>
       </div>

@@ -7,12 +7,14 @@ import {
   inviteMember,
   listMembers,
   listWallets,
+  respondToInvite,
   updateWallet,
   type ListParams,
 } from '../api/wallets'
 import type {
   WalletCreateRequest,
   WalletInviteRequest,
+  WalletMemberResponse,
   WalletUpdateRequest,
 } from '../types/wallet'
 import { queryKeys } from '../lib/queryClient'
@@ -86,6 +88,24 @@ export function useInviteMember(walletId: string) {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.wallets.detail(walletId) })
       qc.invalidateQueries({ queryKey: queryKeys.wallets.all })
+      qc.invalidateQueries({ queryKey: ['wallets', 'members', walletId] })
+    },
+  })
+}
+
+export function useRespondWalletInvite(walletId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({
+      memberId,
+      payload,
+    }: {
+      memberId: string
+      payload: WalletMemberResponse
+    }) => respondToInvite(walletId, memberId, payload),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: queryKeys.wallets.all })
+      qc.invalidateQueries({ queryKey: queryKeys.wallets.detail(walletId) })
       qc.invalidateQueries({ queryKey: ['wallets', 'members', walletId] })
     },
   })

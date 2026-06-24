@@ -4,6 +4,8 @@ export const goalSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   target_amount_minor: z.number().int().min(1, 'Target amount must be greater than 0'),
   deadline: z.string().min(1, 'Deadline is required'),
+  // Optional — only sent on edit to transition the goal lifecycle.
+  status: z.enum(['active', 'achieved', 'cancelled']).optional(),
 });
 
 export type GoalFormData = z.infer<typeof goalSchema>;

@@ -69,7 +69,7 @@ export function GoalMembersPage() {
                   {errors.email && <small className="field-error">{errors.email.message}</small>}
                 </label>
               </div>
-              <div className="form-row-between"><Button to={`/goals/${goal.id}`}>Cancel</Button><Button type="submit" variant="primary" disabled={isSubmitting}><AppIcon name="profile" /> Invite Member</Button></div>
+              <div className="form-row-between"><Button to={`/goals/${goal.id}`}>Cancel</Button><Button type="submit" variant="primary" disabled={isSubmitting || inviteMember.isPending}><AppIcon name="profile" /> {inviteMember.isPending ? 'Inviting...' : 'Invite Member'}</Button></div>
             </form>
           </Card>
 
@@ -89,15 +89,17 @@ export function GoalMembersPage() {
             data={goal.members || []}
             getRowKey={(member) => member.user_id}
             columns={[
-              { key: 'name', header: 'Member', render: (member) => <div className="table-title"><span className="mini-icon safe"><AppIcon name="profile" /></span><strong>{member.user_id}</strong></div> },
+              { key: 'name', header: 'Member ID', render: (member) => <div className="table-title"><span className="mini-icon safe"><AppIcon name="profile" /></span><strong>{member.user_id}</strong></div> },
               { key: 'status', header: 'Status', render: (member) => <Badge tone={member.status === 'joined' ? 'green' : member.status === 'rejected' ? 'red' : 'orange'}>{member.status}</Badge> },
               { key: 'action', header: 'Action', render: (member) => (
                 <div className="inline-actions">
-                  {member.status === 'pending' && (
+                  {member.status === 'pending' ? (
                     <>
-                      <Button size="small" onClick={() => onRespond(member.user_id, 'joined')}>Accept</Button>
-                      <Button size="small" onClick={() => onRespond(member.user_id, 'rejected')}>Reject</Button>
+                      <Button size="small" variant="primary" disabled={respondMember.isPending} onClick={() => onRespond(member.user_id, 'joined')}>Accept</Button>
+                      <Button size="small" variant="danger" disabled={respondMember.isPending} onClick={() => onRespond(member.user_id, 'rejected')}>Reject</Button>
                     </>
+                  ) : (
+                    <span className="muted-text">No action</span>
                   )}
                 </div>
               ) },

@@ -53,6 +53,7 @@ export function useDeleteInstallment() {
     mutationFn: (id: string) => trackersApi.deleteInstallment(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: INSTALLMENTS_QUERY_KEY });
+      invalidateFinancialQueries(queryClient);
     },
   });
 }
@@ -113,6 +114,7 @@ export function useDeleteSubscription() {
     mutationFn: (id: string) => trackersApi.deleteSubscription(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: SUBSCRIPTIONS_QUERY_KEY });
+      invalidateFinancialQueries(queryClient);
     },
   });
 }

@@ -1,4 +1,4 @@
-export type GoalStatus = 'active' | 'at_risk' | 'completed';
+export type GoalStatus = 'active' | 'achieved' | 'cancelled';
 
 export type GoalMember = {
   goal_id: string;

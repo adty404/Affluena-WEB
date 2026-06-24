@@ -24,8 +24,7 @@ export function BudgetFormPage() {
   const { data: categoriesData } = useCategories({ type: 'expense' });
   const expenseCategories = categoriesData?.categories ?? [];
 
-  const { data: budget, isLoading: isBudgetLoading, error: budgetError } = useBudget(id);
-  console.log('BudgetFormPage render:', { id, isEdit, isBudgetLoading, budgetError, budget });
+  const { data: budget, isLoading: isBudgetLoading } = useBudget(id);
   const createBudget = useCreateBudget();
   const updateBudget = useUpdateBudget(id as string);
   const deleteBudget = useDeleteBudget();
