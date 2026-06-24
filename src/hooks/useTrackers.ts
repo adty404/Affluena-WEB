@@ -4,6 +4,7 @@ import {
   CreateInstallmentInput, UpdateInstallmentInput, PayInstallmentInput,
   CreateSubscriptionInput, UpdateSubscriptionInput, PaySubscriptionInput
 } from '../schemas/tracker';
+import { invalidateFinancialQueries } from '../lib/queryClient';
 
 export const INSTALLMENTS_QUERY_KEY = ['installments'];
 export const SUBSCRIPTIONS_QUERY_KEY = ['subscriptions'];
@@ -30,6 +31,7 @@ export function useCreateInstallment() {
     mutationFn: (data: CreateInstallmentInput) => trackersApi.createInstallment(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: INSTALLMENTS_QUERY_KEY });
+      invalidateFinancialQueries(queryClient);
     },
   });
 }
@@ -62,6 +64,7 @@ export function usePayInstallment() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: INSTALLMENTS_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: [...INSTALLMENTS_QUERY_KEY, variables.id] });
+      invalidateFinancialQueries(queryClient);
     },
   });
 }
@@ -88,6 +91,7 @@ export function useCreateSubscription() {
     mutationFn: (data: CreateSubscriptionInput) => trackersApi.createSubscription(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: SUBSCRIPTIONS_QUERY_KEY });
+      invalidateFinancialQueries(queryClient);
     },
   });
 }
@@ -120,6 +124,7 @@ export function usePaySubscription() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: SUBSCRIPTIONS_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: [...SUBSCRIPTIONS_QUERY_KEY, variables.id] });
+      invalidateFinancialQueries(queryClient);
     },
   });
 }

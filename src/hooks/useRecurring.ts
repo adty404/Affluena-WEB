@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { recurringApi } from '../api/recurring';
+import { invalidateFinancialQueries } from '../lib/queryClient';
 import type { RecurringRuleInput } from '../schemas/recurring';
 
 export const recurringKeys = {
@@ -72,6 +73,8 @@ export function useRunRecurringRule() {
       queryClient.invalidateQueries({ queryKey: recurringKeys.detail(variables.id) });
       // Also invalidate transactions since a new one was likely created
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      // Running a rule books a charge that moves wallet balances / dashboard / budgets
+      invalidateFinancialQueries(queryClient);
     },
   });
 }

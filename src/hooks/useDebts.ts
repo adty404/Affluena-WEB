@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { debtsApi, GetDebtsParams } from '../api/debts';
 import { CreateDebtInput, UpdateDebtInput, PayDebtInput } from '../schemas/debt';
+import { invalidateFinancialQueries } from '../lib/queryClient';
 
 export const DEBTS_QUERY_KEY = ['debts'];
 
@@ -25,6 +26,7 @@ export function useCreateDebt() {
     mutationFn: (data: CreateDebtInput) => debtsApi.createDebt(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: DEBTS_QUERY_KEY });
+      invalidateFinancialQueries(queryClient);
     },
   });
 }
@@ -57,6 +59,7 @@ export function usePayDebt() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: DEBTS_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: [...DEBTS_QUERY_KEY, variables.id] });
+      invalidateFinancialQueries(queryClient);
     },
   });
 }

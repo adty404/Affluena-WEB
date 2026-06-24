@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { quickEntryApi } from '../api/quickEntry';
+import { invalidateFinancialQueries } from '../lib/queryClient';
 import type { QuickEntryTemplateInput } from '../schemas/quickEntry';
 
 export const quickEntryKeys = {
@@ -70,6 +71,8 @@ export function useExecuteQuickEntryTemplate() {
     onSuccess: () => {
       // Invalidate transactions since a new one was created
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      // Executing a template books a transaction that moves wallet balances / dashboard / budgets
+      invalidateFinancialQueries(queryClient);
     },
   });
 }

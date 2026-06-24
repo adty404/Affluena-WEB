@@ -41,6 +41,7 @@ export const queryKeys = {
     detail: (id: string) => ['transactions', 'detail', id] as const,
   },
   dashboard: {
+    all: ['dashboard'] as const,
     summary: (month: string) => ['dashboard', 'summary', month] as const,
     cashflowTrend: (months: number) => ['dashboard', 'cashflow-trend', months] as const,
     expenseDistribution: (month: string) => ['dashboard', 'expense-distribution', month] as const,
@@ -109,4 +110,18 @@ export const queryKeys = {
   notifications: {
     rules: ['notifications', 'rules'] as const,
   },
+}
+
+/// Invalidate every query whose data depends on wallet balances or the
+/// transaction ledger. Call this in the `onSuccess` of ANY mutation that moves
+/// money — create/edit/delete a transaction, split a bill, execute a quick
+/// entry, pay a debt/installment/subscription, run a recurring rule, contribute
+/// to a goal — so wallet balances, the dashboard, and budgets do not show stale
+/// numbers after the server has already updated them. Pass the client from
+/// `useQueryClient()` (prefix-matching covers every sub-key).
+export function invalidateFinancialQueries(client: QueryClient) {
+  client.invalidateQueries({ queryKey: queryKeys.wallets.all })
+  client.invalidateQueries({ queryKey: queryKeys.transactions.all })
+  client.invalidateQueries({ queryKey: queryKeys.dashboard.all })
+  client.invalidateQueries({ queryKey: queryKeys.budgets.all })
 }
