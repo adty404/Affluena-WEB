@@ -8,6 +8,11 @@ Use this file to understand existing routes and avoid active-link/dynamic-route 
 - Do not let static routes get swallowed by `:id`.
 - Sidebar active state should use exact/manual matching.
 - Do not use raw prefix matching for active links.
+- **UI route slugs intentionally differ from API endpoint paths.** The browser URL and the backend path are separate namespaces. Do not "align" them — each `src/api/*.ts` module already hardcodes the correct backend path. Known intentional differences:
+  - `/budgets` (UI) → `/api/v1/category-budgets` (API)
+  - `/recurring` (UI) → `/api/v1/recurring-transactions` (API)
+  - `/reports/expenses` (UI) → `/api/v1/reports/expense` (API, singular)
+  - `/reports/budgets` (UI) reuses `/api/v1/category-budgets/report` (there is no `/reports/budget(s)` endpoint)
 
 ## Public / Foundation
 
