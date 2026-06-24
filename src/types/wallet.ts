@@ -23,6 +23,8 @@ export type Wallet = {
   balance_minor: number;
   color: string;
   description: string;
+  /** Set on `goal`-type wallets; links the wallet back to its parent goal. Omitted by the API for non-goal wallets. */
+  goal_id?: string | null;
   role?: WalletRole;
   share_status?: WalletShareStatus;
   created_at: string;
