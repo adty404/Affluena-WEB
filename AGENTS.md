@@ -293,6 +293,7 @@ When adding or changing API-backed UI:
 - keep request/response shapes aligned with `Affluena-API/docs/API_CONTRACT.md`
 - preserve existing loading/error/empty states
 - preserve JWT auth/refresh behavior in `apiFetch`
+- `PUT /auth/password` revokes all other sessions and returns a fresh `{ user, tokens }` pair — `useChangePassword` MUST persist the returned tokens via `setTokens`, or the user is silently logged out when the old refresh token dies
 - preserve `Amount` formatting and integer minor-unit money handling
 - preserve user isolation expectations from the API
 - every mutation must show loading/success/error behavior and invalidate/refetch relevant query keys
