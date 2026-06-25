@@ -10,6 +10,7 @@ import type {
   UpdateAccountRequest,
 } from '../types/auth'
 import { queryKeys } from '../lib/queryClient'
+import { setTokens } from '../lib/token'
 
 export function useUpdateAccount() {
   const qc = useQueryClient()
@@ -24,6 +25,11 @@ export function useUpdateAccount() {
 export function useChangePassword() {
   return useMutation({
     mutationFn: (payload: ChangePasswordRequest) => changePassword(payload),
+    onSuccess: (session) => {
+      // The password change revoked every other session; persist the fresh
+      // token pair so this device stays signed in with the new credentials.
+      setTokens(session.tokens)
+    },
   })
 }
 
