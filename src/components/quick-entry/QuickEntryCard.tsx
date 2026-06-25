@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button } from '../ui/Button';
 import { Badge } from '../ui/Badge';
 import { Card } from '../ui/Card';
+import { Input } from '../ui/Input';
 import { Modal } from '../ui/Modal';
 import { useToast } from '../ui/Toast';
 import { AppIcon } from '../ui/AppIcon';
@@ -15,6 +16,7 @@ import type { QuickEntryTemplate } from '../../types/quickEntry';
 export function QuickEntryCard({ item }: { item: QuickEntryTemplate }) {
   const { showToast } = useToast();
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [transactionAt, setTransactionAt] = useState(() => new Date().toISOString().slice(0, 16));
   const executeMutation = useExecuteQuickEntryTemplate();
   const { data: walletsData } = useWallets();
   const { data: categoriesData } = useCategories();
@@ -26,7 +28,10 @@ export function QuickEntryCard({ item }: { item: QuickEntryTemplate }) {
 
   async function executeTemplate() {
     try {
-      await executeMutation.mutateAsync({ id: item.id });
+      await executeMutation.mutateAsync({
+        id: item.id,
+        data: { transaction_at: new Date(transactionAt).toISOString() },
+      });
       setConfirmOpen(false);
       showToast(`${item.name} berhasil dibuat sebagai transaksi ${item.type}.`);
     } catch (error) {
@@ -56,6 +61,16 @@ export function QuickEntryCard({ item }: { item: QuickEntryTemplate }) {
           <div><span>Wallet</span><strong>{walletText}</strong></div>
           <div><span>Category</span><strong>{categoryText}</strong></div>
           <div><span>Amount</span><strong><Amount value={item.amount_minor} type={amountVariant} /></strong></div>
+        </div>
+        <div className="form-stack">
+          <label>
+            <span>Date &amp; time</span>
+            <Input
+              type="datetime-local"
+              value={transactionAt}
+              onChange={(event) => setTransactionAt(event.target.value)}
+            />
+          </label>
         </div>
         <div className="modal-actions">
           <Button onClick={() => setConfirmOpen(false)}>Cancel</Button>
