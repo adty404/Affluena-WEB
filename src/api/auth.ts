@@ -37,7 +37,9 @@ export function updateAccount(payload: UpdateAccountRequest) {
 }
 
 export function changePassword(payload: ChangePasswordRequest) {
-  return apiFetch<void>('/api/v1/auth/password', {
+  // Returns a fresh {user, tokens} pair: the server revokes all other sessions
+  // on a password change, so the caller must persist the new tokens.
+  return apiFetch<AuthSession>('/api/v1/auth/password', {
     method: 'PUT',
     body: payload,
   })
