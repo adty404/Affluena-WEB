@@ -15,7 +15,6 @@ const startsWithSegment = (pathname: string, segment: string) => pathname === se
 const exactOrId = (pathname: string, root: string, extras: string[] = []) => pathname === root || extras.includes(pathname) || new RegExp(`^${root}/[^/]+(/edit|/pay|/sharing|/run|/history)?$`).test(pathname);
 const isTransactionRoot = (p: string) => exactOrId(p, '/transactions', ['/transactions/new', '/transactions/transfer', '/transactions/adjustment', '/transactions/filter']) && !startsWithSegment(p, '/transactions/split');
 const isBudgetRoot = (p: string) => exactOrId(p, '/budgets', ['/budgets/new']) && !startsWithSegment(p, '/budgets/alerts') && !startsWithSegment(p, '/budgets/report');
-const isDebtRoot = (p: string) => startsWithSegment(p, '/debts') || p === '/tracker';
 const isGoalsRoot = (p: string) => exactOrId(p, '/goals', ['/goals/new']) && !/\/goals\/[^/]+\/(contribute|members)$/.test(p);
 
 const dashboardLinks: NavItem[] = [
@@ -27,12 +26,10 @@ const dashboardLinks: NavItem[] = [
 const manageLinks: NavItem[] = [
   { to: '/wallets', icon: 'wallet', label: 'Wallets', activeWhen: (p) => startsWithSegment(p, '/wallets') },
   { to: '/categories', icon: 'categories', label: 'Categories', activeWhen: (p) => startsWithSegment(p, '/categories') },
-  { to: '/tags', icon: 'tags', label: 'Tags', activeWhen: (p) => startsWithSegment(p, '/tags') },
 ];
 
 const transactionLinks: NavItem[] = [
   { to: '/transactions', icon: 'transactions', label: 'Transactions', activeWhen: isTransactionRoot },
-  { to: '/transactions/split', icon: 'split', label: 'Split Bill', activeWhen: (p) => startsWithSegment(p, '/transactions/split') },
   { to: '/quick-entry', icon: 'quick', label: 'Quick Entry', activeWhen: (p) => startsWithSegment(p, '/quick-entry') },
 ];
 
@@ -40,7 +37,6 @@ const planningLinks: NavItem[] = [
   { to: '/budgets', icon: 'budget', label: 'Budgets', activeWhen: isBudgetRoot },
   { to: '/budgets/alerts', icon: 'budgetAlert', label: 'Budget Alerts', activeWhen: (p) => startsWithSegment(p, '/budgets/alerts') },
   { to: '/budgets/report', icon: 'budgetReport', label: 'Budget Report', activeWhen: (p) => startsWithSegment(p, '/budgets/report') },
-  { to: '/debts', icon: 'debt', label: 'Debt & Tracker', activeWhen: isDebtRoot },
   { to: '/installments', icon: 'installment', label: 'Installments', activeWhen: (p) => startsWithSegment(p, '/installments') },
   { to: '/subscriptions', icon: 'subscription', label: 'Subscriptions', activeWhen: (p) => startsWithSegment(p, '/subscriptions') },
   { to: '/recurring', icon: 'recurring', label: 'Recurring', activeWhen: (p) => startsWithSegment(p, '/recurring') },
@@ -50,7 +46,6 @@ const planningLinks: NavItem[] = [
 
 const insightsLinks: NavItem[] = [
   { to: '/reports', icon: 'chart', label: 'Reports', activeWhen: (p) => startsWithSegment(p, '/reports') },
-  { to: '/exports', icon: 'export', label: 'Exports', activeWhen: (p) => startsWithSegment(p, '/exports') },
   { to: '/activities', icon: 'history', label: 'Activity Log', activeWhen: (p) => startsWithSegment(p, '/activities') },
   { to: '/alerts', icon: 'warning', label: 'Alerts', activeWhen: (p) => startsWithSegment(p, '/alerts') },
   { to: '/system-logs', icon: 'list', label: 'System Logs', activeWhen: (p) => startsWithSegment(p, '/system-logs') },
