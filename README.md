@@ -6,7 +6,7 @@ React + Vite + TypeScript implementation for the Affluena personal finance web a
 
 - Foundation, auth, onboarding, and global layout
 - Dashboard, analytics, forecast, and widget states
-- Wallets, categories, and tags
+- Wallets (incl. shared wallets with `member` and read-only `viewer` roles), categories, and tags
 - Transactions, split bill, and quick entry
 - Budgets, budget alerts, and budget report
 - Debt & Tracker, installments, and subscriptions
@@ -14,6 +14,8 @@ React + Vite + TypeScript implementation for the Affluena personal finance web a
 - Goals, contributions, and shared goal members
 - Reports, export center, activity log, alert center, and system logs
 - Settings, account, security, notification preferences, privacy, help, and UI audit
+
+> **Nav de-clutter:** Split bill, tags, debt/loan, and the export center are intentionally hidden from the sidebar to keep day-to-day navigation focused. Their pages, routes, and code are all retained and stay reachable via the All Access menu (`/app-menu`) and direct URLs. The dashboard was also trimmed to net-worth/cashflow stats, recent transactions, and the wallet portfolio; the `CashflowChart` and `ExpenseDistribution` widgets are no longer rendered on `/dashboard` (the components still exist in `src/components/finance/DashboardWidgets.tsx`).
 
 ## Architecture Notes
 
