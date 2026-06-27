@@ -2,6 +2,8 @@
 
 Use this file to understand existing routes and avoid active-link/dynamic-route mistakes.
 
+> **Hidden-from-sidebar routes (still routable):** The sidebar nav was de-cluttered and no longer links to Split Bill (`/transactions/split`), Tags (`/tags*`), Debt & Tracker (`/debts*`, `/tracker`), or the Export Center (`/exports*`). All of these routes, pages, and handlers are still mounted in `src/App.tsx` and remain reachable via the All Access menu (`/app-menu`) and direct URLs — they were hidden, not removed. Every route below is still accurate.
+
 ## Route Principles
 
 - Static routes must be declared before dynamic routes.
