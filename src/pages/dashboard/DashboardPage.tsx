@@ -4,14 +4,14 @@ import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
 import { AppIcon } from '../../components/ui/AppIcon';
-import { CashflowChart, ExpenseDistribution, RecentTransactions, StatGrid, WalletPortfolio } from '../../components/finance/DashboardWidgets';
-import { useDashboardSummary, useCashflowTrend, useExpenseDistribution } from '../../hooks/useDashboard';
+import { RecentTransactions, StatGrid, WalletPortfolio } from '../../components/finance/DashboardWidgets';
+import { useDashboardSummary } from '../../hooks/useDashboard';
 import { useCategories } from '../../hooks/useCategories';
 import { useTransactions } from '../../hooks/useTransactions';
 import { useWallets } from '../../hooks/useWallets';
 import { categoryLabel, createNameById, walletPairLabel } from '../../lib/financeLabels';
 import { formatIDR } from '../../lib/money';
-import type { DashboardStat, ExpenseSlice, DashboardTransaction } from '../../types/dashboard';
+import type { DashboardStat, DashboardTransaction } from '../../types/dashboard';
 
 const mobileDashboardActions = [
   { to: '/transactions/new', icon: 'transactions', label: 'Add Transaction' },
@@ -25,8 +25,6 @@ export function DashboardPage() {
   const [quickOpen, setQuickOpen] = useState(false);
   
   const { data: summary } = useDashboardSummary();
-  const { data: trendData } = useCashflowTrend(6);
-  const { data: expenseData } = useExpenseDistribution();
   const { data: txData } = useTransactions({ limit: 5 });
   const { data: walletsData } = useWallets();
   const { data: categoriesData } = useCategories();
@@ -45,16 +43,6 @@ export function DashboardPage() {
     { label: 'Monthly Expense', value: '...', note: 'Loading...' },
     { label: 'Cashflow', value: '...', note: 'Loading...' },
   ];
-
-  const expenseSlices: ExpenseSlice[] = (expenseData?.distribution ?? []).map((d, i) => {
-    const tones: ('green' | 'blue' | 'orange' | 'purple' | 'red' | 'gray')[] = ['blue', 'purple', 'orange', 'green', 'red', 'gray'];
-    return {
-      label: d.category_name,
-      amount: formatIDR(d.amount_minor),
-      percent: d.percentage,
-      tone: tones[i % tones.length],
-    };
-  }) || [];
 
   const recentTransactions: DashboardTransaction[] = (txData?.transactions ?? []).map(tx => ({
     id: tx.id,
@@ -118,13 +106,11 @@ export function DashboardPage() {
 
         <section className="dashboard-grid">
           <div className="grid stack-lg">
-            <CashflowChart trend={trendData?.trend} />
             <div className="dashboard-recent-desktop">
               <RecentTransactions items={recentTransactions} />
             </div>
           </div>
           <div className="grid stack-lg">
-            <ExpenseDistribution items={expenseSlices} />
             <WalletPortfolio items={walletPortfolio} />
           </div>
         </section>
@@ -135,7 +121,6 @@ export function DashboardPage() {
           <Button to="/transactions/new" onClick={() => setQuickOpen(false)}><AppIcon name="transactions" /> Add Transaction</Button>
           <Button to="/transactions/transfer" onClick={() => setQuickOpen(false)}><AppIcon name="transactions" /> Transfer Wallet</Button>
           <Button to="/transactions/adjustment" onClick={() => setQuickOpen(false)}><AppIcon name="edit" /> Balance Adjustment</Button>
-          <Button to="/transactions/split" onClick={() => setQuickOpen(false)}><AppIcon name="split" /> Split Bill</Button>
           <Button to="/quick-entry" onClick={() => setQuickOpen(false)}><AppIcon name="quick" /> Execute Quick Entry</Button>
           <Button to="/budgets/new" onClick={() => setQuickOpen(false)}><AppIcon name="budgetForm" /> Create Budget</Button>
           <Button to="/wallets/new" onClick={() => setQuickOpen(false)}><AppIcon name="wallet" /> Add Wallet</Button>
