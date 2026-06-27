@@ -21,6 +21,8 @@ The UI covers these product areas:
 
 Do not restart, rewrite, redesign, or replace the existing UI system.
 
+The sidebar nav was de-cluttered: Split Bill, Tags, Debt & Tracker, and the Export Center are intentionally hidden from the sidebar (and the dashboard no longer renders the cashflow-trend chart or expense-distribution widget). These pages, routes, and components are all retained — they stay reachable via the All Access menu (`/app-menu`) and direct URLs. Do not re-add them to the sidebar, and do not delete the routes/pages/components.
+
 ## Main Rule
 
 Preserve the existing Affluena design system.
