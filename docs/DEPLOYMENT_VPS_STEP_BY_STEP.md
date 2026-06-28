@@ -297,7 +297,13 @@ SMTP_PORT=587
 SMTP_USER=
 SMTP_PASS=
 SMTP_FROM=noreply@your-domain.com
+ALLOW_INSECURE_DB=true
 ```
+
+> `ALLOW_INSECURE_DB=true` **wajib**. Postgres bawaan compose berkomunikasi dengan
+> API lewat jaringan internal memakai `sslmode=disable`, dan di production API
+> menolak boot pada `sslmode=disable` kecuali flag ini di-set — kalau tidak, API
+> akan restart terus dengan error `DATABASE_URL must not use sslmode=disable in production`.
 
 Jika sudah pakai domain:
 
