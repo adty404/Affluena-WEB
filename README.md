@@ -53,4 +53,4 @@ npm run test:run
 - Vanilla CSS only; no Tailwind dependency.
 - Keep routes aligned with `docs/AI_ROUTE_MAP.md`.
 - Keep UI edits aligned with `docs/AI_DESIGN_SYSTEM.md` and `docs/AI_QA_CHECKLIST.md`.
-- API behavior should match `../Affluena-API/docs/API_CONTRACT.md`.
+- API behavior should match the Affluena-API contract (`docs/API_CONTRACT.md` in the **Affluena-API** repo — not present in a single-repo/cloud clone; then rely on `src/api/*.ts` + `docs/AI_ROUTE_MAP.md`). See `CLAUDE.md` for the handover quick-start + cross-cutting API gotchas.
