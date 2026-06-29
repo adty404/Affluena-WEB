@@ -292,7 +292,7 @@ These issues have happened before and must not happen again:
 The app uses `src/api/client.ts` plus domain API modules and React Query hooks for the main backend-integrated surface. The API base URL defaults to `http://localhost:8080` and can be overridden with `VITE_API_BASE_URL`.
 
 When adding or changing API-backed UI:
-- keep request/response shapes aligned with `Affluena-API/docs/API_CONTRACT.md`
+- keep request/response shapes aligned with the Affluena-API contract (`docs/API_CONTRACT.md` lives in the **Affluena-API** repo and is NOT present in a single-repo/cloud clone of WEB — in that case `src/api/*.ts` + `docs/AI_ROUTE_MAP.md` are the in-repo source of truth)
 - preserve existing loading/error/empty states
 - preserve JWT auth/refresh behavior in `apiFetch`
 - `PUT /auth/password` revokes all other sessions and returns a fresh `{ user, tokens }` pair — `useChangePassword` MUST persist the returned tokens via `setTokens`, or the user is silently logged out when the old refresh token dies
