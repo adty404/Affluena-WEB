@@ -44,6 +44,50 @@ export function TrackerPage() {
 
   const isLoading = isLoadingDebts || isLoadingInstallments || isLoadingSubscriptions;
 
+  // Real upcoming due dates derived from the same obligations shown in the table
+  // below: subscriptions (next_due_date) + payable debts (due_date) carry real
+  // dates; active installments recur on due_day, resolved to their next
+  // occurrence. Sorted soonest-first, showing the nearest few.
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+  const parseDue = (raw?: string | null): Date | null => {
+    if (!raw) return null;
+    const d = new Date(raw);
+    return Number.isNaN(d.getTime()) ? null : d;
+  };
+  const nextInstallmentDue = (dueDay: number): Date => {
+    const now = new Date();
+    const candidate = new Date(now.getFullYear(), now.getMonth(), dueDay);
+    if (candidate < startOfToday) candidate.setMonth(candidate.getMonth() + 1);
+    return candidate;
+  };
+  type UpcomingDue = { id: string; title: string; module: string; date: Date; to: string };
+  const upcomingDue: UpcomingDue[] = [
+    ...subscriptions
+      .filter((s) => s.status === 'active')
+      .map((s) => ({ due: parseDue(s.next_due_date), item: { id: s.id, title: s.name, module: 'Langganan', to: `/subscriptions/${s.id}/pay` } }))
+      .filter((x): x is { due: Date; item: Omit<UpcomingDue, 'date'> } => x.due !== null)
+      .map(({ due, item }) => ({ ...item, date: due })),
+    ...debts
+      .filter((d) => d.type === 'payable' && d.status === 'open')
+      .map((d) => ({ due: parseDue(d.due_date), item: { id: d.id, title: d.counterparty_name, module: 'Utang', to: `/debts/${d.id}` } }))
+      .filter((x): x is { due: Date; item: Omit<UpcomingDue, 'date'> } => x.due !== null)
+      .map(({ due, item }) => ({ ...item, date: due })),
+    ...installments
+      .filter((i) => i.status === 'active')
+      .map((i) => ({ id: i.id, title: i.name, module: 'Cicilan', to: `/installments/${i.id}/pay`, date: nextInstallmentDue(i.due_day) })),
+  ]
+    .sort((a, b) => a.date.getTime() - b.date.getTime())
+    .slice(0, 6);
+
+  const dueDateFormatter = new Intl.DateTimeFormat('id-ID', { weekday: 'short', day: 'numeric', month: 'short' });
+  const dueTone = (date: Date): 'today' | 'warn' | 'blue' => {
+    const days = Math.round((date.getTime() - startOfToday.getTime()) / 86_400_000);
+    if (days <= 0) return 'today';
+    if (days <= 3) return 'warn';
+    return 'blue';
+  };
+
   return (
     <AppLayout title={NAV.pemantauUtang} description="Kalender jatuh tempo untuk utang, cicilan, dan langganan.">
       <div className="dashboard-page grid-stack">
@@ -61,16 +105,21 @@ export function TrackerPage() {
 
         <section className="dashboard-grid tracker-grid">
           <Card className="panel-card">
-            <div className="panel-head"><div><h3>Kalender Jatuh Tempo</h3><p>Sekilas tanggal-tanggal penting minggu ini.</p></div><Button to="/recurring" size="small"><AppIcon name="recurring" /> {NAV.berulang}</Button></div>
-            <div className="due-calendar-grid">
-              <div className="due-day today"><strong>14</strong><span>Hari ini</span></div>
-              <div className="due-day warn"><strong>15</strong><span>H-3 Bagi Tagihan</span></div>
-              <div className="due-day"><strong>16</strong><span>Tidak ada</span></div>
-              <div className="due-day warn"><strong>17</strong><span>H-3 KTA</span></div>
-              <div className="due-day danger"><strong>18</strong><span>Bagi Tagihan</span></div>
-              <div className="due-day blue"><strong>19</strong><span>Netflix</span></div>
-              <div className="due-day danger"><strong>20</strong><span>KTA + Mobil</span></div>
-            </div>
+            <div className="panel-head"><div><h3>Jatuh Tempo Terdekat</h3><p>Kewajiban dengan tanggal jatuh tempo terdekat.</p></div><Button to="/recurring" size="small"><AppIcon name="recurring" /> {NAV.berulang}</Button></div>
+            {isLoading ? (
+              <p style={{ padding: '1rem', color: 'var(--muted)' }}>Memuat...</p>
+            ) : upcomingDue.length > 0 ? (
+              <div className="due-calendar-grid">
+                {upcomingDue.map((item) => (
+                  <div key={`${item.module}-${item.id}`} className={`due-day ${dueTone(item.date)}`}>
+                    <strong>{item.date.getDate()}</strong>
+                    <span>{dueDateFormatter.format(item.date)} · {item.title}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p style={{ padding: '1rem', color: 'var(--muted)' }}>Belum ada kewajiban dengan tanggal jatuh tempo.</p>
+            )}
           </Card>
 
           <Card className="panel-card">

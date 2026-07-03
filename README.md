@@ -25,6 +25,8 @@ React + Vite + TypeScript implementation for the Affluena personal finance web a
 - `src/components/ui/AppIcon.tsx` is the shared icon system.
 - `src/styles/*.css` define the vanilla CSS design system.
 - Remaining `src/data/*` files are static UI/support data for the landing page, app shell/widget-state previews, and shared transaction labels. They are not the main business-data source.
+- **Runtime dependencies are pinned to concrete caret majors** (e.g. `react@^19`, `vite@^8`, `react-router-dom@^7`) — never `"latest"`, which had silently drifted the lockfile onto breaking majors. Bump majors deliberately and re-run the build/test gates.
+- **Every user-facing number must come from real data.** Analytics/forecast/tracker/recurring panels derive from the fetched API data (or show an EmptyState when there is none) — do not hardcode illustrative amounts, percentages, or dates as if they were the user's finances.
 
 ## Run
 

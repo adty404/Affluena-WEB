@@ -9,6 +9,8 @@ import { NAV } from '../../lib/copy';
 import { formatIDR as formatCurrency } from '../../lib/money';
 import type { DashboardStat, ExpenseSlice, ForecastItem } from '../../types/dashboard';
 
+type InsightRow = { tone?: 'orange' | 'purple'; label: string; title: string; note: string };
+
 export function AnalyticsPage() {
   const { showToast } = useToast();
   
@@ -47,6 +49,43 @@ export function AnalyticsPage() {
     { title: 'Batas Anggaran', value: '...', note: 'Memuat...', tone: 'purple' },
   ];
 
+  // Insights derived entirely from the real fetched data (summary, expense
+  // distribution, forecast) — no fabricated numbers.
+  const insights: InsightRow[] = [];
+  if (summary) {
+    const cashflowPositive = summary.monthly_cashflow_minor >= 0;
+    insights.push({
+      tone: cashflowPositive ? undefined : 'orange',
+      label: cashflowPositive ? 'Baik' : 'Waspada',
+      title: cashflowPositive
+        ? `Arus kas bulan ini positif ${formatCurrency(summary.monthly_cashflow_minor)}.`
+        : `Pengeluaran melebihi pemasukan ${formatCurrency(Math.abs(summary.monthly_cashflow_minor))} bulan ini.`,
+      note: cashflowPositive
+        ? 'Pemasukan masih menutup pengeluaranmu.'
+        : 'Tinjau pengeluaran terbesar sebelum menambah anggaran.',
+    });
+  }
+  const topSlice = (expenseData?.distribution ?? [])[0];
+  if (topSlice) {
+    insights.push({
+      tone: 'purple',
+      label: 'Pola',
+      title: `${topSlice.category_name} jadi pengeluaran terbesar (${topSlice.percentage.toFixed(0)}%).`,
+      note: `Senilai ${formatCurrency(topSlice.amount_minor)} bulan ini.`,
+    });
+  }
+  if (forecast) {
+    const overBudget = forecast.status !== 'safe';
+    insights.push({
+      tone: overBudget ? 'orange' : undefined,
+      label: overBudget ? 'Waspada' : 'Aman',
+      title: overBudget
+        ? `Prakiraan pengeluaran ${formatCurrency(forecast.forecasted_expense_minor)} melewati batas anggaran.`
+        : `Prakiraan pengeluaran ${formatCurrency(forecast.forecasted_expense_minor)} masih di bawah batas anggaran.`,
+      note: `Batas anggaran ${formatCurrency(forecast.budget_limit_minor)}.`,
+    });
+  }
+
   return (
     <AppLayout title="Analitik" description="Analisis arus kas, sebaran pengeluaran, dan tren keuangan kamu.">
       <div className="grid stack-lg">
@@ -69,11 +108,19 @@ export function AnalyticsPage() {
             <CashflowChart trend={trendData?.trend} />
             <Card className="dashboard-panel">
               <div className="panel-head"><div><h3>Ringkasan Wawasan</h3><p>Dirangkum dari data keuangan kamu bulan ini.</p></div></div>
-              <div className="insight-list">
-                <div><Badge>Baik</Badge><strong>Pemasukan lebih stabil dibanding pengeluaran.</strong><span>Arus kas tetap positif selama 6 bulan.</span></div>
-                <div><Badge tone="orange">Waspada</Badge><strong>Pengeluaran transportasi hampir menyentuh batas anggaran.</strong><span>Batasi pengeluaran harian sampai akhir bulan.</span></div>
-                <div><Badge tone="purple">Pola</Badge><strong>Pengeluaran makanan naik pada minggu kedua.</strong><span>Buka Notifikasi Anggaran untuk meninjau batas pengeluaran.</span></div>
-              </div>
+              {insights.length > 0 ? (
+                <div className="insight-list">
+                  {insights.map((insight) => (
+                    <div key={insight.title}>
+                      <Badge tone={insight.tone}>{insight.label}</Badge>
+                      <strong>{insight.title}</strong>
+                      <span>{insight.note}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p style={{ padding: '1rem', color: 'var(--muted)' }}>Belum ada cukup data untuk merangkum wawasan bulan ini.</p>
+              )}
             </Card>
           </div>
           <div className="grid stack-lg">

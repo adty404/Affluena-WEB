@@ -77,6 +77,62 @@ export function CashflowChart({ trend }: { trend?: { month: string; income_minor
   );
 }
 
+const EXPENSE_TONE_COLOR: Record<ExpenseSlice['tone'], string> = {
+  green: 'var(--success)',
+  blue: 'var(--secondary)',
+  orange: 'var(--warning)',
+  purple: 'var(--purple)',
+  red: 'var(--danger)',
+  gray: 'var(--muted-2)',
+};
+
+/**
+ * A real donut chart driven by the slice percentages. Each slice becomes an arc
+ * on a stroked circle (via stroke-dasharray/offset), so the ring reflects actual
+ * spending. Falls back to a neutral track when there is no data yet.
+ */
+function ExpenseDonut({ items }: { items: ExpenseSlice[] }) {
+  const size = 150;
+  const stroke = 26;
+  const radius = (size - stroke) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const total = items.reduce((sum, item) => sum + Math.max(item.percent, 0), 0);
+
+  let offset = 0;
+  const arcs = total > 0
+    ? items
+        .filter((item) => item.percent > 0)
+        .map((item) => {
+          const length = (item.percent / total) * circumference;
+          const arc = { label: item.label, color: EXPENSE_TONE_COLOR[item.tone], length, offset };
+          offset += length;
+          return arc;
+        })
+    : [];
+
+  return (
+    <div className="expense-donut-chart" aria-label="Grafik sebaran pengeluaran">
+      <svg viewBox={`0 0 ${size} ${size}`} role="img">
+        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="var(--line)" strokeWidth={stroke} />
+        {arcs.map((arc) => (
+          <circle
+            key={arc.label}
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            fill="none"
+            stroke={arc.color}
+            strokeWidth={stroke}
+            strokeDasharray={`${arc.length} ${circumference - arc.length}`}
+            strokeDashoffset={-arc.offset}
+            transform={`rotate(-90 ${size / 2} ${size / 2})`}
+          />
+        ))}
+      </svg>
+    </div>
+  );
+}
+
 export function ExpenseDistribution({ items }: { items: ExpenseSlice[] }) {
   return (
     <Card className="dashboard-panel">
@@ -86,7 +142,7 @@ export function ExpenseDistribution({ items }: { items: ExpenseSlice[] }) {
           <p>Kategori pengeluaran terbesar bulan ini.</p>
         </div>
       </div>
-      <div className="expense-donut" />
+      <ExpenseDonut items={items} />
       <div className="expense-list">
         {items.map((item) => (
           <div key={item.label}>
