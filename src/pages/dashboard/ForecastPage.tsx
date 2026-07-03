@@ -6,13 +6,20 @@ import { ProgressBar } from '../../components/finance/ProgressBar';
 import { ForecastCards } from '../../components/finance/DashboardWidgets';
 import { useToast } from '../../components/ui/Toast';
 import { useForecast } from '../../hooks/useDashboard';
+import { useRecurringRules } from '../../hooks/useRecurring';
+import { useInstallments, useSubscriptions } from '../../hooks/useTrackers';
 import { NAV } from '../../lib/copy';
 import { formatIDR as formatCurrency } from '../../lib/money';
 import type { ForecastItem } from '../../types/dashboard';
 
+type RiskRow = { tone: 'orange' | 'red' | 'blue'; label: string; title: string; note: string };
+
 export function ForecastPage() {
   const { showToast } = useToast();
   const { data: forecast, refetch } = useForecast();
+  const { data: recurringData } = useRecurringRules();
+  const { data: installmentsData } = useInstallments();
+  const { data: subscriptionsData } = useSubscriptions();
 
   const forecastItems: ForecastItem[] = forecast ? [
     { title: 'Pengeluaran Saat Ini', value: formatCurrency(forecast.current_expense_minor), note: 'Total yang sudah terpakai', tone: 'blue' },
@@ -25,6 +32,48 @@ export function ForecastPage() {
     { title: 'Prakiraan Pengeluaran', value: '...', note: 'Memuat...', tone: 'green' },
     { title: 'Batas Anggaran', value: '...', note: 'Memuat...', tone: 'purple' },
   ];
+
+  // Risk warnings derived from real data: the forecast vs budget, upcoming
+  // fixed costs (active installments + subscriptions), and active recurring
+  // rules. No fabricated amounts or percentages.
+  const activeInstallments = (installmentsData?.installments ?? []).filter((i) => i.status === 'active');
+  const activeSubscriptions = (subscriptionsData?.subscriptions ?? []).filter((s) => s.status === 'active');
+  const activeRecurring = (recurringData?.recurring_transactions ?? []).filter((r) => r.status === 'active');
+  const upcomingFixedMinor =
+    activeInstallments.reduce((sum, i) => sum + i.monthly_amount_minor, 0) +
+    activeSubscriptions.reduce((sum, s) => sum + s.amount_minor, 0);
+
+  const risks: RiskRow[] = [];
+  if (forecast) {
+    const overBudget = forecast.status !== 'safe';
+    const remainingMinor = forecast.budget_limit_minor - forecast.forecasted_expense_minor;
+    risks.push({
+      tone: overBudget ? 'red' : 'orange',
+      label: 'Anggaran',
+      title: overBudget
+        ? `Prakiraan pengeluaran ${formatCurrency(forecast.forecasted_expense_minor)} melewati batas anggaran.`
+        : `Sisa ruang anggaran ${formatCurrency(remainingMinor)} sampai akhir bulan.`,
+      note: overBudget
+        ? 'Buka Notifikasi Anggaran untuk meninjau batas peringatan.'
+        : `Batas anggaran ${formatCurrency(forecast.budget_limit_minor)}.`,
+    });
+  }
+  if (upcomingFixedMinor > 0) {
+    risks.push({
+      tone: 'red',
+      label: 'Jatuh Tempo',
+      title: `${formatCurrency(upcomingFixedMinor)} biaya tetap akan jatuh tempo.`,
+      note: 'Cek Cicilan dan Langganan untuk melihat tagihan terdekat.',
+    });
+  }
+  if (activeRecurring.length > 0) {
+    risks.push({
+      tone: 'blue',
+      label: 'Berulang',
+      title: `${activeRecurring.length} pembayaran berulang akan berjalan.`,
+      note: 'Buka Berulang untuk melihat jadwal pembayaranmu.',
+    });
+  }
 
   return (
     <AppLayout title="Prakiraan" description="Proyeksi saldo, batas aman belanja, dan tagihan yang akan datang.">
@@ -57,11 +106,19 @@ export function ForecastPage() {
 
           <Card className="dashboard-panel">
             <div className="panel-head"><div><h3>Peringatan Risiko</h3><p>Hal yang perlu diwaspadai sebelum akhir bulan.</p></div></div>
-            <div className="insight-list">
-              <div><Badge tone="orange">Anggaran</Badge><strong>Pengeluaran makanan bisa mencapai 83%.</strong><span>Buka Notifikasi Anggaran untuk meninjau batas peringatan.</span></div>
-              <div><Badge tone="red">Jatuh Tempo</Badge><strong>Rp 3.184.000 biaya tetap akan jatuh tempo.</strong><span>Cek Cicilan dan Langganan untuk melihat tagihan terdekat.</span></div>
-              <div><Badge tone="blue">Berulang</Badge><strong>3 pembayaran berulang akan berjalan.</strong><span>Buka Berulang untuk melihat jadwal pembayaranmu.</span></div>
-            </div>
+            {risks.length > 0 ? (
+              <div className="insight-list">
+                {risks.map((risk) => (
+                  <div key={risk.title}>
+                    <Badge tone={risk.tone}>{risk.label}</Badge>
+                    <strong>{risk.title}</strong>
+                    <span>{risk.note}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p style={{ padding: '1rem', color: 'var(--muted)' }}>Belum ada risiko yang perlu diwaspadai bulan ini.</p>
+            )}
           </Card>
         </section>
       </div>

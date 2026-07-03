@@ -151,8 +151,8 @@
 .legend-dot.orange { background: var(--warning); }
 .legend-dot.purple { background: var(--purple); }
 .legend-dot.gray { background: var(--muted-2); }
-.expense-donut { width: 150px; height: 150px; margin: 12px auto 22px; border-radius: 50%; background: conic-gradient(var(--primary) 0 25%, var(--secondary) 25% 41%, var(--warning) 41% 62%, var(--purple) 62% 76%, var(--line-strong) 76% 100%); position: relative; box-shadow: inset 0 0 0 1px rgba(229,229,227,.4); }
-.expense-donut::after { content: ''; position: absolute; inset: 32px; border-radius: 50%; background: white; border: 1px solid var(--line); }
+.expense-donut-chart { width: 150px; margin: 12px auto 22px; }
+.expense-donut-chart svg { display: block; width: 100%; height: auto; }
 .expense-list, .portfolio-list, .transaction-list, .insight-list { display: grid; gap: 12px; }
 .expense-list > div, .portfolio-list > div, .insight-list > div { padding: 13px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface-soft); }
 .expense-list > div { display: flex; justify-content: space-between; align-items: center; gap: 12px; color: var(--muted); font-size: 13px; font-weight: 850; }
@@ -1807,14 +1807,9 @@ input.form-control {
     font-size: 12px;
   }
 
-  .expense-donut {
+  .expense-donut-chart {
     width: 108px;
-    height: 108px;
     margin: 4px auto 12px;
-  }
-
-  .expense-donut::after {
-    inset: 24px;
   }
 
   .expense-list,
