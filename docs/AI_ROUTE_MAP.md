@@ -32,6 +32,7 @@ Use this file to understand existing routes and avoid active-link/dynamic-route 
 - `/dashboard/analytics`
 - `/dashboard/forecast`
 - `/dashboard/widget-states`
+- `/insights` — Wawasan (current-month category breakdown; in the sidebar's "Wawasan" section)
 
 ## Wallets
 

@@ -9,6 +9,9 @@ import { Modal } from '../../components/ui/Modal';
 import { Input, Select, Textarea } from '../../components/ui/Input';
 import { useToast } from '../../components/ui/Toast';
 import { AppIcon } from '../../components/ui/AppIcon';
+import { ColorPicker, itemAccentVars } from '../../components/finance/ColorPicker';
+import { IconPicker } from '../../components/finance/IconPicker';
+import { CategoryIcon } from '../../components/master-data/CategoryIcon';
 import { useCategories, useCategory, useCreateCategory, useDeleteCategory, useUpdateCategory } from '../../hooks/useCategories';
 import { categoryCreateSchema, categoryUpdateSchema, categoryTypeOptions, categoryTypeLabels, type CategoryCreateFormValues, type CategoryUpdateFormValues } from '../../schemas/category';
 import type { ApiError } from '../../api/types';
@@ -49,7 +52,7 @@ export function CategoryFormPage() {
 
   const createForm = useForm<CategoryCreateFormValues>({
     resolver: zodResolver(categoryCreateSchema),
-    defaultValues: { name: '', type: defaultType, parent_id: prefillParentId },
+    defaultValues: { name: '', type: defaultType, parent_id: prefillParentId, color: '', icon: '' },
   });
 
   const updateForm = useForm<CategoryUpdateFormValues>({
@@ -59,6 +62,8 @@ export function CategoryFormPage() {
           name: existing.name,
           type: existing.type,
           parent_id: existing.parent_id,
+          color: existing.color ?? '',
+          icon: existing.icon ?? '',
         }
       : undefined,
   });
@@ -66,6 +71,8 @@ export function CategoryFormPage() {
   const activeForm = isEdit ? updateForm : createForm;
   const formType = activeForm.watch('type');
   const formParentId = activeForm.watch('parent_id');
+  const formColor = activeForm.watch('color') ?? '';
+  const formIcon = activeForm.watch('icon') ?? '';
 
   const eligibleParents = useMemo(() => {
     return allCategories.filter((c) => {
@@ -145,6 +152,31 @@ export function CategoryFormPage() {
     </>
   );
 
+  const accentPreview = itemAccentVars(formColor);
+  const renderAppearanceFields = (
+    setValue: (name: 'color' | 'icon', value: string) => void,
+  ) => (
+    <>
+      <div className="category-appearance-preview">
+        <span className={`category-icon${accentPreview ? ' has-accent' : ' green'}`} style={accentPreview}>
+          <CategoryIcon icon={formIcon} type={formType as Category['type']} />
+        </span>
+        <div>
+          <strong>Pratinjau</strong>
+          <small>Ikon dan warna ini muncul di daftar kategori dan baris transaksi.</small>
+        </div>
+      </div>
+      <label>
+        <span>Warna</span>
+        <ColorPicker value={formColor} onChange={(hex) => setValue('color', hex)} />
+      </label>
+      <label>
+        <span>Ikon</span>
+        <IconPicker value={formIcon} type={formType as Category['type']} accentColor={formColor} onChange={(id) => setValue('icon', id)} />
+      </label>
+    </>
+  );
+
   return (
     <AppLayout title={isEdit ? 'Edit Kategori' : 'Buat Kategori'} description="Buat atau edit kategori pemasukan atau pengeluaran.">
       <div className="dashboard-page grid-stack">
@@ -183,6 +215,7 @@ export function CategoryFormPage() {
                   <span>Catatan</span>
                   <Textarea rows={3} placeholder="Catatan opsional, mis. kegunaan kategori ini." />
                 </label>
+                {renderAppearanceFields((name, value) => updateForm.setValue(name, value, { shouldDirty: true }))}
                 <div className="form-row-between">
                   <Button to="/categories">Batal</Button>
                   <div className="inline-actions">
@@ -214,6 +247,7 @@ export function CategoryFormPage() {
                   <span>Catatan</span>
                   <Textarea rows={3} placeholder="Catatan opsional, mis. kegunaan kategori ini." />
                 </label>
+                {renderAppearanceFields((name, value) => createForm.setValue(name, value, { shouldDirty: true }))}
                 <div className="form-row-between">
                   <Button to="/categories">Batal</Button>
                   <Button type="submit" variant="primary" disabled={createForm.formState.isSubmitting || createMut.isPending}><AppIcon name="save" /> Simpan Kategori</Button>

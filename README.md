@@ -5,8 +5,8 @@ React + Vite + TypeScript implementation for the Affluena personal finance web a
 ## Current App Surface
 
 - Foundation, auth, onboarding, and global layout
-- Dashboard, analytics, forecast, and widget states
-- Wallets (incl. shared wallets with `member` and read-only `viewer` roles), categories, and tags
+- Dashboard, analytics, forecast, Wawasan (per-category insights), and widget states
+- Wallets (incl. shared wallets with `member` and read-only `viewer` roles), categories (with per-category icon/color + drag-to-reorder), and tags
 - Transactions, split bill, and quick entry
 - Budgets, budget alerts, and budget report
 - Debt & Tracker, installments, and subscriptions
@@ -22,7 +22,8 @@ React + Vite + TypeScript implementation for the Affluena personal finance web a
 - `src/api/client.ts` is the central fetch wrapper. It defaults to `http://localhost:8080` and supports `VITE_API_BASE_URL`.
 - `src/api/*.ts` and `src/hooks/*.ts` provide the domain API and React Query layer.
 - `src/components/ui/DataTable.tsx` wraps `datatables.net-react` + `datatables.net-dt`; page code should use this component rather than raw table markup.
-- `src/components/ui/AppIcon.tsx` is the shared icon system.
+- `src/components/ui/AppIcon.tsx` is the shared icon system. Categories have their own icon catalog in `src/lib/categoryIcons.tsx` (ids kept identical to the mobile catalog so a persisted `icon` resolves on both clients), picked via `IconPicker` and rendered via `CategoryIcon`.
+- **Follow-up (out of scope here):** a web Calendar view (mobile has a Kalender). The Wawasan page (`/insights`) computes the current-month category breakdown client-side and does not depend on it.
 - `src/styles/*.css` define the vanilla CSS design system.
 - Remaining `src/data/*` files are static UI/support data for the landing page, app shell/widget-state previews, and shared transaction labels. They are not the main business-data source.
 
