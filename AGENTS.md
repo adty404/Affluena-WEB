@@ -106,7 +106,7 @@ Reuse existing components first:
 - `DataTable`
 - `EmptyState`
 - `AppIcon`
-- `ColorPicker` (`src/components/finance/ColorPicker.tsx` — the shared 10-color item-appearance catalog; also exports `normalizeItemColor`/`itemAccentVars` for accent rendering)
+- `ColorPicker` (`src/components/finance/ColorPicker.tsx` — the shared 24-color item-appearance catalog; also exports `normalizeItemColor`/`itemAccentVars` for accent rendering)
 - layout components
 - finance components
 

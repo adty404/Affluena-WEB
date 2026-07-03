@@ -10,6 +10,7 @@ import { useCategories } from '../../hooks/useCategories';
 import { useRecurringRule, useRunRecurringRule } from '../../hooks/useRecurring';
 import { useWallets } from '../../hooks/useWallets';
 import { categoryLabel, createNameById, walletPairLabel } from '../../lib/financeLabels';
+import { formatIDR } from '../../lib/money';
 import { ACTIONS } from '../../lib/copy';
 
 const typeLabel = (type: string) => type === 'income' ? 'Pemasukan' : type === 'expense' ? 'Pengeluaran' : type === 'transfer' ? 'Transfer' : 'Penyesuaian';
@@ -60,7 +61,7 @@ export function RecurringRunPage() {
               </div>
               <div className="form-two">
                 <label><span>Dompet</span><Input value={walletText} readOnly /></label>
-                <label><span>Jumlah</span><Input defaultValue={`Rp ${rule.amount_minor.toLocaleString('id-ID')}`} readOnly /></label>
+                <label><span>Jumlah</span><Input defaultValue={formatIDR(rule.amount_minor)} readOnly /></label>
               </div>
               <div className="form-two">
                 <label><span>Mode Eksekusi</span><Select><option>Buat transaksi sekarang</option></Select></label>
