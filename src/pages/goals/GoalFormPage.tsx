@@ -10,6 +10,7 @@ import { Input, Select } from '../../components/ui/Input';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { Amount } from '../../components/finance/Amount';
 import { ProgressBar } from '../../components/finance/ProgressBar';
+import { ColorPicker, normalizeItemColor } from '../../components/finance/ColorPicker';
 import { useToast } from '../../components/ui/Toast';
 import { useGoal, useCreateGoal, useUpdateGoal } from '../../hooks/useGoals';
 import { goalSchema, type GoalFormData } from '../../schemas/goal';
@@ -25,13 +26,15 @@ export function GoalFormPage() {
   const createGoal = useCreateGoal();
   const updateGoal = useUpdateGoal();
 
-  const { register, handleSubmit, formState: { errors, isSubmitting }, reset, watch } = useForm<GoalFormData>({
+  const { register, handleSubmit, formState: { errors, isSubmitting }, reset, watch, setValue } = useForm<GoalFormData>({
     resolver: zodResolver(goalSchema),
     defaultValues: {
       name: '',
       target_amount_minor: 0,
       deadline: '',
       status: 'active',
+      color: '',
+      icon: '',
     }
   });
 
@@ -42,6 +45,9 @@ export function GoalFormPage() {
         target_amount_minor: goal.target_amount_minor,
         deadline: goal.deadline ? new Date(goal.deadline).toISOString().slice(0, 16) : '',
         status: goal.status,
+        color: normalizeItemColor(goal.color),
+        // No icon picker on web yet — round-trip whatever mobile stored.
+        icon: goal.icon ?? '',
       });
     }
   }, [goal, isEdit, reset]);
@@ -58,6 +64,8 @@ export function GoalFormPage() {
             target_amount_minor: data.target_amount_minor,
             deadline,
             status: data.status,
+            color: data.color,
+            icon: data.icon,
           },
         });
         showToast('Goal updated successfully.');
@@ -66,6 +74,8 @@ export function GoalFormPage() {
           name: data.name,
           target_amount_minor: data.target_amount_minor,
           deadline,
+          color: data.color,
+          icon: data.icon,
         });
         showToast('Goal created successfully.');
       }
@@ -126,6 +136,14 @@ export function GoalFormPage() {
                   </label>
                 )}
               </div>
+              <label>
+                <span>Warna</span>
+                <ColorPicker
+                  value={watch('color')}
+                  onChange={(hex) => setValue('color', hex, { shouldDirty: true })}
+                />
+                <small className="field-help">Warna yang sama dipakai di aplikasi mobile.</small>
+              </label>
               <div className="form-row-between"><Button to="/goals">Cancel</Button><Button type="submit" variant="primary" disabled={isSubmitting}><AppIcon name="save" /> Save Goal</Button></div>
             </form>
           </Card>

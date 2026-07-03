@@ -10,7 +10,15 @@ import { Amount } from '../../components/finance/Amount';
 import { ProgressBar } from '../../components/finance/ProgressBar';
 import { useToast } from '../../components/ui/Toast';
 import { useGoal, useUpdateGoal } from '../../hooks/useGoals';
-import { goalStatusBadgeTone, goalStatusLabel, goalProgressTone } from '../../lib/goalStatus';
+import { useMe } from '../../hooks/useMe';
+import {
+  goalMemberLabel,
+  goalMemberStatusLabel,
+  goalMemberStatusTone,
+  goalStatusBadgeTone,
+  goalStatusLabel,
+  goalProgressTone,
+} from '../../lib/goalStatus';
 import type { GoalStatus } from '../../types/goal';
 
 type PendingTransition = { status: GoalStatus; title: string; description: string; confirmLabel: string };
@@ -19,8 +27,10 @@ export function GoalDetailPage() {
   const { id } = useParams();
   const { showToast } = useToast();
   const { data: goal, isLoading } = useGoal(id || '');
+  const { data: meData } = useMe();
   const updateGoal = useUpdateGoal();
   const [pending, setPending] = useState<PendingTransition | null>(null);
+  const currentUserId = meData?.user.id;
 
   if (isLoading || !goal) {
     return <AppLayout title="Goal Detail" description="Loading..."><div className="loading-state">Loading...</div></AppLayout>;
@@ -39,6 +49,10 @@ export function GoalDetailPage() {
           target_amount_minor: goal.target_amount_minor,
           deadline: goal.deadline,
           status: pending.status,
+          // PUT replaces color/icon on the API; pass them through so a status
+          // transition never wipes the goal's appearance.
+          color: goal.color,
+          icon: goal.icon,
         },
       });
       showToast(`Goal marked as ${goalStatusLabel(pending.status).toLowerCase()}.`);
@@ -102,12 +116,12 @@ export function GoalDetailPage() {
             <div className="readiness-list">
               {goal.members?.map((member) => (
                 <div key={member.user_id}>
-                  <span>Member<small>{member.user_id}</small></span>
-                  <Badge tone={member.status === 'joined' ? 'green' : member.status === 'rejected' ? 'red' : 'orange'}>{member.status}</Badge>
+                  <span>{goalMemberLabel(member, currentUserId)}<small>{member.user_id}</small></span>
+                  <Badge tone={goalMemberStatusTone(member.status)}>{goalMemberStatusLabel(member.status)}</Badge>
                 </div>
               ))}
               {(!goal.members || goal.members.length === 0) && (
-                <div className="empty-state">No members yet.</div>
+                <div className="empty-state">Baru kamu sejauh ini. Undang anggota untuk menabung bersama.</div>
               )}
             </div>
           </Card>

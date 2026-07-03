@@ -15,6 +15,7 @@ Use this file to understand existing routes and avoid active-link/dynamic-route 
   - `/recurring` (UI) → `/api/v1/recurring-transactions` (API)
   - `/reports/expenses` (UI) → `/api/v1/reports/expense` (API, singular)
   - `/reports/budgets` (UI) reuses `/api/v1/category-budgets/report` (there is no `/reports/budget(s)` endpoint)
+  - `/sharing` (UI, "Berbagi Dompet") → `/api/v1/partners` (API keeps the historical `partners` name)
 
 ## Public / Foundation
 
@@ -39,6 +40,10 @@ Use this file to understand existing routes and avoid active-link/dynamic-route 
 - `/wallets/:id`
 - `/wallets/:id/edit`
 - `/wallets/:id/sharing`
+
+## Berbagi Dompet (account-level wallet sharing)
+
+- `/sharing` — not in the sidebar; reachable from Settings and the All Access menu (`/app-menu`).
 
 ## Categories
 

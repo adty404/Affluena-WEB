@@ -1970,3 +1970,21 @@ input.form-control {
 .app-topbar .btn.mobile-sidebar-button {
   display: none;
 }
+
+/* Item appearance (shared web+mobile color catalog) */
+.color-swatch-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.color-swatch { width: 32px; height: 32px; border-radius: 50%; border: 2px solid transparent; padding: 0; display: grid; place-items: center; background: var(--swatch-color); color: white; cursor: pointer; box-shadow: inset 0 0 0 1px rgba(15,23,42,.08); }
+.color-swatch[aria-pressed='true'] { border-color: var(--ink); }
+.color-swatch:focus-visible { outline: 2px solid var(--secondary); outline-offset: 2px; }
+.color-swatch:disabled { opacity: .5; cursor: default; }
+.color-swatch .app-icon { width: 15px; height: 15px; }
+.color-swatch.none { background: var(--surface-soft); border: 2px dashed var(--muted-2); color: var(--muted); }
+.color-swatch.none[aria-pressed='true'] { border-style: solid; border-color: var(--ink); }
+
+/* Accent tinting driven by an item's stored color (--item-accent, set inline).
+   Falls back to default styling when the class/var is absent. */
+.mini-icon.has-accent, .finance-icon.has-accent, .wallet-icon.has-accent { background: color-mix(in srgb, var(--item-accent) 14%, white); color: var(--item-accent); }
+.finance-overview-card.has-accent { border-left: 4px solid var(--item-accent); background: linear-gradient(180deg, color-mix(in srgb, var(--item-accent) 7%, white), white 46%); }
+.wallet-card.has-accent { background: linear-gradient(180deg, color-mix(in srgb, var(--item-accent) 10%, white), white 42%); }
+.budget-card.has-accent { border-left: 4px solid var(--item-accent); background: linear-gradient(180deg, color-mix(in srgb, var(--item-accent) 7%, white), white 46%); }
+.accent-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--item-accent); flex: none; }

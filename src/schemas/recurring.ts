@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { itemColorSchema, itemIconSchema } from './appearance';
 
 export const recurringRuleSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -13,6 +14,8 @@ export const recurringRuleSchema = z.object({
   end_at: z.string().datetime().optional(),
   status: z.enum(['active', 'paused', 'cancelled']).optional(),
   note: z.string().optional(),
+  color: itemColorSchema,
+  icon: itemIconSchema,
 }).refine((data) => {
   if (data.type === 'transfer' && !data.to_wallet_id) {
     return false;

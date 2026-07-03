@@ -7,6 +7,7 @@ import { Card } from '../../components/ui/Card';
 import { Input, Select, Textarea } from '../../components/ui/Input';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { Amount } from '../../components/finance/Amount';
+import { ColorPicker } from '../../components/finance/ColorPicker';
 import { useToast } from '../../components/ui/Toast';
 import { useWallets } from '../../hooks/useWallets';
 import { useCategories } from '../../hooks/useCategories';
@@ -38,6 +39,8 @@ export function SubscriptionFormPage() {
       next_due_date: new Date().toISOString().split('T')[0],
       status: 'active',
       note: '',
+      color: '',
+      icon: '',
     },
   });
 
@@ -120,6 +123,14 @@ export function SubscriptionFormPage() {
                 <span>Account Detail</span>
                 <Input {...form.register('account_detail')} placeholder="user@example.com" />
                 {form.formState.errors.account_detail && <span className="form-error">{form.formState.errors.account_detail.message}</span>}
+              </label>
+              <label>
+                <span>Warna</span>
+                <ColorPicker
+                  value={form.watch('color')}
+                  onChange={(hex) => form.setValue('color', hex, { shouldDirty: true })}
+                />
+                <small className="field-help">Warna yang sama dipakai di aplikasi mobile.</small>
               </label>
               <label>
                 <span>Note</span>

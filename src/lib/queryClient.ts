@@ -83,6 +83,9 @@ export const queryKeys = {
     all: ['goals'] as const,
     detail: (id: string) => ['goals', 'detail', id] as const,
   },
+  partners: {
+    all: ['partners'] as const,
+  },
   activities: {
     list: (params?: Record<string, unknown>) => ['activities', 'list', params ?? {}] as const,
     detail: (id: string) => ['activities', 'detail', id] as const,

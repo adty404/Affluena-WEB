@@ -6,6 +6,10 @@ export interface Budget {
   category_id: string;
   month: string; // RFC3339
   limit_minor: number;
+  /** Optional UI metadata: `#RRGGBB` hex, '' = no color. */
+  color?: string;
+  /** Optional UI metadata: client-defined semantic icon id, '' = default icon. */
+  icon?: string;
   created_at: string;
   updated_at: string;
 }
@@ -19,6 +23,8 @@ export interface BudgetSummary {
   spent_minor: number;
   remaining_minor: number;
   usage_percent: number;
+  color?: string;
+  icon?: string;
   created_at: string;
   updated_at: string;
 }
@@ -36,12 +42,16 @@ export interface BudgetCreateRequest {
   category_id: string;
   month: string; // YYYY-MM
   limit_minor: number;
+  color?: string;
+  icon?: string;
 }
 
 export interface BudgetUpdateRequest {
   category_id: string;
   month: string; // YYYY-MM
   limit_minor: number;
+  color?: string;
+  icon?: string;
 }
 
 export interface BudgetAlert {

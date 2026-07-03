@@ -18,6 +18,7 @@ The UI covers these product areas:
 8. Goals
 9. Reports, Export, Activity & Alerts
 10. Settings, Account & Final Polish
+11. Berbagi Dompet (account-level wallet sharing at `/sharing` — API `/api/v1/partners`)
 
 Do not restart, rewrite, redesign, or replace the existing UI system.
 
@@ -105,6 +106,7 @@ Reuse existing components first:
 - `DataTable`
 - `EmptyState`
 - `AppIcon`
+- `ColorPicker` (`src/components/finance/ColorPicker.tsx` — the shared 10-color item-appearance catalog; also exports `normalizeItemColor`/`itemAccentVars` for accent rendering)
 - layout components
 - finance components
 
@@ -299,6 +301,9 @@ When adding or changing API-backed UI:
 - preserve `Amount` formatting and integer minor-unit money handling
 - preserve user isolation expectations from the API
 - every mutation must show loading/success/error behavior and invalidate/refetch relevant query keys
+- **item appearance (`color`/`icon`)**: wallets, category-budgets, goals, installments, subscriptions, and recurring rules carry optional `color` (`#RRGGBB` hex) + `icon` (semantic id) strings the API stores as-is. The color catalog lives in `src/components/finance/ColorPicker.tsx` and is intentionally identical to mobile's — do not add colors on one client only. `PUT` endpoints replace these fields, so any update that isn't a full form submit must pass the current `color`/`icon` through or it silently wipes them. Web has no icon picker yet; forms round-trip whatever `icon` mobile stored.
+- **wallet share roles** are `owner` / `member` (read+write) / `viewer` (read-only) — there is no `editor`. Wallet invites accept an optional `role` (`member` default).
+- **"Berbagi Dompet"** (`/sharing` UI): account-level, one-way, read-only share of ALL the caller's wallets, max 5 active outgoing viewers. API endpoints keep the historical `/api/v1/partners` name. Accepting/revoking a link changes which wallets the viewer sees, so those mutations must also invalidate financial queries.
 
 The remaining `src/data/*` files are static UI/support data for the landing page, app menu/widget-state previews, and shared transaction labels. Do not treat those files as live business data sources.
 

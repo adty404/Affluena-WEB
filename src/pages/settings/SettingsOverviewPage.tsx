@@ -12,6 +12,7 @@ const settingsLinks = [
   { to: '/settings/notifications', icon: 'budgetAlert' as const, title: 'Notifications', description: 'Budget, due date, recurring, and security alerts.' },
   { to: '/settings/preferences', icon: 'calendar' as const, title: 'Preferences', description: 'Currency, date format, language, and appearance.' },
   { to: '/settings/privacy', icon: 'health' as const, title: 'Privacy', description: 'Data visibility, privacy controls, and audit access.' },
+  { to: '/sharing', icon: 'wallet' as const, title: 'Berbagi Dompet', description: 'Undang pemantau untuk melihat semua dompetmu (hanya lihat).' },
   { to: '/settings/data', icon: 'download' as const, title: 'Data', description: 'Export personal data and account deletion.' },
   { to: '/settings/help', icon: 'list' as const, title: 'Help', description: 'FAQ and support guidance.' },
   { to: '/settings/about', icon: 'success' as const, title: 'About', description: 'Version, modules, and app information.' },

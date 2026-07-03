@@ -7,6 +7,7 @@ import { Card } from '../../components/ui/Card';
 import { Input, Select, Textarea } from '../../components/ui/Input';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { Amount } from '../../components/finance/Amount';
+import { ColorPicker, normalizeItemColor } from '../../components/finance/ColorPicker';
 import { useToast } from '../../components/ui/Toast';
 import { useWallets } from '../../hooks/useWallets';
 import { useCategories } from '../../hooks/useCategories';
@@ -30,7 +31,7 @@ export function RecurringFormPage() {
   const wallets = walletsData?.wallets || [];
   const categories = categoriesData?.categories || [];
 
-  const { register, handleSubmit, formState: { errors, isSubmitting }, reset, watch } = useForm<RecurringRuleInput>({
+  const { register, handleSubmit, formState: { errors, isSubmitting }, reset, watch, setValue } = useForm<RecurringRuleInput>({
     resolver: zodResolver(recurringRuleSchema),
     defaultValues: {
       type: 'expense',
@@ -38,6 +39,8 @@ export function RecurringFormPage() {
       status: 'active',
       interval_count: 1,
       amount_minor: 0,
+      color: '',
+      icon: '',
     }
   });
 
@@ -56,6 +59,9 @@ export function RecurringFormPage() {
         end_at: rule.end_at ? rule.end_at.split('T')[0] + 'T00:00:00Z' : undefined,
         status: rule.status,
         note: rule.note || '',
+        color: normalizeItemColor(rule.color),
+        // No icon picker on web yet — round-trip whatever mobile stored.
+        icon: rule.icon ?? '',
       });
     }
   }, [rule, reset]);
@@ -198,10 +204,19 @@ export function RecurringFormPage() {
               </div>
               
               <label>
+                <span>Warna</span>
+                <ColorPicker
+                  value={watch('color')}
+                  onChange={(hex) => setValue('color', hex, { shouldDirty: true })}
+                />
+                <small className="field-help">Warna yang sama dipakai di aplikasi mobile.</small>
+              </label>
+
+              <label>
                 <span>Note</span>
                 <Textarea {...register('note')} />
               </label>
-              
+
               <div className="form-row-between">
                 <Button to="/recurring">Cancel</Button>
                 <Button type="submit" variant="primary" disabled={isSubmitting}>

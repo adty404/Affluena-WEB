@@ -9,11 +9,11 @@ export async function getGoal(id: string): Promise<Goal> {
   return apiFetch<Goal>(`/api/v1/goals/${id}`);
 }
 
-export async function createGoal(data: { name: string; target_amount_minor: number; deadline?: string }): Promise<Goal> {
+export async function createGoal(data: { name: string; target_amount_minor: number; deadline?: string; color?: string; icon?: string }): Promise<Goal> {
   return apiFetch<Goal>('/api/v1/goals', { method: 'POST', body: data });
 }
 
-export async function updateGoal(id: string, data: { name: string; target_amount_minor: number; deadline?: string; status?: GoalStatus }): Promise<Goal> {
+export async function updateGoal(id: string, data: { name: string; target_amount_minor: number; deadline?: string; status?: GoalStatus; color?: string; icon?: string }): Promise<Goal> {
   return apiFetch<Goal>(`/api/v1/goals/${id}`, { method: 'PUT', body: data });
 }
 

@@ -20,6 +20,10 @@ export interface RecurringRule {
   last_run_at?: string;
   status: RecurringStatus;
   note: string;
+  /** Optional UI metadata: `#RRGGBB` hex, '' = no color. */
+  color?: string;
+  /** Optional UI metadata: client-defined semantic icon id, '' = default icon. */
+  icon?: string;
   created_at: string;
   updated_at: string;
 }

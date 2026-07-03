@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { itemColorSchema, itemIconSchema } from './appearance';
 
 export const createInstallmentSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -12,6 +13,8 @@ export const createInstallmentSchema = z.object({
   due_day: z.number().int().min(1).max(31),
   status: z.enum(['active', 'paid', 'cancelled']).optional(),
   note: z.string().optional().default(''),
+  color: itemColorSchema,
+  icon: itemIconSchema,
 });
 
 export type CreateInstallmentInput = z.infer<typeof createInstallmentSchema>;
@@ -37,6 +40,8 @@ export const createSubscriptionSchema = z.object({
   next_due_date: z.string().min(1, 'Next due date is required'),
   status: z.enum(['active', 'paused', 'cancelled']).optional(),
   note: z.string().optional().default(''),
+  color: itemColorSchema,
+  icon: itemIconSchema,
 });
 
 export type CreateSubscriptionInput = z.infer<typeof createSubscriptionSchema>;

@@ -9,8 +9,9 @@ import { Modal } from '../../components/ui/Modal';
 import { Input, Select, Textarea } from '../../components/ui/Input';
 import { useToast } from '../../components/ui/Toast';
 import { AppIcon } from '../../components/ui/AppIcon';
+import { ColorPicker, normalizeItemColor } from '../../components/finance/ColorPicker';
 import { useCreateWallet, useDeleteWallet, useUpdateWallet, useWallet } from '../../hooks/useWallets';
-import { walletCreateSchema, walletUpdateSchema, walletTypeOptions, walletColorOptions, type WalletCreateFormValues, type WalletUpdateFormValues } from '../../schemas/wallet';
+import { walletCreateSchema, walletUpdateSchema, walletTypeOptions, type WalletCreateFormValues, type WalletUpdateFormValues } from '../../schemas/wallet';
 import { majorToMinor, formatIDR } from '../../lib/money';
 import type { ApiError } from '../../api/types';
 
@@ -28,7 +29,7 @@ export function WalletFormPage() {
 
   const createForm = useForm<WalletCreateFormValues>({
     resolver: zodResolver(walletCreateSchema),
-    defaultValues: { name: '', type: 'bank', currency_code: 'IDR', balance_minor: 0, color: '', description: '' },
+    defaultValues: { name: '', type: 'bank', currency_code: 'IDR', balance_minor: 0, color: '', icon: '', description: '' },
   });
 
   const updateForm = useForm<WalletUpdateFormValues>({
@@ -38,7 +39,10 @@ export function WalletFormPage() {
           name: existing.name,
           type: existing.type as 'cash' | 'bank' | 'e_wallet' | 'investment',
           currency_code: existing.currency_code,
-          color: (existing.color || '') as '' | 'green' | 'blue' | 'orange' | 'purple' | 'gray',
+          // Legacy named colors are normalized to the shared hex catalog.
+          color: normalizeItemColor(existing.color),
+          // No icon picker on web yet — round-trip whatever mobile stored.
+          icon: existing.icon ?? '',
           description: existing.description || '',
         }
       : undefined,
@@ -133,11 +137,12 @@ export function WalletFormPage() {
                 </div>
                 <div className="form-two">
                   <label>
-                    <span>Color</span>
-                    <Select {...updateForm.register('color')}>
-                      <option value="">Default (by type)</option>
-                      {walletColorOptions.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-                    </Select>
+                    <span>Warna</span>
+                    <ColorPicker
+                      value={updateForm.watch('color')}
+                      onChange={(hex) => updateForm.setValue('color', hex, { shouldDirty: true })}
+                    />
+                    <small>Warna yang sama dipakai di aplikasi mobile.</small>
                   </label>
                   <label>
                     <span>Status</span>
@@ -194,11 +199,12 @@ export function WalletFormPage() {
                 </label>
                 <div className="form-two">
                   <label>
-                    <span>Color</span>
-                    <Select {...createForm.register('color')}>
-                      <option value="">Default (by type)</option>
-                      {walletColorOptions.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-                    </Select>
+                    <span>Warna</span>
+                    <ColorPicker
+                      value={createForm.watch('color')}
+                      onChange={(hex) => createForm.setValue('color', hex, { shouldDirty: true })}
+                    />
+                    <small>Warna yang sama dipakai di aplikasi mobile.</small>
                   </label>
                   <label>
                     <span>Sharing mode</span>
@@ -223,7 +229,7 @@ export function WalletFormPage() {
               <div><span>Tipe goal</span><strong>Ditolak di endpoint umum</strong></div>
               <div><span>Saldo edit</span><strong>Hanya via transaksi</strong></div>
               <div><span>Currency</span><strong>3 huruf (IDR/USD/SGD)</strong></div>
-              <div><span>Color</span><strong>green/blue/orange/purple/gray atau default</strong></div>
+              <div><span>Warna</span><strong>Palet 10 warna (sama dengan mobile) atau default</strong></div>
               <div><span>Hapus wallet</span><strong>Butuh konfirmasi</strong></div>
             </div>
           </Card>

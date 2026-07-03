@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
@@ -6,6 +7,7 @@ import { DataTable } from '../../components/ui/DataTable';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { Amount } from '../../components/finance/Amount';
 import { FinanceOverviewCard } from '../../components/finance/FinanceOverviewCard';
+import { itemAccentVars } from '../../components/finance/ColorPicker';
 import { useGoals } from '../../hooks/useGoals';
 import { goalStatusBadgeTone, goalStatusLabel, goalProgressTone } from '../../lib/goalStatus';
 import type { Goal } from '../../types/goal';
@@ -67,6 +69,7 @@ export function GoalListPage() {
                     description=""
                     progress={progress}
                     progressTone={goalProgressTone(goal.status)}
+                    accentColor={goal.color}
                     metaLeft={`${progress}% funded`}
                     metaRight={`Target ${new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(goal.target_amount_minor)}`}
                     actions={<><Button to={`/goals/${goal.id}`} size="small">Detail</Button><Button to={`/goals/${goal.id}/contribute`} size="small" variant="primary"><AppIcon name="pay" /> Contribute</Button><Button to={`/goals/${goal.id}/members`} size="small"><AppIcon name="profile" /> Members</Button></>}
@@ -81,7 +84,7 @@ export function GoalListPage() {
                 data={goals}
                 getRowKey={(goal) => goal.id}
                 columns={[
-                  { key: 'name', header: 'Goal', render: (goal) => <div className="table-title"><span className="mini-icon safe"><AppIcon name="goal" /></span><strong>{goal.name}</strong></div> },
+                  { key: 'name', header: 'Goal', render: (goal) => { const accent = itemAccentVars(goal.color); return <div className="table-title"><span className={clsx('mini-icon', accent ? 'has-accent' : 'safe')} style={accent}><AppIcon name="goal" /></span><strong>{goal.name}</strong></div>; } },
                   { key: 'target', header: 'Target', align: 'right', render: (goal) => <Amount value={goal.target_amount_minor} /> },
                   { key: 'saved', header: 'Saved', align: 'right', render: (goal) => <Amount value={goal.collected_amount_minor} type="income" /> },
                   { key: 'deadline', header: 'Deadline', render: (goal) => goal.deadline ? new Date(goal.deadline).toLocaleDateString() : '-' },

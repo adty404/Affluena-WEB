@@ -30,10 +30,15 @@ Affluena feels like a calm financial command center: data-dense enough for repea
 | Text/tertiary | `--muted-2` | `#94a3b8` | Not defined | Captions and quiet labels |
 | Border/default | `--line` | `#e2e8f0` | Not defined | Card borders, dividers |
 
+### Item appearance palette
+
+User-picked accent colors for finance items (wallets, budgets, goals, installments, subscriptions, recurring rules) come from a fixed 10-swatch catalog shared with the mobile app — `#3E72B8` denim, `#2BB3A3` teal, `#2E8B57` green, `#E0A23B` amber, `#C2553F` coral, `#7C5BC2` purple, `#4256B8` indigo, `#C2588A` pink, `#5E6E80` slate, `#9E7B4F` bronze — plus a "no color" default. The catalog lives in `src/components/finance/ColorPicker.tsx`; the API stores the value as a raw `#RRGGBB` string. Do not extend this palette on one client only.
+
 ### Rules
 
 - Emerald is reserved for primary actions, positive finance state, and active navigation.
 - Blue, purple, orange, and red appear only as semantic finance/status tones.
+- Item-appearance accents render via the `--item-accent` CSS variable + `has-accent` classes (soft `color-mix` tint for icon chips and card backgrounds); items without a color keep their default styling, and warning/exceeded status colors always win over decoration.
 - New colors should be added as tokens first; raw color use is tolerated only when consolidating legacy CSS.
 
 ## 3. Typography
@@ -121,6 +126,13 @@ All spacing is based on `4px`.
 - **Structure**: parent `.panel-card` contains `.transaction-row`, `.expense-list`, `.portfolio-list`, or chart content.
 - **Spacing**: rows use compact padding and icon size on mobile.
 - **Behavior**: long finance labels wrap inside the available column without causing horizontal overflow.
+
+### Color Picker (item appearance)
+
+- **Structure**: `ColorPicker` (`src/components/finance/ColorPicker.tsx`) renders a `.color-swatch-row` of round `.color-swatch` buttons — a dashed "no color" option followed by the 10 catalog swatches.
+- **States**: the active swatch carries `aria-pressed="true"` and an ink ring; disabled swatches dim.
+- **Accessibility**: plain `<button>` elements with `aria-pressed` and per-swatch `aria-label` ("Tanpa warna", "Warna Denim", …), focus-visible outline.
+- **Usage**: place inside a form `<label>` captioned "Warna"; value is `''` (default) or a catalog hex.
 
 ### Mobile Tables and Filters
 
