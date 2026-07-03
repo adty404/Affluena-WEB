@@ -7,7 +7,7 @@ import { EmptyState } from '../../components/ui/EmptyState';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { useToast } from '../../components/ui/Toast';
 import { CategoryTree } from '../../components/master-data/CategoryTree';
-import { useCategories, useDeleteCategory } from '../../hooks/useCategories';
+import { useCategories, useDeleteCategory, useReorderCategories } from '../../hooks/useCategories';
 import { NAV } from '../../lib/copy';
 import { categoryTypeLabels } from '../../schemas/category';
 import type { ApiError } from '../../api/types';
@@ -17,7 +17,15 @@ export function CategoryListPage() {
   const { showToast } = useToast();
   const { data, isLoading, error } = useCategories({ limit: 100 });
   const deleteMut = useDeleteCategory();
+  const reorderMut = useReorderCategories();
   const [pendingDelete, setPendingDelete] = useState<Category | null>(null);
+
+  function handleReorder(ids: string[]) {
+    reorderMut.mutate(ids, {
+      onSuccess: () => showToast('Urutan kategori disimpan.'),
+      onError: (err) => showToast((err as unknown as ApiError).error || 'Gagal menyimpan urutan kategori.'),
+    });
+  }
 
   const categories = data?.categories ?? [];
   const incomeCount = categories.filter((c) => c.type === 'income').length;
@@ -81,11 +89,11 @@ export function CategoryListPage() {
             <div className="panel-head">
               <div>
                 <h3>Pohon Kategori</h3>
-                <p>Buka cabang untuk melihat subkategorinya. Pakai tombol di tiap baris untuk menambah subkategori, mengedit, atau menghapus.</p>
+                <p>Buka cabang untuk melihat subkategorinya. Geser pegangan di tiap baris untuk mengubah urutan; pakai tombol untuk menambah subkategori, mengedit, atau menghapus.</p>
               </div>
               <Button to="/categories/new" size="small" variant="primary"><AppIcon name="add" /> Kategori Baru</Button>
             </div>
-            <CategoryTree categories={categories} onDelete={setPendingDelete} />
+            <CategoryTree categories={categories} onDelete={setPendingDelete} onReorder={handleReorder} />
           </Card>
         )}
       </div>

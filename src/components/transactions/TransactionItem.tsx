@@ -1,6 +1,9 @@
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
+import { AppIcon } from '../ui/AppIcon';
 import { Amount } from '../finance/Amount';
+import { CategoryIcon } from '../master-data/CategoryIcon';
+import { itemAccentVars } from '../finance/ColorPicker';
 import { transactionTypeLabels } from '../../data/mockTransactions';
 import type { Transaction } from '../../types/transaction';
 import { useWallets } from '../../hooks/useWallets';
@@ -14,16 +17,9 @@ const typeTone = {
   adjustment: 'orange',
 } as const;
 
-const typeIcon = {
-  income: '↑',
-  expense: '↓',
-  transfer: '↕',
-  adjustment: '±',
-} as const;
-
 export function TransactionItem({ transaction }: { transaction: Transaction }) {
   const amountVariant = transaction.type === 'income' ? 'income' : transaction.type === 'expense' ? 'expense' : 'neutral';
-  
+
   const { data: walletsData } = useWallets();
   const { data: categoriesData } = useCategories();
   const { data: tagsData } = useTags();
@@ -33,9 +29,18 @@ export function TransactionItem({ transaction }: { transaction: Transaction }) {
   const category = (categoriesData?.categories ?? []).find(c => c.id === transaction.category_id);
   const tags = tagsData?.tags?.filter(t => transaction.tag_ids?.includes(t.id)) || [];
 
+  // Income/expense rows show the category's chosen icon+color (mirroring mobile);
+  // transfers/adjustments keep the neutral type glyph.
+  const accent = category ? itemAccentVars(category.color) : undefined;
+  const isCategoryType = transaction.type === 'income' || transaction.type === 'expense';
+
   return (
     <div className="transaction-item">
-      <div className={`transaction-icon ${transaction.type}`}>{typeIcon[transaction.type]}</div>
+      <div className={`transaction-icon ${transaction.type}${accent ? ' has-accent' : ''}`} style={accent}>
+        {isCategoryType && category
+          ? <CategoryIcon icon={category.icon} type={category.type} />
+          : <AppIcon name={transaction.type === 'income' ? 'arrow-up' : transaction.type === 'expense' ? 'arrow-down' : 'arrow-up-down'} />}
+      </div>
       <div className="transaction-main">
         <strong>{category?.name || transaction.note || transactionTypeLabels[transaction.type]}</strong>
         <span>

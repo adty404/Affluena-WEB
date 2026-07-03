@@ -17,6 +17,7 @@ import { AppShellPage } from './pages/app/AppShellPage';
 // Lazy-loaded: domain chunks
 const AnalyticsPage = lazy(() => import('./pages/dashboard/AnalyticsPage').then(m => ({ default: m.AnalyticsPage })));
 const ForecastPage = lazy(() => import('./pages/dashboard/ForecastPage').then(m => ({ default: m.ForecastPage })));
+const InsightsPage = lazy(() => import('./pages/dashboard/InsightsPage').then(m => ({ default: m.InsightsPage })));
 const WidgetStatesPage = lazy(() => import('./pages/dashboard/WidgetStatesPage').then(m => ({ default: m.WidgetStatesPage })));
 
 const WalletListPage = lazy(() => import('./pages/wallets/WalletListPage').then(m => ({ default: m.WalletListPage })));
@@ -141,6 +142,8 @@ export function App() {
         <Route path="/dashboard/analytics" element={<Suspense fallback={<PageLoader />}><AnalyticsPage /></Suspense>} />
         <Route path="/dashboard/forecast" element={<Suspense fallback={<PageLoader />}><ForecastPage /></Suspense>} />
         <Route path="/dashboard/widget-states" element={<Suspense fallback={<PageLoader />}><WidgetStatesPage /></Suspense>} />
+
+        <Route path="/insights" element={<Suspense fallback={<PageLoader />}><InsightsPage /></Suspense>} />
 
         <Route path="/wallets" element={<Suspense fallback={<PageLoader />}><WalletListPage /></Suspense>} />
         <Route path="/wallets/new" element={<Suspense fallback={<PageLoader />}><WalletFormPage /></Suspense>} />

@@ -244,7 +244,13 @@
 .category-tree-branches { display: grid; gap: 10px; margin-top: 14px; }
 .category-node { position: relative; display: grid; gap: 8px; }
 .category-node-row { display: grid; grid-template-columns: 24px 42px minmax(0,1fr) auto auto; align-items: center; gap: 10px; padding: 11px 12px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface-soft); transition: border-color .15s ease, box-shadow .15s ease; }
+.category-node-row.has-drag { grid-template-columns: 20px 24px 42px minmax(0,1fr) auto auto; }
 .category-node-row:hover { border-color: var(--muted-2); box-shadow: 0 1px 0 rgba(0,0,0,.04); }
+.category-node-row.is-dragging { opacity: .5; border-style: dashed; border-color: var(--ink); }
+.category-drag-handle { width: 20px; height: 24px; display: grid; place-items: center; border: 0; padding: 0; border-radius: 8px; background: transparent; color: var(--muted-2); cursor: grab; }
+.category-drag-handle:hover { color: var(--ink); background: rgba(0,0,0,.06); }
+.category-drag-handle:active { cursor: grabbing; }
+.category-drag-handle .app-icon { width: 18px; height: 18px; transform: rotate(90deg); }
 .category-node-toggle { width: 24px; height: 24px; display: grid; place-items: center; border: 0; padding: 0; border-radius: 8px; background: transparent; color: var(--muted); cursor: pointer; }
 .category-node-toggle:hover:not(:disabled) { background: rgba(0,0,0,.06); color: var(--ink); }
 .category-node-toggle.is-leaf, .category-node-toggle:disabled { cursor: default; }
@@ -288,6 +294,9 @@
 .transaction-icon.income { background: var(--success-soft); color: var(--success); }
 .transaction-icon.transfer { background: var(--secondary-soft); color: var(--secondary); }
 .transaction-icon.adjustment { background: var(--warning-soft); color: var(--warning); }
+/* Category-accented transaction icon (overrides the type-based tint above). */
+.transaction-icon.has-accent { background: color-mix(in srgb, var(--item-accent) 14%, white); color: var(--item-accent); }
+.transaction-icon .app-icon { width: 20px; height: 20px; }
 .transaction-main strong, .transaction-main span { display: block; }
 .transaction-main span { margin-top: 3px; color: var(--muted); font-size: 12px; }
 .transaction-side { display: grid; justify-items: end; gap: 8px; }
@@ -1983,3 +1992,32 @@ input.form-control {
 .wallet-card.has-accent { background: linear-gradient(180deg, color-mix(in srgb, var(--item-accent) 10%, white), white 42%); }
 .budget-card.has-accent { border-left: 4px solid var(--item-accent); background: linear-gradient(180deg, color-mix(in srgb, var(--item-accent) 7%, white), white 46%); }
 .accent-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--item-accent); flex: none; }
+
+/* Category icon picker (mirrors the color-swatch pattern). --icon-accent (set
+   inline) tints the pressed cell to preview the chosen colour. */
+.icon-picker-grid { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.icon-picker-cell { width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--line); padding: 0; display: grid; place-items: center; background: var(--surface-soft); color: var(--muted); cursor: pointer; }
+.icon-picker-cell .app-icon { width: 20px; height: 20px; }
+.icon-picker-cell[aria-pressed='true'] { background: var(--primary); border-color: var(--primary); color: var(--surface); }
+.icon-picker-cell.has-accent[aria-pressed='true'] { background: var(--icon-accent); border-color: var(--icon-accent); color: white; }
+.icon-picker-cell:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.icon-picker-cell:disabled { opacity: .5; cursor: default; }
+
+/* A category's icon tile tinted by its chosen colour (list rows + tx rows). */
+.category-icon.has-accent { background: color-mix(in srgb, var(--item-accent) 14%, white); color: var(--item-accent); }
+
+.category-appearance-preview { display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface-soft); }
+.category-appearance-preview strong { display: block; letter-spacing: -.02em; }
+.category-appearance-preview small { color: var(--muted); font-size: 12px; line-height: 1.5; }
+
+/* Wawasan (insights) — category breakdown rows. */
+.insight-cat-total { display: flex; align-items: center; gap: 12px; padding: 12px 14px; margin-bottom: 14px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface-soft); }
+.insight-cat-total span { color: var(--muted); font-weight: 850; font-size: 13px; }
+.insight-cat-total strong { margin-right: auto; font-size: 18px; letter-spacing: -.03em; }
+.insight-cat-list { display: grid; gap: 12px; }
+.insight-cat-row { display: grid; grid-template-columns: 42px minmax(0,1fr) auto; align-items: center; gap: 12px; padding: 12px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface-soft); }
+.insight-cat-main { display: grid; gap: 8px; min-width: 0; }
+.insight-cat-title { display: flex; justify-content: space-between; gap: 12px; }
+.insight-cat-title strong { letter-spacing: -.02em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.insight-cat-title span { color: var(--muted); font-weight: 850; font-size: 13px; white-space: nowrap; }
+.insight-cat-percent { font-weight: 950; letter-spacing: -.03em; min-width: 40px; text-align: right; }

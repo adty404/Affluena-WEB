@@ -51,7 +51,16 @@ Affluena-API backend. This file is the quick orientation; the full working rules
 - **Item appearance**: wallets/budgets/goals/installments/subscriptions/recurring carry optional
   `color` (`#RRGGBB`) + `icon` strings. The shared 24-color catalog (identical to mobile) +
   `ColorPicker` swatch component live in `src/components/finance/ColorPicker.tsx`. `PUT` replaces
-  these fields — pass them through on partial updates or they get wiped. No web icon picker yet.
+  these fields — pass them through on partial updates or they get wiped.
+- **Categories** additionally carry `color` + `icon` + a server-side `position` (the user's
+  arranged order). The web **category icon catalog** lives in `src/lib/categoryIcons.tsx` with ids
+  **identical to the mobile catalog** (`kCategoryIconCatalog`) so a persisted `icon` resolves on
+  both clients — never rename/reorder an id, only append. Pickers: `ColorPicker` +
+  `IconPicker` (`src/components/finance/IconPicker.tsx`); render via `CategoryIcon`
+  (`src/components/master-data/CategoryIcon.tsx`). **Do not pass `sort` when listing categories** —
+  the API default is position ASC (`listCategories` omits it). Reorder via
+  `PUT /api/v1/categories/reorder` (`useReorderCategories`, optimistic + revert), driven by
+  drag-to-reorder on the CategoryTree (sibling-group only, persists the full flattened id list).
 - **"Berbagi Dompet"** (`/sharing` UI → `/api/v1/partners` API, historical name): account-level,
   one-way, read-only share of ALL your wallets, max 5 active outgoing viewers. Not in the sidebar —
   linked from Settings + `/app-menu`. Wallet share roles are `owner`/`member`/`viewer` (no `editor`).
