@@ -72,7 +72,7 @@ export function ProfileSettingsPage() {
           <div>
             <Badge>● Profil</Badge>
             <h2>Profil dan preferensi aplikasi yang mudah diakses.</h2>
-            <p>Halaman ini menggantikan tombol profil yang sebelumnya hanya memberi notifikasi. Semua aksi kini punya tujuan yang jelas.</p>
+            <p>Kelola identitas, preferensi, dan keamanan akun kamu dari satu tempat.</p>
           </div>
           <div className="app-hero-actions">
             <Button to="/dashboard"><AppIcon name="dashboard" /> Beranda</Button>
@@ -134,7 +134,7 @@ export function ProfileSettingsPage() {
           <Card className="panel-card">
             <div className="panel-head"><div><h3>Keamanan & Akses</h3><p>Kontrol keamanan akun dan sesi aktif.</p></div></div>
             <div className="readiness-list">
-              <div><span>Kebijakan password</span><Badge>Min. 8 karakter</Badge></div>
+              <div><span>Kebijakan kata sandi</span><Badge>Min. 8 karakter</Badge></div>
               <div><span>Sesi aktif</span><strong>Kelola di halaman Sesi</strong></div>
               <div><span>Anggota sejak</span><strong>{isLoading ? 'Memuat…' : memberSince}</strong></div>
               <div><span>Masa berlaku sesi</span><Badge tone="blue">30 hari</Badge></div>
@@ -148,7 +148,7 @@ export function ProfileSettingsPage() {
 
         <Modal open={securityOpen} title="Opsi Keamanan" description="Pilih aksi keamanan yang ingin dilakukan." onClose={() => setSecurityOpen(false)}>
           <div className="quick-action-grid two-col">
-            <Button to="/settings/security">Ubah Password</Button>
+            <Button to="/settings/security">Ubah Kata Sandi</Button>
             <Button to="/settings/sessions">Keluar dari perangkat lain</Button>
             <Button to="/settings/notifications">Kelola Pemberitahuan</Button>
             <Button to="/settings/privacy">Kontrol Privasi</Button>
