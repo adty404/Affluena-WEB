@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import clsx from 'clsx';
 import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
@@ -9,6 +10,7 @@ import { EmptyState } from '../../components/ui/EmptyState';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { Amount } from '../../components/finance/Amount';
 import { FinanceOverviewCard } from '../../components/finance/FinanceOverviewCard';
+import { itemAccentVars } from '../../components/finance/ColorPicker';
 import { useToast } from '../../components/ui/Toast';
 import { useSubscriptions, useDeleteSubscription } from '../../hooks/useTrackers';
 import type { Subscription } from '../../types/tracker';
@@ -62,6 +64,7 @@ export function SubscriptionListPage() {
               badgeTone={statusTone(item.status)}
               amount={item.amount_minor}
               amountType="expense"
+              accentColor={item.color}
               description={`Paid from ${item.wallet_id}. Next renewal ${item.next_due_date}.`}
               metaLeft={item.account_detail}
               metaRight={item.billing_cycle}
@@ -88,7 +91,7 @@ export function SubscriptionListPage() {
             data={subscriptions}
             getRowKey={(item) => item.id}
             columns={[
-              { key: 'name', header: 'Name', render: (item) => <div className="table-title"><span className="mini-icon info"><AppIcon name="subscription" /></span><strong>{item.name}</strong></div> },
+              { key: 'name', header: 'Name', render: (item) => { const accent = itemAccentVars(item.color); return <div className="table-title"><span className={clsx('mini-icon', accent ? 'has-accent' : 'info')} style={accent}><AppIcon name="subscription" /></span><strong>{item.name}</strong></div>; } },
               { key: 'wallet', header: 'Wallet', render: (item) => item.wallet_id },
               { key: 'cycle', header: 'Cycle', render: (item) => item.billing_cycle },
               { key: 'amount', header: 'Amount', align: 'right', render: (item) => <Amount value={item.amount_minor} type="expense" /> },

@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
@@ -5,10 +6,11 @@ import { Badge } from '../../components/ui/Badge';
 import { DataTable } from '../../components/ui/DataTable';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { Amount } from '../../components/finance/Amount';
+import { itemAccentVars } from '../../components/finance/ColorPicker';
 import { useDebts } from '../../hooks/useDebts';
 import { useInstallments, useSubscriptions } from '../../hooks/useTrackers';
 
-type TrackerItem = { id: string; title: string; module: string; walletName: string; amount: number; dueDate: string; status: string; to: string };
+type TrackerItem = { id: string; title: string; module: string; walletName: string; amount: number; dueDate: string; status: string; to: string; color?: string };
 
 export function TrackerPage() {
   const { data: debtsData, isLoading: isLoadingDebts } = useDebts();
@@ -21,8 +23,8 @@ export function TrackerPage() {
 
   const trackerItems: TrackerItem[] = [
     ...debts.map((item) => ({ id: item.id, title: item.counterparty_name, module: 'Debt', walletName: item.wallet_id, amount: item.remaining_amount_minor, dueDate: item.due_date || 'N/A', status: item.status, to: `/debts/${item.id}` })),
-    ...installments.map((item) => ({ id: item.id, title: item.name, module: 'Installment', walletName: item.wallet_id, amount: item.monthly_amount_minor, dueDate: `Day ${item.due_day}`, status: item.status, to: `/installments/${item.id}/pay` })),
-    ...subscriptions.map((item) => ({ id: item.id, title: item.name, module: 'Subscription', walletName: item.wallet_id, amount: item.amount_minor, dueDate: item.next_due_date, status: item.status, to: `/subscriptions/${item.id}/pay` })),
+    ...installments.map((item) => ({ id: item.id, title: item.name, module: 'Installment', walletName: item.wallet_id, amount: item.monthly_amount_minor, dueDate: `Day ${item.due_day}`, status: item.status, to: `/installments/${item.id}/pay`, color: item.color })),
+    ...subscriptions.map((item) => ({ id: item.id, title: item.name, module: 'Subscription', walletName: item.wallet_id, amount: item.amount_minor, dueDate: item.next_due_date, status: item.status, to: `/subscriptions/${item.id}/pay`, color: item.color })),
   ];
 
   const totalDue = installments.reduce((sum, item) => sum + item.monthly_amount_minor, 0) + subscriptions.reduce((sum, item) => sum + item.amount_minor, 0) + debts.filter(d => d.type === 'payable' && d.status === 'open').reduce((sum, item) => sum + item.remaining_amount_minor, 0);
@@ -75,7 +77,7 @@ export function TrackerPage() {
             data={trackerItems}
             getRowKey={(item) => `${item.module}-${item.id}`}
             columns={[
-              { key: 'title', header: 'Item', render: (item) => <div className="table-title"><span className="mini-icon safe"><AppIcon name={item.module === 'Debt' ? 'debt' : item.module === 'Installment' ? 'installment' : 'subscription'} /></span><strong>{item.title}</strong><small>{item.module}</small></div> },
+              { key: 'title', header: 'Item', render: (item) => { const accent = itemAccentVars(item.color); return <div className="table-title"><span className={clsx('mini-icon', accent ? 'has-accent' : 'safe')} style={accent}><AppIcon name={item.module === 'Debt' ? 'debt' : item.module === 'Installment' ? 'installment' : 'subscription'} /></span><strong>{item.title}</strong><small>{item.module}</small></div>; } },
               { key: 'wallet', header: 'Wallet', render: (item) => item.walletName },
               { key: 'amount', header: 'Amount', align: 'right', render: (item) => <Amount value={item.amount} type="expense" /> },
               { key: 'due', header: 'Due', render: (item) => item.dueDate },

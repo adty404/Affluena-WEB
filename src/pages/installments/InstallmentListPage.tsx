@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import clsx from 'clsx';
 import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
@@ -9,6 +10,7 @@ import { EmptyState } from '../../components/ui/EmptyState';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { Amount } from '../../components/finance/Amount';
 import { FinanceOverviewCard } from '../../components/finance/FinanceOverviewCard';
+import { itemAccentVars } from '../../components/finance/ColorPicker';
 import { useToast } from '../../components/ui/Toast';
 import { useInstallments, useDeleteInstallment } from '../../hooks/useTrackers';
 import type { Installment } from '../../types/tracker';
@@ -67,6 +69,7 @@ export function InstallmentListPage() {
                 amount={item.monthly_amount_minor}
                 amountType="expense"
                 description={<>Remaining principal <Amount value={item.monthly_amount_minor * item.remaining_months} /></>}
+                accentColor={item.color}
                 progress={pct}
                 progressTone="blue"
                 metaLeft={`${pct}% completed`}
@@ -95,7 +98,7 @@ export function InstallmentListPage() {
             data={installments}
             getRowKey={(item) => item.id}
             columns={[
-              { key: 'name', header: 'Name', render: (item) => <div className="table-title"><span className="mini-icon info"><AppIcon name="installment" /></span><strong>{item.name}</strong></div> },
+              { key: 'name', header: 'Name', render: (item) => { const accent = itemAccentVars(item.color); return <div className="table-title"><span className={clsx('mini-icon', accent ? 'has-accent' : 'info')} style={accent}><AppIcon name="installment" /></span><strong>{item.name}</strong></div>; } },
               { key: 'wallet', header: 'Wallet', render: (item) => item.wallet_id },
               { key: 'monthly', header: 'Monthly', align: 'right', render: (item) => <Amount value={item.monthly_amount_minor} type="expense" /> },
               { key: 'tenor', header: 'Tenor', render: (item) => `${item.tenor_months - item.remaining_months}/${item.tenor_months}` },

@@ -1,4 +1,4 @@
-import type { GoalStatus } from '../types/goal';
+import type { GoalMember, GoalStatus } from '../types/goal';
 
 type BadgeTone = 'green' | 'blue' | 'orange' | 'purple' | 'gray' | 'red';
 type ProgressTone = 'green' | 'orange';
@@ -31,4 +31,35 @@ export function goalStatusBadgeTone(status: GoalStatus): BadgeTone {
 
 export function goalProgressTone(status: GoalStatus): ProgressTone {
   return status === 'achieved' ? 'green' : status === 'cancelled' ? 'orange' : 'green';
+}
+
+// Goal members mirror mobile: the API only returns the raw user id (no
+// name/email), so surface a short, stable reference derived from that id and
+// the same Indonesian status labels the mobile app uses.
+const MEMBER_STATUS_LABEL: Record<GoalMember['status'], string> = {
+  pending: 'Menunggu',
+  joined: 'Bergabung',
+  rejected: 'Ditolak',
+};
+
+const MEMBER_STATUS_TONE: Record<GoalMember['status'], BadgeTone> = {
+  pending: 'orange',
+  joined: 'green',
+  rejected: 'red',
+};
+
+export function goalMemberStatusLabel(status: GoalMember['status']): string {
+  return MEMBER_STATUS_LABEL[status] ?? status;
+}
+
+export function goalMemberStatusTone(status: GoalMember['status']): BadgeTone {
+  return MEMBER_STATUS_TONE[status] ?? 'gray';
+}
+
+/** "Kamu" for the signed-in user, otherwise "Anggota <first 8 of user id>". */
+export function goalMemberLabel(member: GoalMember, currentUserId?: string): string {
+  if (currentUserId && member.user_id === currentUserId) return 'Kamu';
+  const trimmed = member.user_id.trim();
+  if (!trimmed) return 'Anggota';
+  return `Anggota ${trimmed.slice(0, 8)}`;
 }

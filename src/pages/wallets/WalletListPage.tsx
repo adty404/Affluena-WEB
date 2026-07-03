@@ -1,12 +1,23 @@
+import clsx from 'clsx';
 import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { DataTable } from '../../components/ui/DataTable';
+import { AppIcon, type AppIconName } from '../../components/ui/AppIcon';
 import { WalletCard } from '../../components/master-data/WalletCard';
 import { Amount } from '../../components/finance/Amount';
+import { itemAccentVars } from '../../components/finance/ColorPicker';
 import { useWallets } from '../../hooks/useWallets';
 import { walletTypeLabels } from '../../schemas/wallet';
 import type { Wallet } from '../../types/wallet';
+
+const walletIcons: Record<Wallet['type'], AppIconName> = {
+  bank: 'bank',
+  cash: 'cash',
+  e_wallet: 'eWallet',
+  investment: 'investment',
+  goal: 'goal',
+};
 
 export function WalletListPage() {
   const { data, isLoading, error } = useWallets({ limit: 100 });
@@ -15,12 +26,16 @@ export function WalletListPage() {
   const sharedCount = wallets.filter((w) => w.role && w.role !== 'owner').length;
 
   const columns = [
-    { key: 'name', header: 'Wallet', render: (wallet: Wallet) => (
-      <div>
-        <strong>{wallet.name}</strong>
-        <span className="table-subtitle">{walletTypeLabels[wallet.type]} · {wallet.currency_code}</span>
-      </div>
-    ) },
+    { key: 'name', header: 'Wallet', render: (wallet: Wallet) => {
+      const accent = itemAccentVars(wallet.color);
+      return (
+        <div className="table-title">
+          <span className={clsx('mini-icon', accent && 'has-accent')} style={accent}><AppIcon name={walletIcons[wallet.type]} /></span>
+          <strong>{wallet.name}</strong>
+          <small>{walletTypeLabels[wallet.type]} · {wallet.currency_code}</small>
+        </div>
+      );
+    } },
     { key: 'type', header: 'Type', render: (wallet: Wallet) => walletTypeLabels[wallet.type] },
     { key: 'balance', header: 'Balance', align: 'right' as const, render: (wallet: Wallet) => <Amount value={wallet.balance_minor} /> },
     { key: 'role', header: 'Akses', render: (wallet: Wallet) => wallet.role ?? '—' },

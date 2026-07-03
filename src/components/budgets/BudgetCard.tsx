@@ -1,8 +1,10 @@
+import clsx from 'clsx';
 import { Button } from '../ui/Button';
 import { Badge } from '../ui/Badge';
 import { AppIcon } from '../ui/AppIcon';
 import { Amount } from '../finance/Amount';
 import { ProgressBar } from '../finance/ProgressBar';
+import { itemAccentVars } from '../finance/ColorPicker';
 import type { BudgetSummary } from '../../types/budget';
 import { useCategories } from '../../hooks/useCategories';
 
@@ -36,10 +38,17 @@ export function BudgetCard({ budget, featured }: BudgetCardProps) {
   if (usage >= 100) status = 'exceeded';
   else if (usage >= 80) status = 'warning';
 
+  // The featured card keeps its dark gradient; the appearance tint only
+  // applies to regular cards so status/progress colors stay readable.
+  const accentStyle = featured ? undefined : itemAccentVars(budget.color);
+
   return (
-    <article className={`budget-card ${featured ? 'featured' : ''}`}>
+    <article
+      className={clsx('budget-card', featured && 'featured', accentStyle && 'has-accent')}
+      style={accentStyle}
+    >
       <div className="budget-card-head">
-        <div className={`finance-icon ${status}`}><AppIcon name={categoryIcon} /></div>
+        <div className={clsx('finance-icon', status, accentStyle && status === 'safe' && 'has-accent')}><AppIcon name={categoryIcon} /></div>
         <div>
           <strong>{categoryName}</strong>
           <span>{budget.month}</span>

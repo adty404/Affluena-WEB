@@ -1,10 +1,12 @@
 
 import type { ReactNode } from 'react';
+import clsx from 'clsx';
 import { Card } from '../ui/Card';
 import { Badge } from '../ui/Badge';
 import { AppIcon, type AppIconName } from '../ui/AppIcon';
 import { Amount } from './Amount';
 import { ProgressBar } from './ProgressBar';
+import { itemAccentVars } from './ColorPicker';
 
 type BadgeTone = 'green' | 'blue' | 'orange' | 'purple' | 'gray' | 'red';
 type AmountTone = 'income' | 'expense' | 'neutral';
@@ -24,6 +26,8 @@ type FinanceOverviewCardProps = {
   metaLeft?: string;
   metaRight?: string;
   actions: ReactNode;
+  /** Item appearance color (`#RRGGBB`); tints the card + icon chip when set. */
+  accentColor?: string;
 };
 
 export function FinanceOverviewCard({
@@ -41,11 +45,17 @@ export function FinanceOverviewCard({
   metaLeft,
   metaRight,
   actions,
+  accentColor,
 }: FinanceOverviewCardProps) {
+  const accentStyle = itemAccentVars(accentColor);
   return (
-    <Card as="article" className="finance-overview-card">
+    <Card
+      as="article"
+      className={clsx('finance-overview-card', accentStyle && 'has-accent')}
+      style={accentStyle}
+    >
       <header className="finance-overview-head">
-        <span className={`mini-icon ${iconTone}`}><AppIcon name={icon} /></span>
+        <span className={clsx('mini-icon', iconTone, accentStyle && 'has-accent')}><AppIcon name={icon} /></span>
         <div className="finance-overview-title">
           <strong title={title}>{title}</strong>
           <small title={subtitle}>{subtitle}</small>

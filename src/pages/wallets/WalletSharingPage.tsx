@@ -7,7 +7,7 @@ import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
-import { Input } from '../../components/ui/Input';
+import { Input, Select } from '../../components/ui/Input';
 import { useToast } from '../../components/ui/Toast';
 import { AppIcon } from '../../components/ui/AppIcon';
 import {
@@ -22,8 +22,14 @@ import type { WalletShareStatus } from '../../types/wallet';
 
 const inviteSchema = z.object({
   email: z.string().email('Email tidak valid'),
+  role: z.enum(['member', 'viewer']),
 });
 type InviteValues = z.infer<typeof inviteSchema>;
+
+const roleLabels: Record<string, string> = {
+  member: 'Anggota (bisa catat)',
+  viewer: 'Hanya lihat',
+};
 
 function memberLabel(email: string) {
   const local = email.split('@')[0] ?? email;
@@ -41,7 +47,7 @@ export function WalletSharingPage() {
 
   const form = useForm<InviteValues>({
     resolver: zodResolver(inviteSchema),
-    defaultValues: { email: '' },
+    defaultValues: { email: '', role: 'member' },
   });
 
   const [lastInvite, setLastInvite] = useState<string | null>(null);
@@ -50,8 +56,8 @@ export function WalletSharingPage() {
   async function onSubmit(values: InviteValues) {
     if (!id) return;
     try {
-      await inviteMut.mutateAsync({ email: values.email });
-      setLastInvite(values.email);
+      await inviteMut.mutateAsync({ email: values.email, role: values.role });
+      setLastInvite(`${values.email} · ${roleLabels[values.role]}`);
       showToast(`Undangan terkirim ke ${values.email}.`);
       form.reset();
     } catch (err) {
@@ -182,6 +188,14 @@ export function WalletSharingPage() {
                 <span>Email</span>
                 <Input type="email" placeholder="friend@example.com" {...form.register('email')} />
                 {form.formState.errors.email && <span className="form-error">{form.formState.errors.email.message}</span>}
+              </label>
+              <label>
+                <span>Role</span>
+                <Select {...form.register('role')}>
+                  <option value="member">{roleLabels.member}</option>
+                  <option value="viewer">{roleLabels.viewer}</option>
+                </Select>
+                <small className="field-help">Anggota bisa mencatat transaksi di wallet ini; hanya lihat berarti read-only.</small>
               </label>
               <Button type="submit" variant="primary" full disabled={form.formState.isSubmitting || inviteMut.isPending}>
                 <AppIcon name="save" /> {inviteMut.isPending ? 'Mengirim…' : 'Kirim Undangan'}

@@ -16,6 +16,10 @@ export type Goal = {
   collected_amount_minor: number;
   deadline?: string;
   status: GoalStatus;
+  /** Optional UI metadata: `#RRGGBB` hex, '' = no color. */
+  color?: string;
+  /** Optional UI metadata: client-defined semantic icon id, '' = default icon. */
+  icon?: string;
   created_at: string;
   updated_at: string;
   members?: GoalMember[];

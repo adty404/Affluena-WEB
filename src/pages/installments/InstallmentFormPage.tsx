@@ -7,6 +7,7 @@ import { Card } from '../../components/ui/Card';
 import { Input, Select, Textarea } from '../../components/ui/Input';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { Amount } from '../../components/finance/Amount';
+import { ColorPicker } from '../../components/finance/ColorPicker';
 import { useToast } from '../../components/ui/Toast';
 import { useWallets } from '../../hooks/useWallets';
 import { useCategories } from '../../hooks/useCategories';
@@ -40,6 +41,8 @@ export function InstallmentFormPage() {
       due_day: 1,
       status: 'active',
       note: '',
+      color: '',
+      icon: '',
     },
   });
 
@@ -127,6 +130,14 @@ export function InstallmentFormPage() {
                   {form.formState.errors.category_id && <span className="form-error">{form.formState.errors.category_id.message}</span>}
                 </label>
               </div>
+              <label>
+                <span>Warna</span>
+                <ColorPicker
+                  value={form.watch('color')}
+                  onChange={(hex) => form.setValue('color', hex, { shouldDirty: true })}
+                />
+                <small className="field-help">Warna yang sama dipakai di aplikasi mobile.</small>
+              </label>
               <label>
                 <span>Note</span>
                 <Textarea {...form.register('note')} placeholder="Monthly installment tracked inside Affluena." />

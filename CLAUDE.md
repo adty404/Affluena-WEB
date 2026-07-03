@@ -42,6 +42,13 @@ Affluena-API backend. This file is the quick orientation; the full working rules
   user is silently logged out when the old refresh token dies.
 - **User isolation**: never surface another user's data; respect the API's per-user scoping.
 - Every mutation: loading/success/error UI + invalidate/refetch the relevant React Query keys.
+- **Item appearance**: wallets/budgets/goals/installments/subscriptions/recurring carry optional
+  `color` (`#RRGGBB`) + `icon` strings. The shared 10-color catalog (identical to mobile) +
+  `ColorPicker` swatch component live in `src/components/finance/ColorPicker.tsx`. `PUT` replaces
+  these fields — pass them through on partial updates or they get wiped. No web icon picker yet.
+- **"Berbagi Dompet"** (`/sharing` UI → `/api/v1/partners` API, historical name): account-level,
+  one-way, read-only share of ALL your wallets, max 5 active outgoing viewers. Not in the sidebar —
+  linked from Settings + `/app-menu`. Wallet share roles are `owner`/`member`/`viewer` (no `editor`).
 
 ## Before UI changes
 

@@ -10,6 +10,8 @@ import { Input } from '../../components/ui/Input';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { useToast } from '../../components/ui/Toast';
 import { useGoal, useInviteGoalMember, useRespondGoalMember } from '../../hooks/useGoals';
+import { useMe } from '../../hooks/useMe';
+import { goalMemberLabel, goalMemberStatusLabel, goalMemberStatusTone } from '../../lib/goalStatus';
 import { goalMemberInviteSchema, type GoalMemberInviteData } from '../../schemas/goal';
 import type { GoalMember } from '../../types/goal';
 
@@ -17,8 +19,10 @@ export function GoalMembersPage() {
   const { id } = useParams();
   const { showToast } = useToast();
   const { data: goal, isLoading } = useGoal(id || '');
+  const { data: meData } = useMe();
   const inviteMember = useInviteGoalMember();
   const respondMember = useRespondGoalMember();
+  const currentUserId = meData?.user.id;
 
   const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm<GoalMemberInviteData>({
     resolver: zodResolver(goalMemberInviteSchema),
@@ -89,17 +93,17 @@ export function GoalMembersPage() {
             data={goal.members || []}
             getRowKey={(member) => member.user_id}
             columns={[
-              { key: 'name', header: 'Member ID', render: (member) => <div className="table-title"><span className="mini-icon safe"><AppIcon name="profile" /></span><strong>{member.user_id}</strong></div> },
-              { key: 'status', header: 'Status', render: (member) => <Badge tone={member.status === 'joined' ? 'green' : member.status === 'rejected' ? 'red' : 'orange'}>{member.status}</Badge> },
+              { key: 'name', header: 'Member', render: (member) => <div className="table-title"><span className="mini-icon safe"><AppIcon name="profile" /></span><strong>{goalMemberLabel(member, currentUserId)}</strong><small>{member.user_id}</small></div> },
+              { key: 'status', header: 'Status', render: (member) => <Badge tone={goalMemberStatusTone(member.status)}>{goalMemberStatusLabel(member.status)}</Badge> },
               { key: 'action', header: 'Action', render: (member) => (
                 <div className="inline-actions">
-                  {member.status === 'pending' ? (
+                  {member.status === 'pending' && member.user_id === currentUserId ? (
                     <>
-                      <Button size="small" variant="primary" disabled={respondMember.isPending} onClick={() => onRespond(member.user_id, 'joined')}>Accept</Button>
-                      <Button size="small" variant="danger" disabled={respondMember.isPending} onClick={() => onRespond(member.user_id, 'rejected')}>Reject</Button>
+                      <Button size="small" variant="primary" disabled={respondMember.isPending} onClick={() => onRespond(member.user_id, 'joined')}>Terima</Button>
+                      <Button size="small" variant="danger" disabled={respondMember.isPending} onClick={() => onRespond(member.user_id, 'rejected')}>Tolak</Button>
                     </>
                   ) : (
-                    <span className="muted-text">No action</span>
+                    <span className="muted-text">—</span>
                   )}
                 </div>
               ) },

@@ -16,6 +16,10 @@ export interface Installment {
   due_day: number;
   status: InstallmentStatus;
   note: string;
+  /** Optional UI metadata: `#RRGGBB` hex, '' = no color. */
+  color?: string;
+  /** Optional UI metadata: client-defined semantic icon id, '' = default icon. */
+  icon?: string;
   created_at: string;
   updated_at: string;
 }
@@ -48,6 +52,10 @@ export interface Subscription {
   next_due_date: string;
   status: SubscriptionStatus;
   note: string;
+  /** Optional UI metadata: `#RRGGBB` hex, '' = no color. */
+  color?: string;
+  /** Optional UI metadata: client-defined semantic icon id, '' = default icon. */
+  icon?: string;
   created_at: string;
   updated_at: string;
 }

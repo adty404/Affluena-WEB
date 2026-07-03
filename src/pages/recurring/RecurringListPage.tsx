@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import clsx from 'clsx';
 import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
@@ -9,6 +10,7 @@ import { EmptyState } from '../../components/ui/EmptyState';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { Amount } from '../../components/finance/Amount';
 import { FinanceOverviewCard } from '../../components/finance/FinanceOverviewCard';
+import { itemAccentVars } from '../../components/finance/ColorPicker';
 import { useToast } from '../../components/ui/Toast';
 import { useRecurringRules, useDeleteRecurringRule } from '../../hooks/useRecurring';
 import type { RecurringRule } from '../../types/recurring';
@@ -72,6 +74,7 @@ export function RecurringListPage() {
               badgeTone={statusTone(rule.status)}
               amount={rule.amount_minor}
               amountType={amountTone(rule.type)}
+              accentColor={rule.color}
               description={rule.note}
               metaLeft={rule.to_wallet_id ? `${rule.wallet_id} → ${rule.to_wallet_id}` : rule.wallet_id}
               metaRight={rule.category_id ?? rule.type}
@@ -92,7 +95,7 @@ export function RecurringListPage() {
             data={rules}
             getRowKey={(rule) => rule.id}
             columns={[
-              { key: 'title', header: 'Rule', render: (rule) => <div className="table-title"><span className="mini-icon info"><AppIcon name={typeIcon(rule.type)} /></span><strong>{rule.name}</strong><small>{rule.type} · {rule.frequency}</small></div> },
+              { key: 'title', header: 'Rule', render: (rule) => { const accent = itemAccentVars(rule.color); return <div className="table-title"><span className={clsx('mini-icon', accent ? 'has-accent' : 'info')} style={accent}><AppIcon name={typeIcon(rule.type)} /></span><strong>{rule.name}</strong><small>{rule.type} · {rule.frequency}</small></div>; } },
               { key: 'wallet', header: 'Wallet', render: (rule) => rule.to_wallet_id ? `${rule.wallet_id} → ${rule.to_wallet_id}` : rule.wallet_id },
               { key: 'amount', header: 'Amount', align: 'right', render: (rule) => <Amount value={rule.amount_minor} type={amountTone(rule.type)} /> },
               { key: 'next', header: 'Next Run', render: (rule) => new Date(rule.next_run_at).toLocaleDateString() },

@@ -1,7 +1,9 @@
+import clsx from 'clsx';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 import { AppIcon, type AppIconName } from '../ui/AppIcon';
 import { Amount } from '../finance/Amount';
+import { itemAccentVars } from '../finance/ColorPicker';
 import type { Wallet } from '../../types/wallet';
 import { walletTypeLabels } from '../../schemas/wallet';
 
@@ -15,9 +17,9 @@ const walletIcons: Record<Wallet['type'], AppIconName> = {
   goal: 'goal',
 };
 
-function colorClass(wallet: Wallet): string {
-  if (wallet.color) return wallet.color;
-  switch (wallet.type) {
+/** Default tint by wallet type, used when the wallet has no stored color. */
+function typeColorClass(type: Wallet['type']): string {
+  switch (type) {
     case 'bank': return 'green';
     case 'cash': return 'blue';
     case 'e_wallet': return 'purple';
@@ -40,11 +42,17 @@ export function WalletCard({ wallet }: WalletCardProps) {
   const subtitle = shared
     ? `${walletTypeLabels[wallet.type]} · ${wallet.role} · ${memberCount(wallet)} members`
     : walletTypeLabels[wallet.type];
+  // Stored hex colors (and normalized legacy names) tint via --item-accent;
+  // wallets without a color keep the type-based default tint.
+  const accentStyle = itemAccentVars(wallet.color);
 
   return (
-    <article className={`wallet-card ${colorClass(wallet)}`}>
+    <article
+      className={clsx('wallet-card', accentStyle ? 'has-accent' : typeColorClass(wallet.type))}
+      style={accentStyle}
+    >
       <div className="wallet-card-top">
-        <div className={`wallet-icon ${wallet.type}`} aria-hidden="true"><AppIcon name={walletIcons[wallet.type]} /></div>
+        <div className={clsx('wallet-icon', wallet.type, accentStyle && 'has-accent')} aria-hidden="true"><AppIcon name={walletIcons[wallet.type]} /></div>
         <div>
           <strong>{wallet.name}</strong>
           <span>{subtitle}</span>

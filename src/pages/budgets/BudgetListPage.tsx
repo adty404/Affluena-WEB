@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
@@ -6,6 +7,7 @@ import { DataTable } from '../../components/ui/DataTable';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { Amount } from '../../components/finance/Amount';
 import { ProgressBar } from '../../components/finance/ProgressBar';
+import { itemAccentVars } from '../../components/finance/ColorPicker';
 import { BudgetCard } from '../../components/budgets/BudgetCard';
 import { BudgetAlertItem } from '../../components/budgets/BudgetAlertItem';
 import type { BudgetSummary } from '../../types/budget';
@@ -89,10 +91,13 @@ export function BudgetListPage() {
                         let status: 'safe' | 'warning' | 'exceeded' = 'safe';
                         if (budget.usage_percent >= 100) status = 'exceeded';
                         else if (budget.usage_percent >= 80) status = 'warning';
-                        
+                        // Appearance tint only when the budget is safe; the
+                        // warning/exceeded status colors always win.
+                        const accent = status === 'safe' ? itemAccentVars(budget.color) : undefined;
+
                         return (
                           <div className="table-title">
-                            <span className={`mini-icon ${status}`}><AppIcon name={categoryIcon} /></span>
+                            <span className={clsx('mini-icon', status, accent && 'has-accent')} style={accent}><AppIcon name={categoryIcon} /></span>
                             <strong>{categoryName}</strong>
                             <small>{budget.month}</small>
                           </div>

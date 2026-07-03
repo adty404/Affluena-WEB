@@ -8,7 +8,7 @@ type MenuItem = readonly [string, string, AppIconName];
 
 const menuGroups: { title: string; items: MenuItem[] }[] = [
   { title: 'Dashboard', items: [ ['/dashboard', 'Dashboard', 'dashboard'], ['/dashboard/analytics', 'Analytics', 'analytics'], ['/dashboard/forecast', 'Forecast', 'forecast'], ['/dashboard/widget-states', 'Widget States', 'widgets'] ] },
-  { title: 'Master Data', items: [ ['/wallets', 'Wallets', 'wallet'], ['/categories', 'Categories', 'categories'], ['/tags', 'Tags', 'tags'] ] },
+  { title: 'Master Data', items: [ ['/wallets', 'Wallets', 'wallet'], ['/sharing', 'Berbagi Dompet', 'profile'], ['/categories', 'Categories', 'categories'], ['/tags', 'Tags', 'tags'] ] },
   { title: 'Transactions', items: [ ['/transactions', 'Transactions', 'transactions'], ['/transactions/new', 'Add Transaction', 'add'], ['/transactions/split', 'Split Bill', 'split'], ['/quick-entry', 'Quick Entry', 'quick'] ] },
   { title: 'Budget', items: [ ['/budgets', 'Budgets', 'budget'], ['/budgets/new', 'Create Budget', 'budgetForm'], ['/budgets/alerts', 'Budget Alerts', 'budgetAlert'], ['/budgets/report', 'Budget Report', 'budgetReport'] ] },
   { title: 'Debt & Tracker', items: [ ['/tracker', 'Tracker Overview', 'tracker'], ['/debts', 'Debt List', 'debt'], ['/debts/new/payable', 'Add Payable', 'payable'], ['/debts/new/receivable', 'Add Receivable', 'receivable'], ['/installments', 'Installments', 'installment'], ['/subscriptions', 'Subscriptions', 'subscription'] ] },

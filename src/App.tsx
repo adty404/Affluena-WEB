@@ -23,6 +23,7 @@ const WalletListPage = lazy(() => import('./pages/wallets/WalletListPage').then(
 const WalletFormPage = lazy(() => import('./pages/wallets/WalletFormPage').then(m => ({ default: m.WalletFormPage })));
 const WalletDetailPage = lazy(() => import('./pages/wallets/WalletDetailPage').then(m => ({ default: m.WalletDetailPage })));
 const WalletSharingPage = lazy(() => import('./pages/wallets/WalletSharingPage').then(m => ({ default: m.WalletSharingPage })));
+const SharingPage = lazy(() => import('./pages/sharing/SharingPage').then(m => ({ default: m.SharingPage })));
 
 const CategoryListPage = lazy(() => import('./pages/categories/CategoryListPage').then(m => ({ default: m.CategoryListPage })));
 const CategoryFormPage = lazy(() => import('./pages/categories/CategoryFormPage').then(m => ({ default: m.CategoryFormPage })));
@@ -146,6 +147,8 @@ export function App() {
         <Route path="/wallets/:id" element={<Suspense fallback={<PageLoader />}><WalletDetailPage /></Suspense>} />
         <Route path="/wallets/:id/edit" element={<Suspense fallback={<PageLoader />}><WalletFormPage /></Suspense>} />
         <Route path="/wallets/:id/sharing" element={<Suspense fallback={<PageLoader />}><WalletSharingPage /></Suspense>} />
+
+        <Route path="/sharing" element={<Suspense fallback={<PageLoader />}><SharingPage /></Suspense>} />
 
         <Route path="/categories" element={<Suspense fallback={<PageLoader />}><CategoryListPage /></Suspense>} />
         <Route path="/categories/new" element={<Suspense fallback={<PageLoader />}><CategoryFormPage /></Suspense>} />

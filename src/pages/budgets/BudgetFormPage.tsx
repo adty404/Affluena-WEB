@@ -11,6 +11,7 @@ import { useToast } from '../../components/ui/Toast';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { Amount } from '../../components/finance/Amount';
 import { ProgressBar } from '../../components/finance/ProgressBar';
+import { ColorPicker, normalizeItemColor } from '../../components/finance/ColorPicker';
 import { useCategories } from '../../hooks/useCategories';
 import { useBudget, useCreateBudget, useUpdateBudget, useDeleteBudget } from '../../hooks/useBudgets';
 import { budgetSchema, type BudgetFormData } from '../../schemas/budget';
@@ -34,6 +35,7 @@ export function BudgetFormPage() {
     handleSubmit,
     reset,
     watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<BudgetFormData>({
     resolver: zodResolver(budgetSchema),
@@ -41,6 +43,8 @@ export function BudgetFormPage() {
       category_id: '',
       month: new Date().toISOString().slice(0, 7),
       limit_minor: 0,
+      color: '',
+      icon: '',
     },
   });
 
@@ -50,6 +54,9 @@ export function BudgetFormPage() {
         category_id: budget.category_id,
         month: budget.month ? budget.month.slice(0, 7) : new Date().toISOString().slice(0, 7),
         limit_minor: budget.limit_minor,
+        color: normalizeItemColor(budget.color),
+        // No icon picker on web yet — round-trip whatever mobile stored.
+        icon: budget.icon ?? '',
       });
     }
   }, [isEdit, budget, reset]);
@@ -157,6 +164,14 @@ export function BudgetFormPage() {
                   <small className="field-help">Status exceeded saat actual melewati limit ini.</small>
                 </label>
               </div>
+              <label>
+                <span>Warna</span>
+                <ColorPicker
+                  value={watch('color')}
+                  onChange={(hex) => setValue('color', hex, { shouldDirty: true })}
+                />
+                <small className="field-help">Warna yang sama dipakai di aplikasi mobile.</small>
+              </label>
               <label>
                 <span>Note</span>
                 <Textarea defaultValue="" />

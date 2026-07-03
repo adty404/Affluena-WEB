@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { itemColorSchema, itemIconSchema } from './appearance';
 
 export const goalSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -6,6 +7,8 @@ export const goalSchema = z.object({
   deadline: z.string().min(1, 'Deadline is required'),
   // Optional — only sent on edit to transition the goal lifecycle.
   status: z.enum(['active', 'achieved', 'cancelled']).optional(),
+  color: itemColorSchema,
+  icon: itemIconSchema,
 });
 
 export type GoalFormData = z.infer<typeof goalSchema>;
