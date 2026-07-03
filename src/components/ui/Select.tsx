@@ -143,9 +143,9 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
         ...base,
         minHeight: '40px',
         borderRadius: 'var(--radius-md, 8px)',
-        borderColor: state.isFocused ? 'var(--primary, #10b981)' : 'var(--border, #e2e8f0)',
-        boxShadow: state.isFocused ? '0 0 0 1px var(--primary, #10b981)' : 'none',
-        '&:hover': { borderColor: state.isFocused ? 'var(--primary, #10b981)' : 'var(--border-hover, #cbd5e1)' },
+        borderColor: state.isFocused ? 'var(--primary, #17181a)' : 'var(--border, #e5e5e3)',
+        boxShadow: state.isFocused ? '0 0 0 1px var(--primary, #17181a)' : 'none',
+        '&:hover': { borderColor: state.isFocused ? 'var(--primary, #17181a)' : 'var(--border-hover, #d6d6d4)' },
         backgroundColor: 'var(--bg-input, #ffffff)',
       }),
       menu: (base) => ({
@@ -156,9 +156,9 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
       }),
       option: (base, state) => ({
         ...base,
-        backgroundColor: state.isSelected ? 'var(--primary, #10b981)' : state.isFocused ? 'var(--bg-hover, #f1f5f9)' : 'transparent',
-        color: state.isSelected ? '#ffffff' : 'var(--text-main, #0f172a)',
-        '&:active': { backgroundColor: 'var(--primary-light, #d1fae5)' },
+        backgroundColor: state.isSelected ? 'var(--primary, #17181a)' : state.isFocused ? 'var(--bg-hover, #f1f1ef)' : 'transparent',
+        color: state.isSelected ? '#ffffff' : 'var(--text-main, #17181a)',
+        '&:active': { backgroundColor: 'var(--primary-light, #ececea)' },
       }),
     };
 

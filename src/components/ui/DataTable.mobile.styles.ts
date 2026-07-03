@@ -29,7 +29,7 @@ export const mobileDataTableStyles = `
       align-items: stretch;
       margin: 0 0 var(--mobile-page-gap, 8px);
       padding: var(--mobile-dense-padding, 8px);
-      border: 1px solid var(--line, #e2e8f0);
+      border: 1px solid var(--line, #e5e5e3);
       border-radius: var(--mobile-card-radius, 16px);
       background: var(--surface, #ffffff);
       box-shadow: var(--mobile-card-shadow, 0 6px 18px rgba(15, 23, 42, .055));
@@ -69,10 +69,10 @@ export const mobileDataTableStyles = `
       flex: 0 0 auto;
       max-width: 100%;
       padding: 0.375rem 0.625rem;
-      border: 1px solid var(--line, #e2e8f0);
+      border: 1px solid var(--line, #e5e5e3);
       border-radius: var(--radius-sm, 10px);
-      color: var(--ink, #0f172a);
-      background: var(--surface-soft, #f9fbfd);
+      color: var(--ink, #17181a);
+      background: var(--surface-soft, #f1f1ef);
       font-size: 0.75rem;
       font-weight: 850;
       line-height: 1.2;
@@ -88,7 +88,7 @@ export const mobileDataTableStyles = `
     .dt-mobile-empty-card {
       min-width: 0;
       padding: var(--mobile-dense-padding, 8px) var(--mobile-card-padding, 12px);
-      border: 1px solid var(--line, #e2e8f0);
+      border: 1px solid var(--line, #e5e5e3);
       border-radius: var(--mobile-card-radius, 16px);
       background: var(--surface, #ffffff);
       box-shadow: var(--mobile-card-shadow, 0 6px 18px rgba(15, 23, 42, .055));
@@ -110,7 +110,7 @@ export const mobileDataTableStyles = `
       font-size: 0.9375rem;
       font-weight: 900;
       line-height: 1.2;
-      color: var(--ink, #0f172a);
+      color: var(--ink, #17181a);
       overflow-wrap: anywhere;
     }
     .dt-mobile-card-title .table-subtitle,
@@ -133,7 +133,7 @@ export const mobileDataTableStyles = `
       gap: 0.5rem;
       margin: 0;
       padding-top: 0.5rem;
-      border-top: 1px solid var(--line-soft, #f1f5f9);
+      border-top: 1px solid var(--line-soft, #f1f1ef);
     }
     .dt-mobile-field {
       min-width: 0;
@@ -141,7 +141,7 @@ export const mobileDataTableStyles = `
       gap: 0.1875rem;
     }
     .dt-mobile-field dt {
-      color: var(--muted, #64748b);
+      color: var(--muted, #6e7073);
       font-size: 0.6875rem;
       font-weight: 850;
       line-height: 1.25;
@@ -149,7 +149,7 @@ export const mobileDataTableStyles = `
     .dt-mobile-field dd {
       min-width: 0;
       margin: 0;
-      color: var(--ink, #0f172a);
+      color: var(--ink, #17181a);
       font-size: 0.8125rem;
       font-weight: 750;
       line-height: 1.35;
@@ -159,7 +159,7 @@ export const mobileDataTableStyles = `
       text-align: left;
     }
     .dt-mobile-empty-card {
-      color: var(--muted, #64748b);
+      color: var(--muted, #6e7073);
       font-weight: 850;
       text-align: center;
     }
@@ -170,7 +170,7 @@ export const mobileDataTableStyles = `
       gap: 0.5rem;
       align-items: stretch;
       padding-top: 0.5rem;
-      border-top: 1px solid var(--line-soft, #f1f5f9);
+      border-top: 1px solid var(--line-soft, #f1f1ef);
     }
     .dt-mobile-primary-action {
       min-width: 0;
@@ -191,16 +191,16 @@ export const mobileDataTableStyles = `
     .dt-mobile-more-button {
       width: 44px;
       min-height: 44px;
-      border: 1px solid var(--line, #e2e8f0);
+      border: 1px solid var(--line, #e5e5e3);
       border-radius: var(--radius-sm, 10px);
-      color: var(--ink, #0f172a);
-      background: var(--surface-soft, #f9fbfd);
+      color: var(--ink, #17181a);
+      background: var(--surface-soft, #f1f1ef);
       font-size: 1rem;
       font-weight: 900;
       cursor: pointer;
     }
     .dt-mobile-more-button:focus-visible {
-      outline: 3px solid var(--primary-soft, #d1fae5);
+      outline: 2px solid var(--ink, #17181a);
       outline-offset: 2px;
     }
     .dt-mobile-action-menu {
@@ -212,7 +212,7 @@ export const mobileDataTableStyles = `
       gap: 0.25rem;
       width: min(180px, calc(100vw - 48px));
       padding: 0.375rem;
-      border: 1px solid var(--line, #e2e8f0);
+      border: 1px solid var(--line, #e5e5e3);
       border-radius: var(--radius-sm, 10px);
       background: var(--surface, #ffffff);
       box-shadow: var(--shadow, 0 14px 34px rgba(15, 23, 42, .12));

@@ -70,9 +70,9 @@ Affluena must remain:
 
 - clean white/light UI
 - modern professional finance app
-- green primary accent
+- Tinta monochrome ink accent (near-black `--primary`; colour carries meaning only — success green, danger coral, warning amber, section hues, user item colours)
 - rounded cards
-- soft shadows
+- soft neutral shadows
 - readable typography
 - high-contrast text
 - responsive desktop/tablet/mobile

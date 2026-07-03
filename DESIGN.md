@@ -2,33 +2,49 @@
 
 ## 1. Atmosphere & Identity
 
-Affluena feels like a calm financial command center: data-dense enough for repeated daily use, but soft enough that money decisions do not feel punishing. The signature is crisp financial depth: white and misted surfaces over a pale blue-gray base, with emerald action cues and compact dashboard cards that prioritize scan speed on mobile.
+Affluena feels like a calm financial command center: data-dense enough for repeated daily use, but soft enough that money decisions do not feel punishing. The signature is the **Tinta** monochrome ink language shared with the mobile app: white and warm-grey surfaces over a paper-toned base, a near-black ink accent for every action, and compact dashboard cards that prioritize scan speed on mobile. Colour is deliberate and rare — when something is green or coral it *means* something.
 
 ## 2. Color
 
-### Palette
+### Tinta palette
 
-| Role | Token | Light | Dark | Usage |
-|------|-------|-------|------|-------|
-| Surface/base | `--bg` | `#f6f8fb` | Not defined | App background |
-| Surface/default | `--surface` | `#ffffff` | Not defined | Cards, buttons, panels |
-| Surface/soft | `--surface-soft` | `#f9fbfd` | Not defined | List rows, nested panels |
-| Surface/success | `--surface-green` | `#ecfdf5` | Not defined | Active nav, success-tinted surfaces |
-| Accent/primary | `--primary` | `#10b981` | Not defined | Primary CTAs, success data |
-| Accent/primary strong | `--primary-dark` | `#059669` | Not defined | Primary hover, active text |
-| Accent/primary soft | `--primary-soft` | `#d1fae5` | Not defined | Icon backgrounds |
-| Accent/secondary | `--secondary` | `#2563eb` | Not defined | Info data, chart contrast |
-| Accent/secondary soft | `--secondary-soft` | `#dbeafe` | Not defined | Info-tinted surfaces |
-| Status/warning | `--warning` | `#f59e0b` | Not defined | Warning status |
-| Status/warning soft | `--warning-soft` | `#fef3c7` | Not defined | Warning-tinted surfaces |
-| Status/danger | `--danger` | `#ef4444` | Not defined | Expense, destructive state |
-| Status/danger soft | `--danger-soft` | `#fee2e2` | Not defined | Error-tinted surfaces |
-| Accent/purple | `--purple` | `#8b5cf6` | Not defined | Secondary categorization |
-| Accent/purple soft | `--purple-soft` | `#ede9fe` | Not defined | Purple-tinted surfaces |
-| Text/primary | `--ink` | `#0f172a` | Not defined | Headings and main body |
-| Text/secondary | `--muted` | `#64748b` | Not defined | Descriptions and metadata |
-| Text/tertiary | `--muted-2` | `#94a3b8` | Not defined | Captions and quiet labels |
-| Border/default | `--line` | `#e2e8f0` | Not defined | Card borders, dividers |
+Mirrors the mobile app's `lib/app/theme/sky_palette.dart` (light set). The web app is **light mode only** — no dark palette is defined here.
+
+| Role | Token | Light | Usage |
+|------|-------|-------|-------|
+| Surface/base | `--bg` | `#f7f7f5` | App background (mobile `ground`) |
+| Surface/default | `--surface` | `#ffffff` | Cards, buttons, panels |
+| Surface/soft | `--surface-soft` | `#f1f1ef` | List rows, nested panels (mobile `sheet`) |
+| Border/default | `--line` | `#e5e5e3` | Card borders, dividers |
+| Border/strong | `--line-strong` | `#d6d6d4` | Scrollbar thumbs, tree connectors, sheet handles |
+| Text/primary | `--ink` | `#17181a` | Headings, body, money values |
+| Text/ink step | `--ink-2` | `#2a2b2e` | Dark-card gradient stop, form labels |
+| Text/secondary | `--muted` | `#6e7073` | Descriptions and metadata |
+| Text/tertiary | `--muted-2` | `#a4a5a8` | Captions and quiet labels (mobile `faint`) |
+| Accent (= ink) | `--primary` | `#17181a` | Primary CTAs, active nav, focus rings |
+| Accent strong | `--primary-dark` | `#000000` | Primary hover/gradient stop, links |
+| Accent soft | `--primary-soft` | `#ececea` | Active-nav pills, neutral icon chips |
+| Accent soft border | `--primary-soft-border` | `#dcdcda` | Pill borders, active nav-icon chip |
+| Status/success | `--success` | `#2e8b57` | Income, positive finance state |
+| Status/success soft | `--success-soft` | `#e7f3ec` | Income-tinted chips (alias `--surface-green`) |
+| Status/warning | `--warning` | `#b87b2e` | Warning status |
+| Status/warning soft | `--warning-soft` | `#f9f0e1` | Warning-tinted surfaces |
+| Status/danger | `--danger` | `#c2553f` | Expense, destructive state |
+| Status/danger soft | `--danger-soft` | `#f9ece8` | Error-tinted surfaces |
+
+### Section identity hues
+
+Decorative accents for money domains only (mirror mobile `lib/app/theme/section_palette.dart`): soft tint backgrounds + saturated icons; text on tinted surfaces stays ink. The retired blue/purple brand tokens now alias into this layer: `--secondary`/`--secondary-soft` → dompet denim (blue "info"/transfer coding), `--purple`/`--purple-soft` → langganan violet.
+
+| Domain | Token | Strong | Soft |
+|--------|-------|--------|------|
+| Dompet | `--hue-dompet` | `#3e72b8` | `#e9f0f9` |
+| Anggaran | `--hue-anggaran` | `#b87b2e` | `#f9f0e1` |
+| Tabungan | `--hue-tabungan` | `#2e8b57` | `#e7f3ec` |
+| Cicilan | `--hue-cicilan` | `#5b62c9` | `#ecedf9` |
+| Langganan | `--hue-langganan` | `#8352c9` | `#f1ebf9` |
+| Berulang | `--hue-berulang` | `#178a80` | `#e4f2f1` |
+| Dibagikan | `--hue-dibagikan` | `#b14e86` | `#f9eaf2` |
 
 ### Item appearance palette
 
@@ -36,9 +52,10 @@ User-picked accent colors for finance items (wallets, budgets, goals, installmen
 
 ### Rules
 
-- Emerald is reserved for primary actions, positive finance state, and active navigation.
-- Blue, purple, orange, and red appear only as semantic finance/status tones.
-- Item-appearance accents render via the `--item-accent` CSS variable + `has-accent` classes (soft `color-mix` tint for icon chips and card backgrounds); items without a color keep their default styling, and warning/exceeded status colors always win over decoration.
+- The chrome is monochrome: `--primary` (ink) is reserved for primary actions, active navigation, links, and focus rings; anything rendered on an ink fill is white.
+- Colour carries **meaning only**: `--success` (income/positive), `--danger` (expense/destructive), `--warning`, user-chosen content colours (the item-appearance palette), and the section identity hues — applied as soft tints + saturated icons; text on tinted surfaces stays ink. Everything else is monochrome.
+- Item-appearance accents render via the `--item-accent` CSS variable + `has-accent` classes (soft `color-mix` tint for icon chips and card backgrounds); items without a color keep their default styling, and warning/exceeded status colors always win over decoration. On the monochrome chrome these user colours are the loudest thing on screen — by design.
+- Shadows are always neutral (`rgba(0,0,0,…)`); never colour a shadow.
 - New colors should be added as tokens first; raw color use is tolerated only when consolidating legacy CSS.
 
 ## 3. Typography
@@ -161,7 +178,7 @@ All spacing is based on `4px`.
 
 ### Strategy
 
-Affluena uses a mixed strategy: borders define structure, subtle tinted shadows separate elevated controls, and tonal row backgrounds reduce nested-card heaviness.
+Affluena uses a mixed strategy: borders define structure, subtle neutral shadows separate elevated controls, and tonal row backgrounds reduce nested-card heaviness.
 
 | Level | Token/Value | Usage |
 |-------|-------------|-------|

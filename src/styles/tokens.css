@@ -1,25 +1,64 @@
+/* Tinta — monochrome ink theme, mirrors mobile lib/app/theme/sky_palette.dart (light set).
+   Chrome is black-and-white; colour carries meaning only (success/warning/danger,
+   user item colours, and the section identity hues below). */
 :root {
-  --bg: #f6f8fb;
+  /* Neutral base */
+  --bg: #f7f7f5;
   --surface: #ffffff;
-  --surface-soft: #f9fbfd;
-  --surface-green: #ecfdf5;
-  --primary: #10b981;
-  --primary-dark: #059669;
-  --primary-soft: #d1fae5;
-  --secondary: #2563eb;
-  --secondary-soft: #dbeafe;
-  --warning: #f59e0b;
-  --warning-soft: #fef3c7;
-  --danger: #ef4444;
-  --danger-soft: #fee2e2;
-  --purple: #8b5cf6;
-  --purple-soft: #ede9fe;
-  --ink: #0f172a;
-  --muted: #64748b;
-  --muted-2: #94a3b8;
-  --line: #e2e8f0;
-  --shadow: 0 18px 45px rgba(15, 23, 42, .08);
-  --shadow-soft: 0 10px 30px rgba(15, 23, 42, .06);
+  --surface-soft: #f1f1ef;
+  --line: #e5e5e3;
+  --line-strong: #d6d6d4;
+
+  /* Ink text scale */
+  --ink: #17181a;
+  --ink-2: #2a2b2e;
+  --muted: #6e7073;
+  --muted-2: #a4a5a8;
+
+  /* Accent = ink (primary actions, active nav, links, focus rings) */
+  --primary: #17181a;
+  --primary-dark: #000000;
+  --primary-soft: #ececea;
+  --primary-soft-border: #dcdcda;
+
+  /* Semantic status — the only colour in the chrome */
+  --success: #2e8b57;
+  --success-soft: #e7f3ec;
+  --warning: #b87b2e;
+  --warning-soft: #f9f0e1;
+  --danger: #c2553f;
+  --danger-soft: #f9ece8;
+
+  /* Legacy alias: success-tinted surface (historical name from the emerald theme) */
+  --surface-green: var(--success-soft);
+
+  /* Section identity hues — decorative accents for money domains only
+     (mirror mobile lib/app/theme/section_palette.dart, light set) */
+  --hue-dompet: #3e72b8;
+  --hue-dompet-soft: #e9f0f9;
+  --hue-anggaran: #b87b2e;
+  --hue-anggaran-soft: #f9f0e1;
+  --hue-tabungan: #2e8b57;
+  --hue-tabungan-soft: #e7f3ec;
+  --hue-cicilan: #5b62c9;
+  --hue-cicilan-soft: #ecedf9;
+  --hue-langganan: #8352c9;
+  --hue-langganan-soft: #f1ebf9;
+  --hue-berulang: #178a80;
+  --hue-berulang-soft: #e4f2f1;
+  --hue-dibagikan: #b14e86;
+  --hue-dibagikan-soft: #f9eaf2;
+
+  /* Legacy aliases: retired blue/purple brand accents now resolve to section hues
+     (blue "info" coding → dompet denim, purple coding → langganan violet) */
+  --secondary: var(--hue-dompet);
+  --secondary-soft: var(--hue-dompet-soft);
+  --purple: var(--hue-langganan);
+  --purple-soft: var(--hue-langganan-soft);
+
+  /* Subtle neutral shadows — never coloured */
+  --shadow: 0 18px 45px rgba(0, 0, 0, .08);
+  --shadow-soft: 0 10px 30px rgba(0, 0, 0, .05);
   --radius-xl: 28px;
   --radius-lg: 20px;
   --radius-md: 14px;
@@ -35,5 +74,5 @@
   --mobile-icon-size: 36px;
   --mobile-touch-target: 48px;
   --mobile-fab-size: 56px;
-  --mobile-card-shadow: 0 6px 18px rgba(15, 23, 42, .055);
+  --mobile-card-shadow: 0 6px 18px rgba(0, 0, 0, .05);
 }
