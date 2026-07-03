@@ -31,12 +31,23 @@ function renderPicker(value: string | undefined, onChange: (hex: string) => void
   return host;
 }
 
+// The item-appearance catalog is intentionally identical to the mobile app's
+// 24-swatch palette (same order, uppercase hex). Keep this list in lockstep
+// with `lib/features/shared/presentation/appearance/` on mobile.
+const EXPECTED_PALETTE = [
+  '#3E72B8', '#2BB3A3', '#2E8B57', '#E0A23B', '#C2553F', '#7C5BC2',
+  '#4256B8', '#C2588A', '#5E6E80', '#9E7B4F', '#2E86C1', '#17A2B8',
+  '#16A085', '#5CB85C', '#8BC34A', '#B8902E', '#D9822B', '#E67E22',
+  '#C0392B', '#D6337A', '#6A4CB3', '#795548', '#607D8B', '#455A64',
+];
+
 describe('ColorPicker', () => {
-  it('renders the 10-color catalog plus a "no color" option as toggle buttons', () => {
+  it('renders the 24-color catalog plus a "no color" option as toggle buttons', () => {
     const container = renderPicker('', () => {});
     const buttons = container.querySelectorAll('button');
 
-    expect(ITEM_COLOR_PALETTE).toHaveLength(10);
+    expect(ITEM_COLOR_PALETTE.map((swatch) => swatch.value)).toEqual(EXPECTED_PALETTE);
+    expect(ITEM_COLOR_PALETTE).toHaveLength(24);
     expect(buttons).toHaveLength(ITEM_COLOR_PALETTE.length + 1);
     // Every swatch is a real button with aria-pressed (keyboard accessible).
     buttons.forEach((btn) => {

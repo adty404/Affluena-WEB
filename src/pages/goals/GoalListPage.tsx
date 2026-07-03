@@ -10,6 +10,7 @@ import { FinanceOverviewCard } from '../../components/finance/FinanceOverviewCar
 import { itemAccentVars } from '../../components/finance/ColorPicker';
 import { useGoals } from '../../hooks/useGoals';
 import { goalStatusBadgeTone, goalStatusLabel, goalProgressTone } from '../../lib/goalStatus';
+import { formatIDR } from '../../lib/money';
 import { NAV } from '../../lib/copy';
 import type { Goal } from '../../types/goal';
 
@@ -72,7 +73,7 @@ export function GoalListPage() {
                     progressTone={goalProgressTone(goal.status)}
                     accentColor={goal.color}
                     metaLeft={`${progress}% tercapai`}
-                    metaRight={`Target ${new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(goal.target_amount_minor)}`}
+                    metaRight={`Target ${formatIDR(goal.target_amount_minor)}`}
                     actions={<><Button to={`/goals/${goal.id}`} size="small">Detail</Button><Button to={`/goals/${goal.id}/contribute`} size="small" variant="primary"><AppIcon name="pay" /> Setor</Button><Button to={`/goals/${goal.id}/members`} size="small"><AppIcon name="profile" /> Anggota</Button></>}
                   />
                 );

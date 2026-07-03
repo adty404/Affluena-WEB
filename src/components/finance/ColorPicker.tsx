@@ -22,6 +22,20 @@ export const ITEM_COLOR_PALETTE: { value: string; label: string }[] = [
   { value: '#C2588A', label: 'Pink' },
   { value: '#5E6E80', label: 'Slate' },
   { value: '#9E7B4F', label: 'Bronze' },
+  { value: '#2E86C1', label: 'Biru Langit' },
+  { value: '#17A2B8', label: 'Sian' },
+  { value: '#16A085', label: 'Hijau Laut' },
+  { value: '#5CB85C', label: 'Hijau Daun' },
+  { value: '#8BC34A', label: 'Hijau Limau' },
+  { value: '#B8902E', label: 'Emas' },
+  { value: '#D9822B', label: 'Oranye Tua' },
+  { value: '#E67E22', label: 'Oranye' },
+  { value: '#C0392B', label: 'Merah' },
+  { value: '#D6337A', label: 'Magenta' },
+  { value: '#6A4CB3', label: 'Violet' },
+  { value: '#795548', label: 'Cokelat' },
+  { value: '#607D8B', label: 'Abu Biru' },
+  { value: '#455A64', label: 'Arang' },
 ];
 
 /** Legacy wallet color names (pre-hex palette) mapped to their nearest catalog hex. */
