@@ -80,7 +80,7 @@ function CategoryNode({ node, collapsed, onToggle, onDelete }: CategoryNodeProps
           data-collapsed={hasChildren && isCollapsed ? 'true' : undefined}
           onClick={hasChildren ? () => onToggle(category.id) : undefined}
           aria-expanded={hasChildren ? !isCollapsed : undefined}
-          aria-label={hasChildren ? (isCollapsed ? 'Expand subcategories' : 'Collapse subcategories') : undefined}
+          aria-label={hasChildren ? (isCollapsed ? 'Buka subkategori' : 'Tutup subkategori') : undefined}
           disabled={!hasChildren}
         >
           {hasChildren ? <AppIcon name="back" className="chevron" /> : null}
@@ -94,7 +94,7 @@ function CategoryNode({ node, collapsed, onToggle, onDelete }: CategoryNodeProps
             {hasChildren ? <span className="category-sub-hint">{childCountLabel(childCount)}</span> : null}
           </div>
           <span className="category-node-meta">
-            {isRoot ? 'Top-level category' : depth === 1 ? 'Subcategory' : 'Sub-subcategory'}
+            {isRoot ? 'Kategori utama' : depth === 1 ? 'Subkategori' : 'Sub-subkategori'}
           </span>
         </div>
         <Badge tone={category.type === 'income' ? 'green' : 'orange'}>{categoryTypeLabels[category.type]}</Badge>
@@ -103,8 +103,8 @@ function CategoryNode({ node, collapsed, onToggle, onDelete }: CategoryNodeProps
             <Button
               size="icon"
               to={`/categories/new?parent_id=${category.id}&type=${category.type}`}
-              aria-label={`Add subcategory under ${category.name}`}
-              title="Add subcategory"
+              aria-label={`Tambah subkategori di bawah ${category.name}`}
+              title="Tambah subkategori"
             >
               <AppIcon name="add" />
             </Button>
@@ -116,8 +116,8 @@ function CategoryNode({ node, collapsed, onToggle, onDelete }: CategoryNodeProps
             size="icon"
             variant="danger"
             onClick={() => onDelete(category)}
-            aria-label={`Delete ${category.name}`}
-            title="Delete"
+            aria-label={`Hapus ${category.name}`}
+            title="Hapus"
           >
             <AppIcon name="delete" />
           </Button>
@@ -152,7 +152,7 @@ export function CategoryTree({ categories, onDelete }: CategoryTreeProps) {
   })).filter(({ nodes }) => nodes.length > 0);
 
   return (
-    <div className={`category-tree ${groups.length === 1 ? 'single' : ''}`} aria-label="Category hierarchy">
+    <div className={`category-tree ${groups.length === 1 ? 'single' : ''}`} aria-label="Susunan kategori">
       {groups.map(({ group, nodes }) => (
         <section className="category-tree-section" key={group.type}>
           <div className="category-tree-section-head">
@@ -161,10 +161,10 @@ export function CategoryTree({ categories, onDelete }: CategoryTreeProps) {
             </div>
             <div>
               <h4>{categoryTypeLabels[group.type]}</h4>
-              <p>{nodes.length} parents · {countNodes(nodes)} total</p>
+              <p>{nodes.length} kategori utama · {countNodes(nodes)} total</p>
             </div>
             <Button size="small" to={`/categories/new?type=${group.type}`}>
-              <AppIcon name="add" /> Add
+              <AppIcon name="add" /> Tambah
             </Button>
           </div>
           <div className="category-tree-branches">

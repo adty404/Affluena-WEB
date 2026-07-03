@@ -84,8 +84,8 @@ describe('DataTable', () => {
     const container = renderDataTable([]);
 
     expect(container.querySelector('table.dataTable')).toBeNull();
-    expect(container.querySelector('.dt-empty-state')?.textContent).toContain('No data available');
-    expect(container.querySelector('.dt-mobile-empty-card')?.textContent).toContain('No data available');
+    expect(container.querySelector('.dt-empty-state')?.textContent).toContain('Tidak ada data');
+    expect(container.querySelector('.dt-mobile-empty-card')?.textContent).toContain('Tidak ada data');
     expect(container.querySelector('tbody td')?.getAttribute('colspan')).toBe(String(columns.length));
   });
 
@@ -217,7 +217,7 @@ describe('DataTable', () => {
     expect(container.querySelector('.dt-mobile-action-menu')).toBeNull();
 
     const moreButton = container.querySelector<HTMLButtonElement>('.dt-mobile-more-button');
-    expect(moreButton?.getAttribute('aria-label')).toBe('More actions for Wallet');
+    expect(moreButton?.getAttribute('aria-label')).toBe('Aksi lain untuk Wallet');
 
     act(() => {
       moreButton?.click();
@@ -254,6 +254,6 @@ describe('DataTable', () => {
     });
 
     expect([...container.querySelectorAll('.dt-mobile-card-title')].map((title) => title.textContent)).toEqual(['Cash']);
-    expect(container.querySelector('.dt-mobile-filter-chip')?.textContent).toBe('Search: Cash');
+    expect(container.querySelector('.dt-mobile-filter-chip')?.textContent).toBe('Cari: Cash');
   });
 });

@@ -29,16 +29,16 @@ export function InstallmentPaymentPage() {
 
   if (isLoading) {
     return (
-      <AppLayout title="Pay Installment" description="Loading...">
-        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Loading</span><strong>...</strong></div></div></Card></div>
+      <AppLayout title="Bayar Cicilan" description="Memuat...">
+        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Memuat</span><strong>...</strong></div></div></Card></div>
       </AppLayout>
     );
   }
 
   if (!item) {
     return (
-      <AppLayout title="Pay Installment" description="Not found">
-        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Error</span><strong>Installment not found</strong></div></div></Card></div>
+      <AppLayout title="Bayar Cicilan" description="Tidak ditemukan">
+        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Gagal</span><strong>Cicilan tidak ditemukan</strong></div></div></Card></div>
       </AppLayout>
     );
   }
@@ -47,48 +47,48 @@ export function InstallmentPaymentPage() {
     if (!id) return;
     try {
       await payMut.mutateAsync({ id, data: values });
-      showToast('Installment payment recorded.');
+      showToast('Pembayaran cicilan tercatat.');
       navigate('/installments', { replace: true });
     } catch (err) {
       const apiErr = err as ApiError;
-      showToast(apiErr.error || 'Failed to record payment.');
+      showToast(apiErr.error || 'Gagal mencatat pembayaran.');
     }
   }
 
   const paidCount = item.tenor_months - item.remaining_months;
 
   return (
-    <AppLayout title="Pay Installment" description="Record installment payment and advance paid tenor.">
+    <AppLayout title="Bayar Cicilan" description="Catat pembayaran cicilan dan perbarui progres tenor.">
       <div className="dashboard-page grid-stack">
-        <section className="app-hero-card dashboard-hero"><div><span className="badge dark">● Installment Payment</span><h2>Bayar {item.name} dan update progress tenor.</h2><p>Payment akan membuat expense transaction dan menambah paid count.</p></div><div className="app-hero-actions"><Button to="/installments">Back</Button></div></section>
+        <section className="app-hero-card dashboard-hero"><div><span className="badge dark">● Pembayaran Cicilan</span><h2>Bayar {item.name} dan perbarui progres tenor.</h2><p>Pembayaran tercatat sebagai transaksi pengeluaran dan menambah jumlah cicilan terbayar.</p></div><div className="app-hero-actions"><Button to="/installments">Kembali</Button></div></section>
         <section className="form-detail-grid">
           <Card className="panel-card">
-            <div className="panel-head"><div><h3>Payment Information</h3><p>Wallet, amount, due date, dan linked transaction.</p></div></div>
+            <div className="panel-head"><div><h3>Informasi Pembayaran</h3><p>Tanggal pembayaran dan catatan.</p></div></div>
             <form className="form-stack" onSubmit={form.handleSubmit(onSubmit)} noValidate>
               <div className="form-two">
                 <label>
-                  <span>Payment Date</span>
+                  <span>Tanggal Pembayaran</span>
                   <Input type="date" {...form.register('paid_at')} />
                   {form.formState.errors.paid_at && <span className="form-error">{form.formState.errors.paid_at.message}</span>}
                 </label>
               </div>
               <label>
-                <span>Note</span>
-                <Textarea {...form.register('note')} placeholder={`Payment for ${item.name}.`} />
+                <span>Catatan</span>
+                <Textarea {...form.register('note')} placeholder={`Pembayaran untuk ${item.name}.`} />
                 {form.formState.errors.note && <span className="form-error">{form.formState.errors.note.message}</span>}
               </label>
               <div className="form-row-between">
-                <Button to="/installments">Cancel</Button>
-                <Button type="submit" variant="primary" disabled={form.formState.isSubmitting || payMut.isPending}><AppIcon name="pay" /> Pay Installment</Button>
+                <Button to="/installments">Batal</Button>
+                <Button type="submit" variant="primary" disabled={form.formState.isSubmitting || payMut.isPending}><AppIcon name="pay" /> Bayar Cicilan</Button>
               </div>
             </form>
           </Card>
           <Card className="panel-card side-metrics-card">
-            <div className="panel-head"><div><h3>Progress After Payment</h3><p>Tenor dan outstanding setelah submit.</p></div></div>
+            <div className="panel-head"><div><h3>Progres Setelah Pembayaran</h3><p>Tenor dan sisa pokok setelah pembayaran ini.</p></div></div>
             <div className="metric-list">
-              <div><span>Paid Count</span><strong>{paidCount} → {Math.min(paidCount + 1, item.tenor_months)}</strong></div>
-              <div><span>Remaining Principal</span><strong><Amount value={Math.max(0, (item.remaining_months - 1) * item.monthly_amount_minor)} /></strong></div>
-              <div><span>Wallet Effect</span><strong><Amount value={item.monthly_amount_minor} type="expense" /></strong></div>
+              <div><span>Cicilan Terbayar</span><strong>{paidCount} → {Math.min(paidCount + 1, item.tenor_months)}</strong></div>
+              <div><span>Sisa Pokok</span><strong><Amount value={Math.max(0, (item.remaining_months - 1) * item.monthly_amount_minor)} /></strong></div>
+              <div><span>Efek ke Dompet</span><strong><Amount value={item.monthly_amount_minor} type="expense" /></strong></div>
             </div>
           </Card>
         </section>

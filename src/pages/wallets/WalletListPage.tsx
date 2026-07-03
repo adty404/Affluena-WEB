@@ -8,6 +8,7 @@ import { WalletCard } from '../../components/master-data/WalletCard';
 import { Amount } from '../../components/finance/Amount';
 import { itemAccentVars } from '../../components/finance/ColorPicker';
 import { useWallets } from '../../hooks/useWallets';
+import { NAV } from '../../lib/copy';
 import { walletTypeLabels } from '../../schemas/wallet';
 import type { Wallet } from '../../types/wallet';
 
@@ -19,6 +20,12 @@ const walletIcons: Record<Wallet['type'], AppIconName> = {
   goal: 'goal',
 };
 
+const walletRoleLabels: Record<string, string> = {
+  owner: 'Pemilik',
+  member: 'Anggota (bisa mencatat)',
+  viewer: 'Hanya lihat',
+};
+
 export function WalletListPage() {
   const { data, isLoading, error } = useWallets({ limit: 100 });
   const wallets = data?.wallets ?? [];
@@ -26,7 +33,7 @@ export function WalletListPage() {
   const sharedCount = wallets.filter((w) => w.role && w.role !== 'owner').length;
 
   const columns = [
-    { key: 'name', header: 'Wallet', render: (wallet: Wallet) => {
+    { key: 'name', header: 'Dompet', render: (wallet: Wallet) => {
       const accent = itemAccentVars(wallet.color);
       return (
         <div className="table-title">
@@ -36,56 +43,56 @@ export function WalletListPage() {
         </div>
       );
     } },
-    { key: 'type', header: 'Type', render: (wallet: Wallet) => walletTypeLabels[wallet.type] },
-    { key: 'balance', header: 'Balance', align: 'right' as const, render: (wallet: Wallet) => <Amount value={wallet.balance_minor} /> },
-    { key: 'role', header: 'Akses', render: (wallet: Wallet) => wallet.role ?? '—' },
-    { key: 'action', header: 'Action', render: (wallet: Wallet) => (
+    { key: 'type', header: 'Tipe', render: (wallet: Wallet) => walletTypeLabels[wallet.type] },
+    { key: 'balance', header: 'Saldo', align: 'right' as const, render: (wallet: Wallet) => <Amount value={wallet.balance_minor} /> },
+    { key: 'role', header: 'Akses', render: (wallet: Wallet) => (wallet.role ? walletRoleLabels[wallet.role] ?? wallet.role : '—') },
+    { key: 'action', header: 'Aksi', render: (wallet: Wallet) => (
       <div className="inline-actions">
-        <Button size="small" to={`/wallets/${wallet.id}`}>View</Button>
+        <Button size="small" to={`/wallets/${wallet.id}`}>Lihat</Button>
         <Button size="small" to={`/wallets/${wallet.id}/edit`}>Edit</Button>
       </div>
     ) },
   ];
 
   return (
-    <AppLayout title="Wallets" description="Manage cash, bank, e-wallet, investment, and shared wallets.">
+    <AppLayout title={NAV.dompet} description="Kelola dompet tunai, bank, e-wallet, investasi, dan dompet bersama.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <span className="badge dark">● Master Data</span>
-            <h2>Semua wallet terlihat jelas, termasuk shared wallet dan balance movement.</h2>
-            <p>Wallet dipakai oleh transaction, transfer, adjustment, quick entry, budget, debt, dan recurring module.</p>
+            <span className="badge dark">● {NAV.dompet}</span>
+            <h2>Kelola semua dompetmu — tunai, bank, e-wallet, dan dompet bersama — dalam satu tempat.</h2>
+            <p>Saldo dan pergerakan tiap dompet selalu terlihat jelas, termasuk dompet yang dibagikan.</p>
           </div>
-          <div className="app-hero-actions"><Button to="/wallets/new" variant="primary">+ Create Wallet</Button></div>
+          <div className="app-hero-actions"><Button to="/wallets/new" variant="primary">+ Buat Dompet</Button></div>
         </section>
 
         {error ? (
           <Card className="panel-card">
             <div className="readiness-list">
-              <div><span>Error</span><strong>{(error as { error?: string }).error ?? 'Gagal memuat wallet'}</strong></div>
+              <div><span>Error</span><strong>{(error as { error?: string }).error ?? 'Gagal memuat dompet'}</strong></div>
             </div>
           </Card>
         ) : null}
 
         <section className="stat-grid">
-          <Card className="stat-card"><span>Total Balance</span><strong>{isLoading ? '…' : <Amount value={totalBalance} />}</strong><small>Across all wallets</small></Card>
-          <Card className="stat-card blue"><span>Wallet Count</span><strong>{isLoading ? '…' : wallets.length}</strong><small>Active wallets</small></Card>
-          <Card className="stat-card purple"><span>Shared Wallets</span><strong>{isLoading ? '…' : sharedCount}</strong><small>Collaboration enabled</small></Card>
+          <Card className="stat-card"><span>Total Saldo</span><strong>{isLoading ? '…' : <Amount value={totalBalance} />}</strong><small>Dari semua dompet</small></Card>
+          <Card className="stat-card blue"><span>Jumlah Dompet</span><strong>{isLoading ? '…' : wallets.length}</strong><small>Dompet aktif</small></Card>
+          <Card className="stat-card purple"><span>Dompet Bersama</span><strong>{isLoading ? '…' : sharedCount}</strong><small>Dibagikan denganmu</small></Card>
         </section>
 
         {isLoading ? (
           <Card className="panel-card"><div className="readiness-list"><div><span>Memuat</span><strong>…</strong></div></div></Card>
         ) : wallets.length === 0 ? (
           <Card className="panel-card">
-            <div className="panel-head"><div><h3>Belum ada wallet</h3><p>Buat wallet pertama untuk mulai mencatat transaksi.</p></div></div>
-            <div className="modal-actions"><Button to="/wallets/new" variant="primary">+ Create Wallet</Button></div>
+            <div className="panel-head"><div><h3>Belum ada dompet</h3><p>Buat dompet pertamamu untuk mulai mencatat transaksi.</p></div></div>
+            <div className="modal-actions"><Button to="/wallets/new" variant="primary">+ Buat Dompet</Button></div>
           </Card>
         ) : (
           <>
             <section className="master-grid cards-4">{wallets.map((wallet) => <WalletCard key={wallet.id} wallet={wallet} />)}</section>
 
             <Card className="panel-card">
-              <div className="panel-head"><div><h3>Wallet Table</h3><p>{data?.pagination.total ?? wallets.length} wallet terdaftar.</p></div><Button to="/wallets/new" size="small" variant="primary">+ Wallet</Button></div>
+              <div className="panel-head"><div><h3>Daftar Dompet</h3><p>{data?.pagination.total ?? wallets.length} dompet terdaftar.</p></div><Button to="/wallets/new" size="small" variant="primary">+ Dompet</Button></div>
               <DataTable columns={columns} data={wallets} getRowKey={(wallet) => wallet.id} />
             </Card>
           </>

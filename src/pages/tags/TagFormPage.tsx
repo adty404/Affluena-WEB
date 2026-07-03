@@ -83,86 +83,85 @@ export function TagFormPage() {
   if (isEdit && !existing) {
     return (
       <AppLayout title="Edit Tag" description="Tag tidak ditemukan.">
-        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Error</span><strong>Tag tidak ditemukan.</strong></div></div><div className="modal-actions"><Button to="/tags">Back to list</Button></div></Card></div>
+        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Error</span><strong>Tag tidak ditemukan.</strong></div></div><div className="modal-actions"><Button to="/tags">Kembali ke daftar</Button></div></Card></div>
       </AppLayout>
     );
   }
 
   return (
-    <AppLayout title={isEdit ? 'Edit Tag' : 'Create Tag'} description="Buat atau edit transaction tag.">
+    <AppLayout title={isEdit ? 'Edit Tag' : 'Buat Tag'} description="Buat atau edit tag transaksi.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <span className="badge dark">● Tag Form</span>
+            <span className="badge dark">● Tag</span>
             <h2>{isEdit ? `Edit #${existing?.name ?? ''}` : 'Buat tag baru.'}</h2>
-            <p>Nama tag unique per user dan akan tampil sebagai chip/pill di transaksi.</p>
+            <p>Nama tag harus unik dan akan tampil sebagai label di transaksimu.</p>
           </div>
-          <div className="app-hero-actions"><Button to="/tags"><AppIcon name="back" /> Back</Button></div>
+          <div className="app-hero-actions"><Button to="/tags"><AppIcon name="back" /> Kembali</Button></div>
         </section>
 
         <section className="dashboard-grid">
           <Card className="panel-card">
-            <div className="panel-head"><div><h3>Tag Information</h3><p>Field utama tags table.</p></div></div>
+            <div className="panel-head"><div><h3>Informasi Tag</h3><p>Nama tag yang tampil di transaksimu.</p></div></div>
             {isEdit ? (
               <form className="form-stack" onSubmit={updateForm.handleSubmit(onUpdate)} noValidate>
                 <label>
-                  <span>Tag name</span>
+                  <span>Nama tag</span>
                   <Input {...updateForm.register('name')} />
                   {updateForm.formState.errors.name && <span className="form-error">{updateForm.formState.errors.name.message}</span>}
                 </label>
                 <label>
-                  <span>Description</span>
+                  <span>Deskripsi</span>
                   <Textarea rows={3} defaultValue="Tag untuk memudahkan filter transaksi dan laporan lintas kategori." />
                 </label>
                 <div className="form-row-between">
-                  <Button to="/tags">Cancel</Button>
+                  <Button to="/tags">Batal</Button>
                   <div className="inline-actions">
-                    <Button type="button" variant="danger" onClick={() => setDeleteOpen(true)}><AppIcon name="delete" /> Delete</Button>
-                    <Button type="submit" variant="primary" disabled={updateForm.formState.isSubmitting || updateMut.isPending}><AppIcon name="save" /> Save Tag</Button>
+                    <Button type="button" variant="danger" onClick={() => setDeleteOpen(true)}><AppIcon name="delete" /> Hapus</Button>
+                    <Button type="submit" variant="primary" disabled={updateForm.formState.isSubmitting || updateMut.isPending}><AppIcon name="save" /> Simpan Tag</Button>
                   </div>
                 </div>
               </form>
             ) : (
               <form className="form-stack" onSubmit={createForm.handleSubmit(onCreate)} noValidate>
                 <label>
-                  <span>Tag name</span>
+                  <span>Nama tag</span>
                   <Input {...createForm.register('name')} />
                   {createForm.formState.errors.name && <span className="form-error">{createForm.formState.errors.name.message}</span>}
                 </label>
                 <label>
-                  <span>Description</span>
+                  <span>Deskripsi</span>
                   <Textarea rows={3} defaultValue="Tag untuk memudahkan filter transaksi dan laporan lintas kategori." />
                 </label>
                 <div className="form-row-between">
-                  <Button to="/tags">Cancel</Button>
-                  <Button type="submit" variant="primary" disabled={createForm.formState.isSubmitting || createMut.isPending}><AppIcon name="save" /> Save Tag</Button>
+                  <Button to="/tags">Batal</Button>
+                  <Button type="submit" variant="primary" disabled={createForm.formState.isSubmitting || createMut.isPending}><AppIcon name="save" /> Simpan Tag</Button>
                 </div>
               </form>
             )}
           </Card>
           <Card className="panel-card">
-            <div className="panel-head"><div><h3>Preview</h3><p>Tag chip appearance.</p></div></div>
+            <div className="panel-head"><div><h3>Pratinjau</h3><p>Tampilan label tag.</p></div></div>
             <div className="tag-preview">
-              <TagPill tag={{ name: existing?.name ?? 'example' }} active />
-              <p>Preview di transaction form: tag bisa multiple select dan dipakai filter/report.</p>
+              <TagPill tag={{ name: existing?.name ?? 'contoh' }} active />
+              <p>Seperti inilah tag tampil saat mencatat transaksi — bisa dipasang beberapa sekaligus untuk filter dan laporan.</p>
             </div>
             <div className="readiness-list">
-              <div><span>Unique per user</span><strong>required</strong></div>
-              <div><span>Transaction relation</span><strong>transaction_tags</strong></div>
-              <div><span>Filter support</span><strong>yes</strong></div>
+              <div><span>Nama tag</span><strong>Harus unik</strong></div>
+              <div><span>Filter & laporan</span><strong>Didukung</strong></div>
             </div>
           </Card>
         </section>
       </div>
 
-      <Modal open={deleteOpen} title="Delete Tag" description="Konfirmasi sebelum tag dihapus." onClose={() => setDeleteOpen(false)}>
+      <Modal open={deleteOpen} title="Hapus Tag" description="Konfirmasi sebelum tag dihapus." onClose={() => setDeleteOpen(false)}>
         <div className="readiness-list">
           <div><span>Tag</span><strong>#{existing?.name ?? id}</strong></div>
-          <div><span>Rekomendasi</span><strong>Hapus kalau nggak ada transaksi terkait</strong></div>
+          <div><span>Rekomendasi</span><strong>Hapus kalau sudah tidak ada transaksi terkait</strong></div>
         </div>
         <div className="modal-actions">
-          <Button onClick={() => setDeleteOpen(false)}>Cancel</Button>
-          <Button variant="danger" onClick={onDelete} disabled={deleteMut.isPending}>Delete Tag</Button>
+          <Button onClick={() => setDeleteOpen(false)}>Batal</Button>
+          <Button variant="danger" onClick={onDelete} disabled={deleteMut.isPending}>Hapus Tag</Button>
         </div>
       </Modal>
     </AppLayout>

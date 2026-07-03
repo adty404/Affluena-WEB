@@ -3,6 +3,7 @@ import { Logo } from '../ui/Logo';
 import { Button } from '../ui/Button';
 import { AppIcon, type AppIconName } from '../ui/AppIcon';
 import { useMe } from '../../hooks/useMe';
+import { NAV, NAV_SECTIONS } from '../../lib/copy';
 
 type NavItem = {
   to: string;
@@ -18,43 +19,43 @@ const isBudgetRoot = (p: string) => exactOrId(p, '/budgets', ['/budgets/new']) &
 const isGoalsRoot = (p: string) => exactOrId(p, '/goals', ['/goals/new']) && !/\/goals\/[^/]+\/(contribute|members)$/.test(p);
 
 const dashboardLinks: NavItem[] = [
-  { to: '/dashboard', icon: 'dashboard', label: 'Dashboard', activeWhen: (p) => p === '/dashboard' },
-  { to: '/dashboard/analytics', icon: 'analytics', label: 'Analytics', activeWhen: (p) => startsWithSegment(p, '/dashboard/analytics') },
-  { to: '/dashboard/forecast', icon: 'forecast', label: 'Forecast', activeWhen: (p) => startsWithSegment(p, '/dashboard/forecast') },
+  { to: '/dashboard', icon: 'dashboard', label: NAV.beranda, activeWhen: (p) => p === '/dashboard' },
+  { to: '/dashboard/analytics', icon: 'analytics', label: NAV.analitik, activeWhen: (p) => startsWithSegment(p, '/dashboard/analytics') },
+  { to: '/dashboard/forecast', icon: 'forecast', label: NAV.prakiraan, activeWhen: (p) => startsWithSegment(p, '/dashboard/forecast') },
 ];
 
 const manageLinks: NavItem[] = [
-  { to: '/wallets', icon: 'wallet', label: 'Wallets', activeWhen: (p) => startsWithSegment(p, '/wallets') },
-  { to: '/categories', icon: 'categories', label: 'Categories', activeWhen: (p) => startsWithSegment(p, '/categories') },
+  { to: '/wallets', icon: 'wallet', label: NAV.dompet, activeWhen: (p) => startsWithSegment(p, '/wallets') },
+  { to: '/categories', icon: 'categories', label: NAV.kategori, activeWhen: (p) => startsWithSegment(p, '/categories') },
 ];
 
 const transactionLinks: NavItem[] = [
-  { to: '/transactions', icon: 'transactions', label: 'Transactions', activeWhen: isTransactionRoot },
-  { to: '/quick-entry', icon: 'quick', label: 'Quick Entry', activeWhen: (p) => startsWithSegment(p, '/quick-entry') },
+  { to: '/transactions', icon: 'transactions', label: NAV.transaksi, activeWhen: isTransactionRoot },
+  { to: '/quick-entry', icon: 'quick', label: NAV.catatCepat, activeWhen: (p) => startsWithSegment(p, '/quick-entry') },
 ];
 
 const planningLinks: NavItem[] = [
-  { to: '/budgets', icon: 'budget', label: 'Budgets', activeWhen: isBudgetRoot },
-  { to: '/budgets/alerts', icon: 'budgetAlert', label: 'Budget Alerts', activeWhen: (p) => startsWithSegment(p, '/budgets/alerts') },
-  { to: '/budgets/report', icon: 'budgetReport', label: 'Budget Report', activeWhen: (p) => startsWithSegment(p, '/budgets/report') },
-  { to: '/installments', icon: 'installment', label: 'Installments', activeWhen: (p) => startsWithSegment(p, '/installments') },
-  { to: '/subscriptions', icon: 'subscription', label: 'Subscriptions', activeWhen: (p) => startsWithSegment(p, '/subscriptions') },
-  { to: '/recurring', icon: 'recurring', label: 'Recurring', activeWhen: (p) => startsWithSegment(p, '/recurring') },
-  { to: '/goals', icon: 'goal', label: 'Goals', activeWhen: isGoalsRoot },
+  { to: '/budgets', icon: 'budget', label: NAV.anggaran, activeWhen: isBudgetRoot },
+  { to: '/budgets/alerts', icon: 'budgetAlert', label: NAV.notifikasiAnggaran, activeWhen: (p) => startsWithSegment(p, '/budgets/alerts') },
+  { to: '/budgets/report', icon: 'budgetReport', label: NAV.laporanAnggaran, activeWhen: (p) => startsWithSegment(p, '/budgets/report') },
+  { to: '/installments', icon: 'installment', label: NAV.cicilan, activeWhen: (p) => startsWithSegment(p, '/installments') },
+  { to: '/subscriptions', icon: 'subscription', label: NAV.langganan, activeWhen: (p) => startsWithSegment(p, '/subscriptions') },
+  { to: '/recurring', icon: 'recurring', label: NAV.berulang, activeWhen: (p) => startsWithSegment(p, '/recurring') },
+  { to: '/goals', icon: 'goal', label: NAV.targetTabungan, activeWhen: isGoalsRoot },
 ];
 
 
 const insightsLinks: NavItem[] = [
-  { to: '/reports', icon: 'chart', label: 'Reports', activeWhen: (p) => startsWithSegment(p, '/reports') },
-  { to: '/activities', icon: 'history', label: 'Activity Log', activeWhen: (p) => startsWithSegment(p, '/activities') },
-  { to: '/alerts', icon: 'warning', label: 'Alerts', activeWhen: (p) => startsWithSegment(p, '/alerts') },
-  { to: '/system-logs', icon: 'list', label: 'System Logs', activeWhen: (p) => startsWithSegment(p, '/system-logs') },
+  { to: '/reports', icon: 'chart', label: NAV.laporan, activeWhen: (p) => startsWithSegment(p, '/reports') },
+  { to: '/activities', icon: 'history', label: NAV.riwayatAktivitas, activeWhen: (p) => startsWithSegment(p, '/activities') },
+  { to: '/alerts', icon: 'warning', label: NAV.pemberitahuan, activeWhen: (p) => startsWithSegment(p, '/alerts') },
+  { to: '/system-logs', icon: 'list', label: NAV.logSistem, activeWhen: (p) => startsWithSegment(p, '/system-logs') },
 ];
 
 const workspaceLinks: NavItem[] = [
-  { to: '/settings', icon: 'settings', label: 'Settings', activeWhen: (p) => p === '/settings' || startsWithSegment(p, '/settings/profile') || startsWithSegment(p, '/settings/account') || startsWithSegment(p, '/settings/notifications') || startsWithSegment(p, '/settings/preferences') || startsWithSegment(p, '/settings/privacy') || startsWithSegment(p, '/settings/data') || startsWithSegment(p, '/settings/help') || startsWithSegment(p, '/settings/about') || startsWithSegment(p, '/settings/ui-audit') },
-  { to: '/settings/security', icon: 'warning', label: 'Security', activeWhen: (p) => startsWithSegment(p, '/settings/security') || startsWithSegment(p, '/settings/sessions') },
-  { to: '/app-menu', icon: 'more', label: 'All Access', activeWhen: (p) => p === '/app-menu' },
+  { to: '/settings', icon: 'settings', label: NAV.pengaturan, activeWhen: (p) => p === '/settings' || startsWithSegment(p, '/settings/profile') || startsWithSegment(p, '/settings/account') || startsWithSegment(p, '/settings/notifications') || startsWithSegment(p, '/settings/preferences') || startsWithSegment(p, '/settings/privacy') || startsWithSegment(p, '/settings/data') || startsWithSegment(p, '/settings/help') || startsWithSegment(p, '/settings/about') || startsWithSegment(p, '/settings/ui-audit') },
+  { to: '/settings/security', icon: 'warning', label: NAV.keamanan, activeWhen: (p) => startsWithSegment(p, '/settings/security') || startsWithSegment(p, '/settings/sessions') },
+  { to: '/app-menu', icon: 'more', label: NAV.aksesLengkap, activeWhen: (p) => p === '/app-menu' },
 ];
 
 function LinkGroup({ links, onClose }: { links: NavItem[]; onClose: () => void }) {
@@ -87,32 +88,32 @@ export function Sidebar({ onClose }: { onClose: () => void }) {
     <aside className="sidebar">
       <div className="sidebar-head">
         <Logo to="/dashboard" />
-        <Button size="icon" className="sidebar-toggle" onClick={onClose} aria-label="Close sidebar"><AppIcon name="close" /></Button>
+        <Button size="icon" className="sidebar-toggle" onClick={onClose} aria-label="Tutup sidebar"><AppIcon name="close" /></Button>
       </div>
 
-      <div className="sidebar-scroll" aria-label="Primary navigation">
-        <Section title="Dashboard" links={dashboardLinks} onClose={onClose} />
-        <Section title="Manage" links={manageLinks} onClose={onClose} />
-        <Section title="Transactions" links={transactionLinks} onClose={onClose} />
-        <Section title="Planning" links={planningLinks} onClose={onClose} />
-        <Section title="Insights" links={insightsLinks} onClose={onClose} />
-        <Section title="Workspace" links={workspaceLinks} onClose={onClose} />
+      <div className="sidebar-scroll" aria-label="Navigasi utama">
+        <Section title={NAV_SECTIONS.beranda} links={dashboardLinks} onClose={onClose} />
+        <Section title={NAV_SECTIONS.kelola} links={manageLinks} onClose={onClose} />
+        <Section title={NAV_SECTIONS.transaksi} links={transactionLinks} onClose={onClose} />
+        <Section title={NAV_SECTIONS.perencanaan} links={planningLinks} onClose={onClose} />
+        <Section title={NAV_SECTIONS.wawasan} links={insightsLinks} onClose={onClose} />
+        <Section title={NAV_SECTIONS.lainnya} links={workspaceLinks} onClose={onClose} />
       </div>
 
       <div className="sidebar-footer">
         <NavLink to="/settings/profile" onClick={onClose} className="sidebar-user sidebar-user-link">
           <div className="avatar">{isLoading ? '…' : initials}</div>
           <div>
-            <strong>{isLoading ? 'Memuat…' : (user?.email ?? 'Guest')}</strong>
-            <span>Affluena User</span>
+            <strong>{isLoading ? 'Memuat…' : (user?.email ?? 'Tamu')}</strong>
+            <span>Pengguna Affluena</span>
           </div>
         </NavLink>
-        <nav className="sidebar-quick-links" aria-label="Account shortcuts">
-          <Link to="/settings/profile" onClick={onClose}>Profile</Link>
-          <Link to="/settings/help" onClick={onClose}>Help</Link>
-          <Link to="/settings/about" onClick={onClose}>About</Link>
+        <nav className="sidebar-quick-links" aria-label="Pintasan akun">
+          <Link to="/settings/profile" onClick={onClose}>{NAV.profil}</Link>
+          <Link to="/settings/help" onClick={onClose}>{NAV.bantuan}</Link>
+          <Link to="/settings/about" onClick={onClose}>{NAV.tentang}</Link>
         </nav>
-        <div className="sidebar-version" aria-label="Application version">
+        <div className="sidebar-version" aria-label="Versi aplikasi">
           <span>Affluena Web</span>
           <strong>v1.0.0</strong>
         </div>

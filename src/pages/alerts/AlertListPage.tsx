@@ -18,25 +18,25 @@ export function AlertListPage() {
   const unread = alerts.filter((alert) => !readMap[alert.id]).length;
 
   return (
-    <AppLayout title="Alert Center" description="Inbox notifikasi finansial dan operasional.">
+    <AppLayout title="Pusat Pemberitahuan" description="Kotak masuk pemberitahuan keuangan dan operasional.">
       <div className="dashboard-page grid-stack">
-        <section className="app-hero-card dashboard-hero"><div><Badge>● Alerts</Badge><h2>Prioritaskan budget risk, debt overdue, recurring result, dan export readiness.</h2><p>Alert center memiliki read state lokal agar action tidak hanya pajangan.</p></div><div className="app-hero-actions"><Button onClick={markAll} variant="primary"><AppIcon name="success" /> Mark All Read</Button><Button to="/reports">Reports</Button></div></section>
-        
+        <section className="app-hero-card dashboard-hero"><div><Badge>● Pemberitahuan</Badge><h2>Prioritaskan risiko anggaran, utang jatuh tempo, hasil transaksi berulang, dan ekspor yang siap.</h2><p>Tandai yang sudah dibaca supaya kamu bisa fokus ke yang penting.</p></div><div className="app-hero-actions"><Button onClick={markAll} variant="primary"><AppIcon name="success" /> Tandai Semua Dibaca</Button><Button to="/reports">Laporan</Button></div></section>
+
         {isLoading ? (
-          <div className="empty-state"><p>Loading alerts...</p></div>
+          <div className="empty-state"><p>Memuat pemberitahuan...</p></div>
         ) : isError ? (
-          <div className="empty-state"><p>Failed to load alerts.</p></div>
+          <div className="empty-state"><p>Gagal memuat pemberitahuan.</p></div>
         ) : alerts.length === 0 ? (
-          <div className="empty-state"><p>No alerts found.</p></div>
+          <div className="empty-state"><p>Belum ada pemberitahuan.</p></div>
         ) : (
           <>
-            <section className="stat-grid"><Card className="stat-card"><span>Unread</span><strong>{unread}</strong><small>Needs attention</small></Card><Card className="stat-card blue"><span>Total Alerts</span><strong>{alerts.length}</strong><small>Current inbox</small></Card><Card className="stat-card danger-card"><span>Critical</span><strong>{alerts.filter((a) => a.severity === 'danger').length}</strong><small>Immediate action</small></Card><Card className="stat-card"><span>Read</span><strong>{alerts.length - unread}</strong><small>Handled alerts</small></Card></section>
+            <section className="stat-grid"><Card className="stat-card"><span>Belum Dibaca</span><strong>{unread}</strong><small>Perlu perhatian</small></Card><Card className="stat-card blue"><span>Total Pemberitahuan</span><strong>{alerts.length}</strong><small>Kotak masuk saat ini</small></Card><Card className="stat-card danger-card"><span>Kritis</span><strong>{alerts.filter((a) => a.severity === 'danger').length}</strong><small>Perlu tindakan segera</small></Card><Card className="stat-card"><span>Sudah Dibaca</span><strong>{alerts.length - unread}</strong><small>Sudah ditangani</small></Card></section>
             <section className="insight-list">
               {alerts.map((alert) => (
                 <Card className={`alert-message-card ${alert.severity}`} key={alert.id}>
                   <div className={`mini-icon ${alert.severity === 'danger' ? 'danger' : alert.severity === 'warning' ? 'warning' : alert.severity === 'success' ? 'safe' : 'info'}`}><AppIcon name={severityIcon(alert.severity)} /></div>
                   <div><h3>{alert.title}</h3><p>{alert.description}</p><div className="inline-actions"><Badge tone={severityTone(alert.severity)}>{alert.module}</Badge><ReadStatusBadge read={!!readMap[alert.id]} /><span className="muted-text">{relativeTime(alert.created_at)}</span></div></div>
-                  <div className="alert-actions"><Button to={`/alerts/${alert.id}`} size="small">Open</Button><Button to={alert.action_path} size="small">Go to Module</Button><Button onClick={() => markRead(alert.id)} size="small" disabled={readMap[alert.id]}>Mark Read</Button></div>
+                  <div className="alert-actions"><Button to={`/alerts/${alert.id}`} size="small">Buka</Button><Button to={alert.action_path} size="small">Buka Modul</Button><Button onClick={() => markRead(alert.id)} size="small" disabled={readMap[alert.id]}>Tandai Dibaca</Button></div>
                 </Card>
               ))}
             </section>

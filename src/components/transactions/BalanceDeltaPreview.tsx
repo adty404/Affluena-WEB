@@ -19,9 +19,9 @@ export function BalanceDeltaPreview({ title, before, delta, after, description }
         </div>
       </div>
       <div className="delta-grid balance-preview-grid">
-        <div className="delta-cell"><span>Before</span><Amount value={before} /></div>
-        <div className="delta-cell delta-cell-current"><span>Delta</span><Amount value={Math.abs(delta)} variant={delta < 0 ? 'expense' : 'income'} /></div>
-        <div className="delta-cell"><span>After</span><Amount value={after} /></div>
+        <div className="delta-cell"><span>Sebelum</span><Amount value={before} /></div>
+        <div className="delta-cell delta-cell-current"><span>Perubahan</span><Amount value={Math.abs(delta)} variant={delta < 0 ? 'expense' : 'income'} /></div>
+        <div className="delta-cell"><span>Sesudah</span><Amount value={after} /></div>
       </div>
     </Card>
   );

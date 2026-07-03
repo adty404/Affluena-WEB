@@ -8,12 +8,12 @@ export function currentMonth(): string {
   return `${yyyy}-${mm}`;
 }
 
-/** Human label for a YYYY-MM month, e.g. "June 2026". Falls back to the raw value. */
+/** Human label for a YYYY-MM month, e.g. "Juni 2026". Falls back to the raw value. */
 export function formatMonthLabel(month: string): string {
   const match = /^(\d{4})-(\d{2})$/.exec(month);
   if (!match) return month;
   const date = new Date(Number(match[1]), Number(match[2]) - 1, 1);
-  return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  return date.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
 }
 
 /** Build a list of recent months (YYYY-MM) ending at the current month. */
@@ -78,10 +78,10 @@ export function exportReportCsv(
 
   if (metrics.length > 0) {
     sections.push('');
-    sections.push('Summary');
+    sections.push('Ringkasan');
     sections.push(
       rowsToCsv(
-        ['Metric', 'Amount (minor)', 'Detail'],
+        ['Metrik', 'Jumlah', 'Keterangan'],
         metrics.map((m) => [m.label, m.value_minor, m.helper]),
       ),
     );
@@ -92,7 +92,7 @@ export function exportReportCsv(
     sections.push('Detail');
     sections.push(
       rowsToCsv(
-        ['Name', 'Category', 'Wallet', 'Amount (minor)', 'Previous (minor)', 'Change %', 'Status'],
+        ['Nama', 'Kategori', 'Dompet', 'Jumlah', 'Sebelumnya', 'Perubahan %', 'Status'],
         rows.map((r) => [
           r.name,
           r.category,
@@ -108,7 +108,7 @@ export function exportReportCsv(
 
   if (metrics.length === 0 && rows.length === 0) {
     sections.push('');
-    sections.push('No data for this period.');
+    sections.push('Tidak ada data untuk periode ini.');
   }
 
   const slug = reportName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');

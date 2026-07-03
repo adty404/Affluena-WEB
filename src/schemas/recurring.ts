@@ -2,12 +2,12 @@ import { z } from 'zod';
 import { itemColorSchema, itemIconSchema } from './appearance';
 
 export const recurringRuleSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
+  name: z.string().min(1, 'Nama wajib diisi'),
   type: z.enum(['income', 'expense', 'transfer', 'adjustment']),
-  wallet_id: z.string().min(1, 'Wallet is required'),
+  wallet_id: z.string().min(1, 'Dompet wajib dipilih'),
   to_wallet_id: z.string().optional(),
   category_id: z.string().optional(),
-  amount_minor: z.number().int().positive('Amount must be positive'),
+  amount_minor: z.number().int().positive('Jumlah harus lebih dari 0'),
   frequency: z.enum(['weekly', 'monthly']),
   interval_count: z.number().int().min(1).optional(),
   next_run_at: z.string().datetime(),
@@ -22,7 +22,7 @@ export const recurringRuleSchema = z.object({
   }
   return true;
 }, {
-  message: 'Destination wallet is required for transfers',
+  message: 'Dompet tujuan wajib dipilih untuk transfer',
   path: ['to_wallet_id'],
 });
 

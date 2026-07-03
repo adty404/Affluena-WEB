@@ -40,11 +40,11 @@ export function GoalContributionPage() {
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!sourceWalletId || !amount) {
-      showToast('Please fill all required fields');
+      showToast('Lengkapi semua kolom yang wajib diisi.');
       return;
     }
     if (!toWalletId) {
-      showToast('Goal wallet not found. Cannot record contribution.');
+      showToast('Dompet target tabungan tidak ditemukan. Setoran tidak dapat dicatat.');
       return;
     }
 
@@ -55,7 +55,7 @@ export function GoalContributionPage() {
         to_wallet_id: toWalletId,
         amount_minor: parseInt(amount, 10),
         transaction_at: new Date(date).toISOString(),
-        note: note || `Contribution to ${goal?.name}`,
+        note: note || `Setoran untuk ${goal?.name}`,
       });
       // The contribution is a transfer transaction that moves money into the
       // goal wallet, so refresh wallet balances, the dashboard, and budgets.
@@ -65,76 +65,76 @@ export function GoalContributionPage() {
       if (id) {
         queryClient.invalidateQueries({ queryKey: queryKeys.goals.detail(id) });
       }
-      showToast('Goal contribution recorded successfully.');
+      showToast('Setoran berhasil dicatat.');
       navigate(`/goals/${id}`);
     } catch (error) {
-      showToast('Failed to record contribution.');
+      showToast('Gagal mencatat setoran.');
     }
   };
 
   if (isLoadingGoal || isLoadingWallets || !goal) {
-    return <AppLayout title="Goal Contribution" description="Loading..."><div className="loading-state">Loading...</div></AppLayout>;
+    return <AppLayout title="Setoran Target" description="Memuat..."><div className="loading-state">Memuat...</div></AppLayout>;
   }
 
   const contributionAmount = parseInt(amount || '0', 10);
   const afterAmount = goal.collected_amount_minor + contributionAmount;
 
   return (
-    <AppLayout title="Goal Contribution" description="Add a contribution and preview wallet/goal balance impact.">
+    <AppLayout title="Setoran Target" description="Catat setoran dan lihat dampaknya ke saldo dompet dan progres target.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
-          <div><span className="badge dark">● Contribute Goal</span><h2>Tambahkan kontribusi ke {goal.name}.</h2><p>Kontribusi akan mengurangi wallet sumber dan menaikkan current amount goal.</p></div>
-          <div className="app-hero-actions"><Button to={`/goals/${goal.id}`}><AppIcon name="back" /> Back</Button></div>
+          <div><span className="badge dark">● Setoran Target</span><h2>Tambahkan setoran ke {goal.name}.</h2><p>Setoran akan mengurangi saldo dompet sumber dan menambah dana terkumpul target.</p></div>
+          <div className="app-hero-actions"><Button to={`/goals/${goal.id}`}><AppIcon name="back" /> Kembali</Button></div>
         </section>
 
         <section className="form-detail-grid">
           <Card className="panel-card">
-            <div className="panel-head"><div><h3>Contribution Information</h3><p>Pilih wallet sumber, amount, tanggal, dan note kontribusi.</p></div></div>
+            <div className="panel-head"><div><h3>Informasi Setoran</h3><p>Pilih dompet sumber, jumlah, tanggal, dan catatan setoran.</p></div></div>
             <form className="form-stack" onSubmit={onSubmit}>
               {!goalWallet && (
-                <span className="error-text">Goal wallet belum tersedia, kontribusi tidak dapat dicatat.</span>
+                <span className="error-text">Dompet target tabungan belum tersedia, setoran tidak dapat dicatat.</span>
               )}
               <div className="form-two">
                 <label>
-                  <span>Goal</span>
+                  <span>Target Tabungan</span>
                   <Input value={goal.name} disabled />
                 </label>
                 <label>
-                  <span>Source Wallet</span>
+                  <span>Dompet Sumber</span>
                   <Select value={sourceWalletId} onChange={(e) => setSourceWalletId(e.target.value)} required>
-                    <option value="">Select Wallet</option>
+                    <option value="">Pilih Dompet</option>
                     {sourceWallets.map((wallet) => <option key={wallet.id} value={wallet.id}>{wallet.name}</option>)}
                   </Select>
                 </label>
               </div>
               <div className="form-two">
                 <label>
-                  <span>Contribution Amount</span>
+                  <span>Jumlah Setoran (Rp)</span>
                   <Input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} required min="1" />
                 </label>
                 <label>
-                  <span>Date</span>
+                  <span>Tanggal</span>
                   <Input type="datetime-local" value={date} onChange={(e) => setDate(e.target.value)} required />
                 </label>
               </div>
               <label>
-                <span>Note</span>
-                <Textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder={`Contribution to ${goal.name}`} />
+                <span>Catatan</span>
+                <Textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder={`Setoran untuk ${goal.name}`} />
               </label>
               <div className="form-row-between">
-                <Button to={`/goals/${goal.id}`}>Cancel</Button>
-                <Button type="submit" variant="primary" disabled={createTransaction.isPending || !goalWallet}><AppIcon name="save" /> Save Contribution</Button>
+                <Button to={`/goals/${goal.id}`}>Batal</Button>
+                <Button type="submit" variant="primary" disabled={createTransaction.isPending || !goalWallet}><AppIcon name="save" /> Simpan Setoran</Button>
               </div>
             </form>
           </Card>
 
           <Card className="panel-card side-metrics-card">
-            <div className="panel-head"><div><h3>Goal Balance Preview</h3><p>Dampak kontribusi terhadap progress goal.</p></div></div>
+            <div className="panel-head"><div><h3>Pratinjau Saldo Target</h3><p>Dampak setoran terhadap progres target.</p></div></div>
             <div className="metric-list">
-              <div><span>Before</span><strong><Amount value={goal.collected_amount_minor} type="income" /></strong></div>
-              <div><span>Contribution</span><strong><Amount value={contributionAmount} type="income" /></strong></div>
-              <div><span>After</span><strong><Amount value={afterAmount} type="income" /></strong></div>
-              <div><span>Remaining target</span><strong><Amount value={Math.max(goal.target_amount_minor - afterAmount, 0)} type="expense" /></strong></div>
+              <div><span>Sebelum</span><strong><Amount value={goal.collected_amount_minor} type="income" /></strong></div>
+              <div><span>Setoran</span><strong><Amount value={contributionAmount} type="income" /></strong></div>
+              <div><span>Sesudah</span><strong><Amount value={afterAmount} type="income" /></strong></div>
+              <div><span>Sisa target</span><strong><Amount value={Math.max(goal.target_amount_minor - afterAmount, 0)} type="expense" /></strong></div>
             </div>
           </Card>
         </section>

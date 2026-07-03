@@ -30,16 +30,16 @@ export function DebtPaymentPage() {
 
   if (isLoading) {
     return (
-      <AppLayout title="Pay Debt" description="Loading...">
-        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Loading</span><strong>...</strong></div></div></Card></div>
+      <AppLayout title="Bayar Utang" description="Memuat...">
+        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Memuat</span><strong>...</strong></div></div></Card></div>
       </AppLayout>
     );
   }
 
   if (!debt) {
     return (
-      <AppLayout title="Pay Debt" description="Not found">
-        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Error</span><strong>Debt not found</strong></div></div></Card></div>
+      <AppLayout title="Bayar Utang" description="Tidak ditemukan">
+        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Gagal</span><strong>Utang tidak ditemukan</strong></div></div></Card></div>
       </AppLayout>
     );
   }
@@ -48,11 +48,11 @@ export function DebtPaymentPage() {
     if (!id) return;
     try {
       await payMut.mutateAsync({ id, data: values });
-      showToast('Debt payment recorded.');
+      showToast('Pembayaran utang tercatat.');
       navigate(`/debts/${id}`, { replace: true });
     } catch (err) {
       const apiErr = err as ApiError;
-      showToast(apiErr.error || 'Failed to record payment.');
+      showToast(apiErr.error || 'Gagal mencatat pembayaran.');
     }
   }
 
@@ -60,48 +60,48 @@ export function DebtPaymentPage() {
   const remainingAfter = Math.max(0, debt.remaining_amount_minor - amountMinor);
 
   return (
-    <AppLayout title="Pay Debt" description="Record payable payment or receivable collection with wallet effect.">
+    <AppLayout title="Bayar Utang" description="Catat pembayaran utang atau penerimaan piutang.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
-          <div><span className="badge dark">● Payment</span><h2>{debt.type === 'payable' ? 'Bayar utang dan kurangi saldo wallet.' : 'Terima pembayaran piutang dan tambah saldo wallet.'}</h2><p>Payment otomatis memperbarui remaining balance dan bisa membuat linked transaction.</p></div>
-          <div className="app-hero-actions"><Button to={`/debts/${debt.id}`}>Back</Button></div>
+          <div><span className="badge dark">● Pembayaran</span><h2>{debt.type === 'payable' ? 'Bayar utang dan kurangi saldo dompet.' : 'Terima pembayaran piutang dan tambah saldo dompet.'}</h2><p>Pembayaran otomatis memperbarui sisa tagihan dan tercatat sebagai transaksi.</p></div>
+          <div className="app-hero-actions"><Button to={`/debts/${debt.id}`}>Kembali</Button></div>
         </section>
 
         <section className="form-detail-grid">
           <Card className="panel-card">
-            <div className="panel-head"><div><h3>Payment Information</h3><p>Amount, wallet, dan linked transaction behavior.</p></div></div>
+            <div className="panel-head"><div><h3>Informasi Pembayaran</h3><p>Tanggal, nominal, dan catatan pembayaran.</p></div></div>
             <form className="form-stack" onSubmit={form.handleSubmit(onSubmit)} noValidate>
               <div className="form-two">
                 <label>
-                  <span>Payment Date</span>
+                  <span>Tanggal Pembayaran</span>
                   <Input type="date" {...form.register('paid_at')} />
                   {form.formState.errors.paid_at && <span className="form-error">{form.formState.errors.paid_at.message}</span>}
                 </label>
                 <label>
-                  <span>Payment Amount (Minor)</span>
+                  <span>Nominal Pembayaran (Rp)</span>
                   <Input type="number" {...form.register('amount_minor', { valueAsNumber: true })} />
                   {form.formState.errors.amount_minor && <span className="form-error">{form.formState.errors.amount_minor.message}</span>}
                 </label>
               </div>
               <label>
-                <span>Note</span>
-                <Textarea {...form.register('note')} placeholder={`Payment for ${debt.counterparty_name}.`} />
+                <span>Catatan</span>
+                <Textarea {...form.register('note')} placeholder={`Pembayaran untuk ${debt.counterparty_name}.`} />
                 {form.formState.errors.note && <span className="form-error">{form.formState.errors.note.message}</span>}
               </label>
               <div className="form-row-between">
-                <Button to={`/debts/${debt.id}`}>Cancel</Button>
-                <Button type="submit" variant="primary" disabled={form.formState.isSubmitting || payMut.isPending}><AppIcon name="pay" /> Record Payment</Button>
+                <Button to={`/debts/${debt.id}`}>Batal</Button>
+                <Button type="submit" variant="primary" disabled={form.formState.isSubmitting || payMut.isPending}><AppIcon name="pay" /> Catat Pembayaran</Button>
               </div>
             </form>
           </Card>
 
           <Card className="panel-card side-metrics-card">
-            <div className="panel-head"><div><h3>Payment Preview</h3><p>Saldo dan remaining balance setelah submit.</p></div></div>
+            <div className="panel-head"><div><h3>Pratinjau Pembayaran</h3><p>Sisa tagihan setelah pembayaran ini.</p></div></div>
             <div className="metric-list payment-preview-list">
-              <div><span>Remaining Before</span><strong><Amount value={debt.remaining_amount_minor} /></strong></div>
-              <div><span>Payment</span><strong><Amount value={amountMinor} type={debt.type === 'payable' ? 'expense' : 'income'} /></strong></div>
-              <div><span>Remaining After</span><strong><Amount value={remainingAfter} /></strong></div>
-              <div><span>Wallet Effect</span><strong>{debt.type === 'payable' ? 'Wallet decreases' : 'Wallet increases'}</strong></div>
+              <div><span>Sisa Sebelum</span><strong><Amount value={debt.remaining_amount_minor} /></strong></div>
+              <div><span>Pembayaran</span><strong><Amount value={amountMinor} type={debt.type === 'payable' ? 'expense' : 'income'} /></strong></div>
+              <div><span>Sisa Sesudah</span><strong><Amount value={remainingAfter} /></strong></div>
+              <div><span>Efek ke Dompet</span><strong>{debt.type === 'payable' ? 'Saldo berkurang' : 'Saldo bertambah'}</strong></div>
             </div>
           </Card>
         </section>

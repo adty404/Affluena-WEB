@@ -11,7 +11,7 @@ type MonthPickerProps = {
  * Period (month) picker driving the report queries. Uses the native month input
  * inside the shared filter-card style so it matches the report filter bar.
  */
-export function MonthPicker({ value, onChange, label = 'Period' }: MonthPickerProps) {
+export function MonthPicker({ value, onChange, label = 'Periode' }: MonthPickerProps) {
   return (
     <label className="filter-card filter-card-input">
       <span>{label}</span>
@@ -23,7 +23,7 @@ export function MonthPicker({ value, onChange, label = 'Period' }: MonthPickerPr
           const next = event.target.value;
           if (next) onChange(next);
         }}
-        aria-label="Report period month"
+        aria-label="Bulan periode laporan"
       />
     </label>
   );

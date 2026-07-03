@@ -240,6 +240,8 @@ Use existing modal/popover patterns. Modals must fit viewport, be closeable, hav
 
 ## Copywriting Rules
 
+**ALL user-facing copy is Bahasa Indonesia** (workspace-wide product rule; mobile is already fully Indonesian). Nav/section labels come from the shared glossary module **`src/lib/copy.ts`** (`NAV`, `NAV_SECTIONS`, `ACTIONS`) — reuse it for labels shared across Sidebar/BottomNav/AppMenu/Settings; page-local strings stay inline but must use the same canonical terms. Mobile terms are canon: Beranda, Dompet, Kategori, Transaksi, Catat Cepat, Anggaran, Cicilan, Langganan, **Berulang** (Recurring — never "Otomasi"), Target Tabungan, Utang, Laporan, Wawasan, Pengaturan, Berbagi Dompet (viewers = "pemantau"), Keluar, Lainnya. Technical terms that are identical/expected stay: Transfer, Status, Edit, Endpoint, Email. Money labels are "Jumlah (Rp)"-style — never expose "(Minor)"/minor-unit wording in UI. Copy style is informal "kamu", never "Anda".
+
 Do not use staging/prototype/development wording in user-facing UI.
 
 Forbidden UI copy:
@@ -254,7 +256,13 @@ Forbidden UI copy:
 - development note
 - placeholder action
 
-Use final product copy. Input placeholders like `Search...`, `friend@example.com`, or `Rp 0` are allowed.
+Use final product copy. Input placeholders like `Cari...`, `friend@example.com`, or `Rp 0` are allowed.
+
+Also forbidden in user-facing copy (developer-note wording):
+- backend
+- minor unit
+- module/architecture narration ("Recurring rule menggunakan frequency...", table names, rule engine)
+- English UI strings (labels, headers, toasts, empty states, badges — everything user-visible is Indonesian)
 
 ## Responsive Rules
 

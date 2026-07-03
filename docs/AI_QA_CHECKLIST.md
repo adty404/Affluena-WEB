@@ -126,7 +126,10 @@ Check:
 
 ## Copy QA
 
+All user-facing copy must be Bahasa Indonesia (mobile terms are canon; glossary in `src/lib/copy.ts` and `docs/AI_DESIGN_SYSTEM.md` → "User-Facing Copy"). Recurring = "Berulang", never "Otomasi". Money labels are "Jumlah (Rp)" — never "(Minor)".
+
 Forbidden user-facing copy:
+- English UI strings (labels, headers, buttons, toasts, badges, empty states)
 - Ready for Stage
 - prototype mode
 - mock data
@@ -136,9 +139,14 @@ Forbidden user-facing copy:
 - development note
 - placeholder action
 - Stage 1 / Stage 2 / etc as main UI labels
+- backend / minor unit / module / endpoint narration in copy
 
 Allowed:
-- input placeholders like Search, example email, example amount
+- technical terms that are identical/expected: Transfer, Status, Edit, Endpoint, Email
+- input placeholders like `Cari...`, example email, example amount
+
+Quick sweep before finishing:
+`rg -n "Dashboard<|>Wallets<|Create |Save<|Loading|Amount<|Cancel<|Delete<" src/pages src/components --glob '!**/*.test.*'` should return no user-facing English hits.
 
 ## Finance Card QA
 

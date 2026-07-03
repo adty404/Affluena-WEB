@@ -28,7 +28,7 @@ export function RegisterPage() {
   async function onSubmit(values: RegisterFormValues) {
     try {
       await registerUser({ email: values.email, password: values.password });
-      showToast('Akun berhasil dibuat. Membuka dashboard...');
+      showToast('Akun berhasil dibuat. Membuka Beranda...');
       window.setTimeout(() => navigate('/dashboard', { replace: true }), 200);
     } catch (err) {
       const apiErr = err as ApiError;
@@ -37,9 +37,9 @@ export function RegisterPage() {
   }
 
   return (
-    <AuthLayout title="Bangun kebiasaan finansial yang lebih rapi." description="Buat akun, lalu masuk ke dashboard Affluena.">
+    <AuthLayout title="Bangun kebiasaan finansial yang lebih rapi." description="Buat akun, lalu mulai kelola keuangan kamu.">
       <h2>Buat akun baru</h2>
-      <p>Email dan password saja — backend belum menyimpan nama lengkap.</p>
+      <p>Cukup email dan kata sandi untuk mulai.</p>
       <form className="form-stack" onSubmit={handleSubmit(onSubmit)} noValidate>
         <label>
           <span>Email</span>
@@ -47,7 +47,7 @@ export function RegisterPage() {
           {errors.email && <span className="form-error">{errors.email.message}</span>}
         </label>
         <label>
-          <span>Password</span>
+          <span>Kata Sandi</span>
           <div className="password-field">
             <Input
               type={showPassword ? 'text' : 'password'}
@@ -55,12 +55,12 @@ export function RegisterPage() {
               required
               {...field('password')}
             />
-            <button type="button" onClick={() => setShowPassword((value) => !value)}>{showPassword ? 'Hide' : 'Show'}</button>
+            <button type="button" onClick={() => setShowPassword((value) => !value)}>{showPassword ? 'Sembunyikan' : 'Tampilkan'}</button>
           </div>
           {errors.password && <span className="form-error">{errors.password.message}</span>}
         </label>
         <label>
-          <span>Konfirmasi Password</span>
+          <span>Konfirmasi Kata Sandi</span>
           <Input
             type={showPassword ? 'text' : 'password'}
             autoComplete="new-password"
@@ -70,7 +70,7 @@ export function RegisterPage() {
           {errors.confirmPassword && <span className="form-error">{errors.confirmPassword.message}</span>}
         </label>
         <Button type="submit" variant="primary" full disabled={isSubmitting}>
-          {isSubmitting ? 'Memproses…' : 'Daftar dan masuk dashboard'}
+          {isSubmitting ? 'Memproses…' : 'Daftar'}
         </Button>
       </form>
       <p className="auth-switch">Sudah punya akun? <Link to="/login">Masuk</Link></p>

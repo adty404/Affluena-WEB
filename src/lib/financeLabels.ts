@@ -8,7 +8,7 @@ export function createNameById<T extends NamedEntity>(items: T[]) {
 }
 
 export function walletLabel(walletNameById: Map<string, string>, walletId: string | undefined) {
-  return walletId ? (walletNameById.get(walletId) ?? 'Unknown Wallet') : 'Unknown Wallet';
+  return walletId ? (walletNameById.get(walletId) ?? 'Dompet Tidak Dikenal') : 'Dompet Tidak Dikenal';
 }
 
 export function walletPairLabel(walletNameById: Map<string, string>, walletId: string | undefined, toWalletId?: string) {
@@ -16,8 +16,8 @@ export function walletPairLabel(walletNameById: Map<string, string>, walletId: s
 }
 
 export function categoryLabel(categoryNameById: Map<string, string>, categoryId: string | undefined, type: string) {
-  if (categoryId) return categoryNameById.get(categoryId) ?? 'Unknown Category';
+  if (categoryId) return categoryNameById.get(categoryId) ?? 'Kategori Tidak Dikenal';
   if (type === 'transfer') return 'Transfer';
-  if (type === 'adjustment') return 'Adjustment';
-  return 'Uncategorized';
+  if (type === 'adjustment') return 'Penyesuaian';
+  return 'Tanpa Kategori';
 }

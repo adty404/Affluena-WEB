@@ -11,10 +11,10 @@ import { resetPassword } from '../../api/auth';
 import type { ApiError } from '../../api/types';
 
 const schema = z.object({
-  new_password: z.string().min(8, 'Password baru minimal 8 karakter'),
+  new_password: z.string().min(8, 'Kata sandi baru minimal 8 karakter'),
   confirm_password: z.string(),
 }).refine((d) => d.new_password === d.confirm_password, {
-  message: 'Konfirmasi password tidak cocok',
+  message: 'Konfirmasi kata sandi tidak cocok',
   path: ['confirm_password'],
 });
 type Values = z.infer<typeof schema>;
@@ -33,42 +33,42 @@ export function ResetPasswordPage() {
 
   async function onSubmit(values: Values) {
     if (!token) {
-      showToast('Token reset tidak ditemukan di URL.');
+      showToast('Tautan reset tidak valid. Buka tautan dari email kamu.');
       return;
     }
     try {
       await resetPassword(token, values.new_password);
-      showToast('Password berhasil direset. Silakan login.');
+      showToast('Kata sandi berhasil direset. Silakan masuk.');
       window.setTimeout(() => navigate('/login'), 200);
     } catch (err) {
       const apiErr = err as ApiError;
-      showToast(apiErr.error || 'Gagal mereset password. Token mungkin tidak valid.');
+      showToast(apiErr.error || 'Gagal mereset kata sandi. Tautan mungkin sudah tidak berlaku.');
     }
   }
 
   return (
-    <AuthLayout title="Buat password baru." description="Pastikan password baru kuat dan mudah diingat." narrow>
-      <h2>Reset password</h2>
+    <AuthLayout title="Buat kata sandi baru." description="Pastikan kata sandi baru kuat dan mudah diingat." narrow>
+      <h2>Reset kata sandi</h2>
       {!token ? (
         <div className="readiness-list">
-          <p style={{ color: 'var(--warning)' }}>Token reset tidak ditemukan. Buka link dari email reset.</p>
+          <p style={{ color: 'var(--warning)' }}>Tautan reset tidak ditemukan. Buka tautan dari email reset kamu.</p>
         </div>
       ) : null}
       <form className="form-stack" onSubmit={form.handleSubmit(onSubmit)} noValidate>
         <label>
-          <span>Password baru</span>
+          <span>Kata sandi baru</span>
           <div className="password-field">
             <Input
               type={showPassword ? 'text' : 'password'}
               autoComplete="new-password"
               {...form.register('new_password')}
             />
-            <button type="button" onClick={() => setShowPassword((v) => !v)}>{showPassword ? 'Hide' : 'Show'}</button>
+            <button type="button" onClick={() => setShowPassword((v) => !v)}>{showPassword ? 'Sembunyikan' : 'Tampilkan'}</button>
           </div>
           {form.formState.errors.new_password && <span className="form-error">{form.formState.errors.new_password.message}</span>}
         </label>
         <label>
-          <span>Konfirmasi password</span>
+          <span>Konfirmasi kata sandi</span>
           <Input
             type={showPassword ? 'text' : 'password'}
             autoComplete="new-password"
@@ -77,10 +77,10 @@ export function ResetPasswordPage() {
           {form.formState.errors.confirm_password && <span className="form-error">{form.formState.errors.confirm_password.message}</span>}
         </label>
         <Button type="submit" variant="primary" full disabled={form.formState.isSubmitting || !token}>
-          {form.formState.isSubmitting ? 'Memproses…' : 'Reset password'}
+          {form.formState.isSubmitting ? 'Memproses…' : 'Reset kata sandi'}
         </Button>
       </form>
-      <p className="auth-switch"><Link to="/login">Kembali ke login</Link></p>
+      <p className="auth-switch"><Link to="/login">Kembali ke halaman masuk</Link></p>
     </AuthLayout>
   );
 }

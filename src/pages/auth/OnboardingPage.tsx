@@ -12,7 +12,7 @@ export function OnboardingPage() {
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault();
-    showToast(`Onboarding selesai: ${selected}. Membuka dashboard...`);
+    showToast(`Pilihan tersimpan: ${selected}. Membuka Beranda...`);
     window.setTimeout(() => navigate('/dashboard'), 450);
   }
 
@@ -20,14 +20,14 @@ export function OnboardingPage() {
     <main className="onboarding-shell">
       <aside className="onboarding-side">
         <Logo />
-        <h1>Personalisasi dashboard Affluena kamu.</h1>
-        <p>Pilih fokus utama agar dashboard, quick action, dan rekomendasi module terasa relevan.</p>
+        <h1>Personalisasi dasbor Affluena kamu.</h1>
+        <p>Pilih fokus utama agar dasbor, aksi cepat, dan rekomendasi fitur terasa relevan.</p>
       </aside>
       <section className="onboarding-main">
         <form className="onboarding-card" onSubmit={handleSubmit}>
           <span className="step-label">Langkah 1 dari 1</span>
           <h2>Apa tujuan utama kamu?</h2>
-          <p>Pilihan ini menyesuaikan dashboard dan rekomendasi module. Bisa diubah kapan saja dari Settings.</p>
+          <p>Pilihan ini menyesuaikan dasbor dan rekomendasi fitur. Bisa diubah kapan saja dari Pengaturan.</p>
           <div className="onboarding-grid">
             {onboardingOptions.map((option) => (
               <button
@@ -42,8 +42,8 @@ export function OnboardingPage() {
             ))}
           </div>
           <div className="onboarding-actions">
-            <Button to="/login">Skip</Button>
-            <Button type="submit" variant="primary">Finish onboarding</Button>
+            <Button to="/login">Lewati</Button>
+            <Button type="submit" variant="primary">Selesai</Button>
           </div>
         </form>
       </section>

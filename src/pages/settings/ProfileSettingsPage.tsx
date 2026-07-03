@@ -36,7 +36,7 @@ export function ProfileSettingsPage() {
 
   function handleLogout() {
     logout();
-    showToast('Anda telah keluar dari akun.');
+    showToast('Kamu telah keluar dari akun.');
     navigate('/login', { replace: true });
   }
   const user = data?.user;
@@ -58,7 +58,7 @@ export function ProfileSettingsPage() {
         name: values.name,
         avatar_url: user?.avatar_url ?? '',
       });
-      showToast('Profile information saved.');
+      showToast('Informasi profil tersimpan.');
     } catch (err) {
       const apiErr = err as ApiError;
       showToast(apiErr.error || 'Gagal memperbarui profil.');
@@ -66,38 +66,38 @@ export function ProfileSettingsPage() {
   }
 
   return (
-    <AppLayout title="Profile Settings" description="Kelola profil, preferensi aplikasi, dan keamanan akun.">
+    <AppLayout title="Pengaturan Profil" description="Kelola profil, preferensi aplikasi, dan keamanan akun.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <Badge>● Workspace Settings</Badge>
+            <Badge>● Profil</Badge>
             <h2>Profil dan preferensi aplikasi yang mudah diakses.</h2>
-            <p>Halaman ini menggantikan tombol profil yang sebelumnya hanya memberi notifikasi. Semua action kini punya tujuan yang jelas.</p>
+            <p>Halaman ini menggantikan tombol profil yang sebelumnya hanya memberi notifikasi. Semua aksi kini punya tujuan yang jelas.</p>
           </div>
           <div className="app-hero-actions">
-            <Button to="/dashboard"><AppIcon name="dashboard" /> Dashboard</Button>
+            <Button to="/dashboard"><AppIcon name="dashboard" /> Beranda</Button>
             <Button variant="primary" onClick={form.handleSubmit(onSubmit)} disabled={form.formState.isSubmitting || updateMut.isPending}>
-              <AppIcon name="save" /> {updateMut.isPending ? 'Saving...' : 'Save Changes'}
+              <AppIcon name="save" /> {updateMut.isPending ? 'Menyimpan…' : 'Simpan Perubahan'}
             </Button>
           </div>
         </section>
 
         <section className="dashboard-grid">
           <Card className="panel-card">
-            <div className="panel-head"><div><h3>Personal Information</h3><p>Identitas yang tampil di topbar dan activity trail.</p></div></div>
+            <div className="panel-head"><div><h3>Informasi Pribadi</h3><p>Identitas yang tampil di bilah atas dan riwayat aktivitas.</p></div></div>
             <form className="form-stack" onSubmit={form.handleSubmit(onSubmit)} noValidate>
               <div className="form-two">
                 <label>
-                  <span>Full name</span>
+                  <span>Nama lengkap</span>
                   <Input {...form.register('name')} placeholder={isLoading ? 'Memuat…' : ''} />
                   {form.formState.errors.name && <span className="form-error">{form.formState.errors.name.message}</span>}
                 </label>
                 <label><span>Email</span><Input defaultValue={isLoading ? 'Memuat…' : (user?.email ?? '')} disabled /></label>
               </div>
               <div className="form-two">
-                <label><span>Handle</span><Input defaultValue="" disabled placeholder="Belum tersedia" /></label>
+                <label><span>Nama pengguna</span><Input defaultValue="" disabled placeholder="Belum tersedia" /></label>
                 <label>
-                  <span>Default currency</span>
+                  <span>Mata uang bawaan</span>
                   <Select {...form.register('currency')}>
                     <option value="IDR">IDR</option>
                     <option value="USD">USD</option>
@@ -107,53 +107,53 @@ export function ProfileSettingsPage() {
               </div>
               <div className="form-two">
                 <label>
-                  <span>Start page</span>
+                  <span>Halaman awal</span>
                   <Select {...form.register('start_page')}>
-                    <option value="Dashboard">Dashboard</option>
-                    <option value="Transactions">Transactions</option>
-                    <option value="Budgets">Budgets</option>
+                    <option value="Dashboard">Beranda</option>
+                    <option value="Transactions">Transaksi</option>
+                    <option value="Budgets">Anggaran</option>
                   </Select>
                 </label>
                 <label>
-                  <span>Compact mode</span>
+                  <span>Mode ringkas</span>
                   <Select {...form.register('compact_mode')}>
-                    <option value="Comfortable">Comfortable</option>
-                    <option value="Compact">Compact</option>
+                    <option value="Comfortable">Nyaman</option>
+                    <option value="Compact">Ringkas</option>
                   </Select>
                 </label>
               </div>
               <div className="form-row-between">
-                <Button to="/dashboard">Cancel</Button>
+                <Button to="/dashboard">Batal</Button>
                 <Button type="submit" variant="primary" disabled={form.formState.isSubmitting || updateMut.isPending}>
-                  {updateMut.isPending ? 'Saving...' : 'Save Profile'}
+                  {updateMut.isPending ? 'Menyimpan…' : 'Simpan Profil'}
                 </Button>
               </div>
             </form>
           </Card>
 
           <Card className="panel-card">
-            <div className="panel-head"><div><h3>Security & Access</h3><p>Kontrol keamanan akun dan session aktif.</p></div></div>
+            <div className="panel-head"><div><h3>Keamanan & Akses</h3><p>Kontrol keamanan akun dan sesi aktif.</p></div></div>
             <div className="readiness-list">
-              <div><span>Password policy</span><Badge>Min. 8 characters</Badge></div>
-              <div><span>Active sessions</span><strong>Kelola di halaman Sessions</strong></div>
-              <div><span>Member since</span><strong>{isLoading ? 'Memuat…' : memberSince}</strong></div>
-              <div><span>Session timeout</span><Badge tone="blue">30 days</Badge></div>
+              <div><span>Kebijakan password</span><Badge>Min. 8 karakter</Badge></div>
+              <div><span>Sesi aktif</span><strong>Kelola di halaman Sesi</strong></div>
+              <div><span>Anggota sejak</span><strong>{isLoading ? 'Memuat…' : memberSince}</strong></div>
+              <div><span>Masa berlaku sesi</span><Badge tone="blue">30 hari</Badge></div>
             </div>
             <div className="modal-actions left-actions">
-              <Button onClick={() => setSecurityOpen(true)}><AppIcon name="settings" /> Security Options</Button>
-              <Button onClick={handleLogout} variant="danger"><AppIcon name="back" /> Logout</Button>
+              <Button onClick={() => setSecurityOpen(true)}><AppIcon name="settings" /> Opsi Keamanan</Button>
+              <Button onClick={handleLogout} variant="danger"><AppIcon name="back" /> Keluar</Button>
             </div>
           </Card>
         </section>
 
-        <Modal open={securityOpen} title="Security Options" description="Pilih aksi keamanan yang ingin dilakukan." onClose={() => setSecurityOpen(false)}>
+        <Modal open={securityOpen} title="Opsi Keamanan" description="Pilih aksi keamanan yang ingin dilakukan." onClose={() => setSecurityOpen(false)}>
           <div className="quick-action-grid two-col">
-            <Button to="/settings/security">Change Password</Button>
-            <Button to="/settings/sessions">Sign out devices</Button>
-            <Button to="/settings/notifications">Manage Alerts</Button>
-            <Button to="/settings/privacy">Privacy Controls</Button>
+            <Button to="/settings/security">Ubah Password</Button>
+            <Button to="/settings/sessions">Keluar dari perangkat lain</Button>
+            <Button to="/settings/notifications">Kelola Pemberitahuan</Button>
+            <Button to="/settings/privacy">Kontrol Privasi</Button>
           </div>
-          <div className="modal-actions"><Button onClick={() => setSecurityOpen(false)}>Close</Button></div>
+          <div className="modal-actions"><Button onClick={() => setSecurityOpen(false)}>Tutup</Button></div>
         </Modal>
       </div>
     </AppLayout>

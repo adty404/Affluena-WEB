@@ -15,7 +15,7 @@ export function SystemLogDetailPage() {
 
   if (isLoading) {
     return (
-      <AppLayout title="System Log Detail" description="Detailed request metadata for audit and debugging.">
+      <AppLayout title="Detail Log Sistem" description="Detail lengkap satu catatan permintaan.">
         <div className="dashboard-page grid-stack">
           <div className="empty-state"><p>Memuat log...</p></div>
         </div>
@@ -25,9 +25,9 @@ export function SystemLogDetailPage() {
 
   if (isError || !log) {
     return (
-      <AppLayout title="System Log Detail" description="Detailed request metadata for audit and debugging.">
+      <AppLayout title="Detail Log Sistem" description="Detail lengkap satu catatan permintaan.">
         <div className="dashboard-page grid-stack">
-          <div className="empty-state"><p>Log tidak ditemukan atau gagal dimuat.</p><Button to="/system-logs">Back to System Logs</Button></div>
+          <div className="empty-state"><p>Log tidak ditemukan atau gagal dimuat.</p><Button to="/system-logs">Kembali ke Log Sistem</Button></div>
         </div>
       </AppLayout>
     );
@@ -36,7 +36,7 @@ export function SystemLogDetailPage() {
   const hasPayload = log.request_payload || log.response_payload;
 
   return (
-    <AppLayout title="System Log Detail" description="Detailed request metadata for audit and debugging.">
+    <AppLayout title="Detail Log Sistem" description="Detail lengkap satu catatan permintaan.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
@@ -45,29 +45,29 @@ export function SystemLogDetailPage() {
             <p>{formatTimestamp(log.created_at)} · {relativeTime(log.created_at)}</p>
           </div>
           <div className="app-hero-actions">
-            <Button to="/system-logs">Back</Button>
-            <Button to="/activities" variant="primary"><AppIcon name="history" /> Activity Log</Button>
+            <Button to="/system-logs">Kembali</Button>
+            <Button to="/activities" variant="primary"><AppIcon name="history" /> Riwayat Aktivitas</Button>
           </div>
         </section>
         <Card className="panel-card">
           <div className="metric-list compact-metrics">
-            <div className="metric-cell"><span>Status</span><strong>{log.status_code}</strong><small>HTTP status</small></div>
-            <div className="metric-cell"><span>Latency</span><strong>{log.latency_ms} ms</strong><small>Request duration</small></div>
-            <div className="metric-cell"><span>User</span><strong>{actorLabel(log.user_id)}</strong><small>Actor</small></div>
-            <div className="metric-cell"><span>IP Address</span><strong>{log.client_ip || '—'}</strong><small>Client IP</small></div>
-            <div className="metric-cell"><span>Client</span><strong>{humanizeUserAgent(log.user_agent)}</strong><small>User agent</small></div>
-            <div className="metric-cell"><span>Method</span><strong>{log.method}</strong><small>HTTP method</small></div>
+            <div className="metric-cell"><span>Status</span><strong>{log.status_code}</strong><small>Status HTTP</small></div>
+            <div className="metric-cell"><span>Latensi</span><strong>{log.latency_ms} ms</strong><small>Durasi permintaan</small></div>
+            <div className="metric-cell"><span>Pengguna</span><strong>{actorLabel(log.user_id)}</strong><small>Aktor</small></div>
+            <div className="metric-cell"><span>Alamat IP</span><strong>{log.client_ip || '—'}</strong><small>IP klien</small></div>
+            <div className="metric-cell"><span>Klien</span><strong>{humanizeUserAgent(log.user_agent)}</strong><small>Peramban & perangkat</small></div>
+            <div className="metric-cell"><span>Metode</span><strong>{log.method}</strong><small>Metode HTTP</small></div>
           </div>
         </Card>
         {hasPayload ? (
           <section className="dashboard-grid two-col">
             <Card className="panel-card">
-              <div className="panel-head"><div><h3>Request Payload</h3><p>Body yang dikirim ke endpoint.</p></div></div>
-              <pre className="code-block">{log.request_payload ? JSON.stringify(log.request_payload, null, 2) : 'No request body'}</pre>
+              <div className="panel-head"><div><h3>Isi Permintaan</h3><p>Data yang dikirim bersama permintaan.</p></div></div>
+              <pre className="code-block">{log.request_payload ? JSON.stringify(log.request_payload, null, 2) : 'Tidak ada isi permintaan'}</pre>
             </Card>
             <Card className="panel-card">
-              <div className="panel-head"><div><h3>Response Payload</h3><p>Body yang dikembalikan endpoint.</p></div></div>
-              <pre className="code-block">{log.response_payload ? JSON.stringify(log.response_payload, null, 2) : 'No response body'}</pre>
+              <div className="panel-head"><div><h3>Isi Respons</h3><p>Data yang dikembalikan sebagai respons.</p></div></div>
+              <pre className="code-block">{log.response_payload ? JSON.stringify(log.response_payload, null, 2) : 'Tidak ada isi respons'}</pre>
             </Card>
           </section>
         ) : null}

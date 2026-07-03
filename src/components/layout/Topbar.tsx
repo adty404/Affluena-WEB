@@ -5,6 +5,7 @@ import { AppIcon } from '../ui/AppIcon';
 import { useAuth } from '../../hooks/useAuth';
 import { useMe } from '../../hooks/useMe';
 import { queryClient } from '../../lib/queryClient';
+import { NAV, ACTIONS } from '../../lib/copy';
 
 type TopbarProps = {
   title: string;
@@ -51,21 +52,21 @@ export function Topbar({ title, description, onMenuClick }: TopbarProps) {
 
   return (
     <header className="app-topbar">
-      <Button size="icon" className="mobile-sidebar-button" onClick={onMenuClick} aria-label="Open sidebar"><AppIcon name="more" /></Button>
+      <Button size="icon" className="mobile-sidebar-button" onClick={onMenuClick} aria-label="Buka sidebar"><AppIcon name="more" /></Button>
       <div className="topbar-title">
         <h1>{title}</h1>
         <p>{description}</p>
       </div>
       <div className="topbar-actions">
-        <Button to="/alerts" size="icon" className="mobile-alert-button" aria-label="Open alerts"><AppIcon name="budgetAlert" /></Button>
-        <Button to="/transactions/new"><AppIcon name="add" /> Quick Add</Button>
+        <Button to="/alerts" size="icon" className="mobile-alert-button" aria-label="Buka pemberitahuan"><AppIcon name="budgetAlert" /></Button>
+        <Button to="/transactions/new"><AppIcon name="add" /> {NAV.catatCepat}</Button>
         <div className="profile-menu-wrap" ref={profileRef}>
-          <Button variant="primary" onClick={() => setProfileOpen((value) => !value)} aria-expanded={profileOpen} aria-haspopup="menu" aria-label="Open profile menu">
+          <Button variant="primary" onClick={() => setProfileOpen((value) => !value)} aria-expanded={profileOpen} aria-haspopup="menu" aria-label="Buka menu profil">
             <AppIcon name="profile" /> <span className="profile-initials">{initials}</span>
           </Button>
 
           {profileOpen ? (
-            <div className="profile-popover" role="menu" aria-label="Profile menu">
+            <div className="profile-popover" role="menu" aria-label="Menu profil">
               <div className="profile-popover-head">
                 <div className="avatar large">{initials}</div>
                 <div>
@@ -74,14 +75,14 @@ export function Topbar({ title, description, onMenuClick }: TopbarProps) {
                 </div>
               </div>
               <div className="profile-popover-actions">
-                <Button to="/settings/profile" onClick={() => setProfileOpen(false)}><AppIcon name="settings" /> Profile Settings</Button>
-                <Button to="/dashboard/widget-states" onClick={() => setProfileOpen(false)}><AppIcon name="widgets" /> UI States</Button>
-                <Button to="/alerts" onClick={() => setProfileOpen(false)}><AppIcon name="budgetAlert" /> Alert Center</Button>
-                <Button to="/app-menu" onClick={() => setProfileOpen(false)}><AppIcon name="more" /> All Access</Button>
+                <Button to="/settings/profile" onClick={() => setProfileOpen(false)}><AppIcon name="settings" /> Pengaturan Profil</Button>
+                <Button to="/dashboard/widget-states" onClick={() => setProfileOpen(false)}><AppIcon name="widgets" /> Tampilan Widget</Button>
+                <Button to="/alerts" onClick={() => setProfileOpen(false)}><AppIcon name="budgetAlert" /> Pusat Pemberitahuan</Button>
+                <Button to="/app-menu" onClick={() => setProfileOpen(false)}><AppIcon name="more" /> {NAV.aksesLengkap}</Button>
               </div>
               <div className="profile-popover-foot">
-                <Button onClick={() => setProfileOpen(false)}>Close</Button>
-                <Button variant="danger" onClick={handleLogout}>Logout</Button>
+                <Button onClick={() => setProfileOpen(false)}>{ACTIONS.tutup}</Button>
+                <Button variant="danger" onClick={handleLogout}>{NAV.keluar}</Button>
               </div>
             </div>
           ) : null}

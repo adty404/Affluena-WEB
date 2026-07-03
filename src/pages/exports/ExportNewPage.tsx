@@ -62,7 +62,7 @@ export function ExportNewPage() {
       setResultSize(`${(blob.size / 1024).toFixed(1)} KB`);
 
       // The API records an export_jobs audit row; refresh the list and grab the
-      // real job id so "Open Result" routes to a genuine export detail page.
+      // real job id so "Buka Hasil" routes to a genuine export detail page.
       queryClient.invalidateQueries({ queryKey: ['exportJobs'] });
       try {
         const jobs = await queryClient.fetchQuery({
@@ -75,10 +75,10 @@ export function ExportNewPage() {
       }
 
       setCreated(true);
-      showToast('Export berhasil diunduh.');
+      showToast('Ekspor berhasil diunduh.');
     } catch (err) {
       const apiErr = err as ApiError;
-      showToast(apiErr.error || 'Gagal melakukan export.');
+      showToast(apiErr.error || 'Gagal membuat ekspor.');
     }
   }
 
@@ -91,28 +91,28 @@ export function ExportNewPage() {
   };
 
   return (
-    <AppLayout title="Create Export" description="Generate CSV/XLSX data export with clear module and period filters.">
+    <AppLayout title="Buat Ekspor" description="Buat ekspor data CSV dengan pilihan modul dan periode yang jelas.">
       <div className="dashboard-page grid-stack">
-        <section className="app-hero-card dashboard-hero"><div><Badge>● New Export</Badge><h2>Pilih modul, periode, format, lalu generate file export.</h2><p>File CSV langsung terunduh dan tercatat di export history dengan status dan jumlah row sebenarnya.</p></div><div className="app-hero-actions"><Button to="/exports">Back</Button><Button onClick={openLatest} variant="primary" disabled={!created}><AppIcon name="download" /> Open Latest</Button></div></section>
+        <section className="app-hero-card dashboard-hero"><div><Badge>● Ekspor Baru</Badge><h2>Pilih modul, periode, dan format, lalu buat berkas ekspor.</h2><p>Berkas CSV langsung terunduh dan tercatat di riwayat ekspor dengan status dan jumlah baris sebenarnya.</p></div><div className="app-hero-actions"><Button to="/exports">Kembali</Button><Button onClick={openLatest} variant="primary" disabled={!created}><AppIcon name="download" /> Buka Terbaru</Button></div></section>
         <section className="dashboard-grid two-col form-dashboard-grid">
           <Card className="panel-card">
-            <div className="panel-head"><div><h3>Export Configuration</h3><p>Semua field diberi label dan helper agar jelas di desktop maupun mobile.</p></div></div>
+            <div className="panel-head"><div><h3>Konfigurasi Ekspor</h3><p>Atur modul, format, dan rentang tanggal data yang mau kamu ekspor.</p></div></div>
             <form className="form-grid" onSubmit={handleSubmit}>
-              <div className="form-two"><label className="field"><span>Module</span><Select defaultValue="Transactions"><option>Transactions</option></Select></label><label className="field"><span>Format</span><Select defaultValue="CSV"><option>CSV</option></Select></label></div>
-              <div className="form-two"><label className="field"><span>Start date</span><Input type="date" name="from" defaultValue="2026-06-01" /></label><label className="field"><span>End date</span><Input type="date" name="to" defaultValue="2026-06-30" /></label></div>
-              <label className="field"><span>Export name</span><Input defaultValue="Transactions June 2026" /><small>Used as the suggested download file name.</small></label>
-              <div className="form-actions"><Button to="/exports">Cancel</Button><Button type="submit" variant="primary" disabled={exportMut.isPending}><AppIcon name="export" /> {exportMut.isPending ? 'Generating...' : 'Generate Export'}</Button></div>
+              <div className="form-two"><label className="field"><span>Modul</span><Select defaultValue="Transactions"><option value="Transactions">Transaksi</option></Select></label><label className="field"><span>Format</span><Select defaultValue="CSV"><option>CSV</option></Select></label></div>
+              <div className="form-two"><label className="field"><span>Tanggal mulai</span><Input type="date" name="from" defaultValue="2026-06-01" /></label><label className="field"><span>Tanggal akhir</span><Input type="date" name="to" defaultValue="2026-06-30" /></label></div>
+              <label className="field"><span>Nama ekspor</span><Input defaultValue="Transaksi Juni 2026" /><small>Dipakai sebagai usulan nama berkas unduhan.</small></label>
+              <div className="form-actions"><Button to="/exports">Batal</Button><Button type="submit" variant="primary" disabled={exportMut.isPending}><AppIcon name="export" /> {exportMut.isPending ? 'Membuat...' : 'Buat Ekspor'}</Button></div>
             </form>
           </Card>
           <Card className="panel-card export-result-card">
             <div className="mini-icon safe"><AppIcon name={created ? 'success' : 'export'} /></div>
-            <h3>{created ? 'Export generated' : 'Export preview'}</h3>
-            <p>{created ? 'File sudah diunduh dan tercatat di export history. Buka detail untuk download ulang.' : 'Konfigurasi export akan menghasilkan file CSV untuk periode yang dipilih.'}</p>
+            <h3>{created ? 'Ekspor selesai' : 'Pratinjau ekspor'}</h3>
+            <p>{created ? 'Berkas sudah diunduh dan tercatat di riwayat ekspor. Buka detail untuk mengunduh ulang.' : 'Konfigurasi ini akan menghasilkan berkas CSV untuk periode yang dipilih.'}</p>
             <div className="metric-list compact-metrics">
-              <div className="metric-cell"><span>Rows</span><strong>{created ? resultRows.toLocaleString('id-ID') : 'Generated on export'}</strong><small>{created ? 'Included records' : 'Based on selected period'}</small></div>
-              <div className="metric-cell"><span>{created ? 'Size' : 'Format'}</span><strong>{created ? resultSize : 'CSV'}</strong><small>{created ? 'Downloaded file' : 'Compatible with spreadsheet tools'}</small></div>
+              <div className="metric-cell"><span>Baris</span><strong>{created ? resultRows.toLocaleString('id-ID') : 'Dihitung saat ekspor'}</strong><small>{created ? 'Baris yang disertakan' : 'Sesuai periode terpilih'}</small></div>
+              <div className="metric-cell"><span>{created ? 'Ukuran' : 'Format'}</span><strong>{created ? resultSize : 'CSV'}</strong><small>{created ? 'Berkas terunduh' : 'Kompatibel dengan aplikasi spreadsheet'}</small></div>
             </div>
-            <div className="inline-actions"><Button onClick={openLatest} variant={created ? 'primary' : 'default'} disabled={!created}>Open Result</Button><Button to="/exports">History</Button></div>
+            <div className="inline-actions"><Button onClick={openLatest} variant={created ? 'primary' : 'default'} disabled={!created}>Buka Hasil</Button><Button to="/exports">Riwayat</Button></div>
           </Card>
         </section>
       </div>

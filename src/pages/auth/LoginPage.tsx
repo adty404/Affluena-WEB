@@ -31,18 +31,18 @@ export function LoginPage() {
   async function onSubmit(values: LoginFormValues) {
     try {
       await login(values);
-      showToast('Login berhasil. Membuka dashboard...');
+      showToast('Berhasil masuk. Membuka Beranda...');
       window.setTimeout(() => navigate(from, { replace: true }), 200);
     } catch (err) {
       const apiErr = err as ApiError;
-      showToast(apiErr.error || 'Login gagal. Periksa email dan password.');
+      showToast(apiErr.error || 'Gagal masuk. Periksa email dan kata sandi kamu.');
     }
   }
 
   return (
-    <AuthLayout title="Selamat datang kembali." description="Masuk untuk melihat dashboard finansial Affluena." narrow>
+    <AuthLayout title="Selamat datang kembali." description="Masuk untuk melihat dasbor keuangan Affluena." narrow>
       <h2>Masuk ke Affluena</h2>
-      <p>Gunakan akun email pribadi untuk masuk ke dashboard.</p>
+      <p>Gunakan akun email pribadi kamu untuk masuk.</p>
       <form className="form-stack" onSubmit={handleSubmit(onSubmit)} noValidate>
         <label>
           <span>Email</span>
@@ -50,7 +50,7 @@ export function LoginPage() {
           {errors.email && <span className="form-error">{errors.email.message}</span>}
         </label>
         <label>
-          <span>Password</span>
+          <span>Kata Sandi</span>
           <div className="password-field">
             <Input
               type={showPassword ? 'text' : 'password'}
@@ -58,13 +58,13 @@ export function LoginPage() {
               required
               {...field('password')}
             />
-            <button type="button" onClick={() => setShowPassword((value) => !value)}>{showPassword ? 'Hide' : 'Show'}</button>
+            <button type="button" onClick={() => setShowPassword((value) => !value)}>{showPassword ? 'Sembunyikan' : 'Tampilkan'}</button>
           </div>
           {errors.password && <span className="form-error">{errors.password.message}</span>}
         </label>
         <div className="form-row-between">
-          <label className="checkbox-row"><input type="checkbox" /> Remember me</label>
-          <Link to="/forgot-password">Lupa password?</Link>
+          <label className="checkbox-row"><input type="checkbox" /> Ingat saya</label>
+          <Link to="/forgot-password">Lupa kata sandi?</Link>
         </div>
         <Button type="submit" variant="primary" full disabled={isSubmitting}>
           {isSubmitting ? 'Memproses…' : 'Masuk'}

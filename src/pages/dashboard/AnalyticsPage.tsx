@@ -5,6 +5,7 @@ import { Card } from '../../components/ui/Card';
 import { CashflowChart, ExpenseDistribution, ForecastCards, StatGrid } from '../../components/finance/DashboardWidgets';
 import { useToast } from '../../components/ui/Toast';
 import { useDashboardSummary, useCashflowTrend, useExpenseDistribution, useForecast } from '../../hooks/useDashboard';
+import { NAV } from '../../lib/copy';
 import { formatIDR as formatCurrency } from '../../lib/money';
 import type { DashboardStat, ExpenseSlice, ForecastItem } from '../../types/dashboard';
 
@@ -17,15 +18,15 @@ export function AnalyticsPage() {
   const { data: forecast } = useForecast();
 
   const analyticsStats: DashboardStat[] = summary ? [
-    { label: 'Net Worth', value: formatCurrency(summary.net_worth_minor), note: 'Total aset bersih', tone: 'blue' },
-    { label: 'Monthly Income', value: formatCurrency(summary.monthly_income_minor), note: 'Pemasukan bulan ini', tone: 'green' },
-    { label: 'Avg Daily Spend', value: formatCurrency(summary.monthly_expense_minor / 30), note: 'Estimated daily average', tone: 'orange' },
-    { label: 'Expense Ratio', value: `${((summary.monthly_expense_minor / (summary.monthly_income_minor || 1)) * 100).toFixed(1)}%`, note: 'Of monthly income', tone: 'purple' },
+    { label: 'Kekayaan Bersih', value: formatCurrency(summary.net_worth_minor), note: 'Total aset bersih', tone: 'blue' },
+    { label: 'Pemasukan Bulan Ini', value: formatCurrency(summary.monthly_income_minor), note: 'Total uang masuk', tone: 'green' },
+    { label: 'Rata-rata Harian', value: formatCurrency(summary.monthly_expense_minor / 30), note: 'Perkiraan pengeluaran per hari', tone: 'orange' },
+    { label: 'Rasio Pengeluaran', value: `${((summary.monthly_expense_minor / (summary.monthly_income_minor || 1)) * 100).toFixed(1)}%`, note: 'Dari pemasukan bulan ini', tone: 'purple' },
   ] : [
-    { label: 'Net Worth', value: '...', note: 'Loading...' },
-    { label: 'Monthly Income', value: '...', note: 'Loading...' },
-    { label: 'Avg Daily Spend', value: '...', note: 'Loading...' },
-    { label: 'Expense Ratio', value: '...', note: 'Loading...' },
+    { label: 'Kekayaan Bersih', value: '...', note: 'Memuat...' },
+    { label: 'Pemasukan Bulan Ini', value: '...', note: 'Memuat...' },
+    { label: 'Rata-rata Harian', value: '...', note: 'Memuat...' },
+    { label: 'Rasio Pengeluaran', value: '...', note: 'Memuat...' },
   ];
 
   const expenseSlices: ExpenseSlice[] = (expenseData?.distribution ?? []).map((d, i) => {
@@ -39,25 +40,25 @@ export function AnalyticsPage() {
   });
 
   const forecastItems: ForecastItem[] = forecast ? [
-    { title: 'Forecasted Expense', value: formatCurrency(forecast.forecasted_expense_minor), note: 'Expected end of month', tone: forecast.status === 'safe' ? 'green' : 'red' },
-    { title: 'Budget Limit', value: formatCurrency(forecast.budget_limit_minor), note: 'Total budget limit', tone: 'purple' },
+    { title: 'Prakiraan Pengeluaran', value: formatCurrency(forecast.forecasted_expense_minor), note: 'Perkiraan sampai akhir bulan', tone: forecast.status === 'safe' ? 'green' : 'red' },
+    { title: 'Batas Anggaran', value: formatCurrency(forecast.budget_limit_minor), note: 'Total batas anggaran kamu', tone: 'purple' },
   ] : [
-    { title: 'Forecasted Expense', value: '...', note: 'Loading...', tone: 'green' },
-    { title: 'Budget Limit', value: '...', note: 'Loading...', tone: 'purple' },
+    { title: 'Prakiraan Pengeluaran', value: '...', note: 'Memuat...', tone: 'green' },
+    { title: 'Batas Anggaran', value: '...', note: 'Memuat...', tone: 'purple' },
   ];
 
   return (
-    <AppLayout title="Analytics" description="Analisa cashflow, expense distribution, dan financial trend.">
+    <AppLayout title="Analitik" description="Analisis arus kas, sebaran pengeluaran, dan tren keuangan kamu.">
       <div className="grid stack-lg">
         <section className="app-hero-card">
           <div>
-            <Badge tone="blue">● Analytics</Badge>
-            <h2>Analisa kebiasaan finansial dari income, expense, dan spending pattern.</h2>
-            <p>Gunakan halaman ini untuk membaca tren sebelum membuat keputusan budget atau forecast.</p>
+            <Badge tone="blue">● {NAV.analitik}</Badge>
+            <h2>Pahami kebiasaan finansial kamu dari pola pemasukan dan pengeluaran.</h2>
+            <p>Baca tren keuanganmu lebih dulu sebelum menentukan anggaran atau prakiraan.</p>
           </div>
           <div className="app-hero-actions">
-            <Button variant="primary" onClick={() => showToast('Analytics period changed to current month.')}>Current Month</Button>
-            <Button to="/dashboard/forecast">Open Forecast</Button>
+            <Button variant="primary" onClick={() => showToast('Periode analitik diubah ke bulan ini.')}>Bulan Ini</Button>
+            <Button to="/dashboard/forecast">Buka Prakiraan</Button>
           </div>
         </section>
 
@@ -67,11 +68,11 @@ export function AnalyticsPage() {
           <div className="grid stack-lg">
             <CashflowChart trend={trendData?.trend} />
             <Card className="dashboard-panel">
-              <div className="panel-head"><div><h3>Insight Summary</h3><p>Generated from current dashboard metrics.</p></div></div>
+              <div className="panel-head"><div><h3>Ringkasan Wawasan</h3><p>Dirangkum dari data keuangan kamu bulan ini.</p></div></div>
               <div className="insight-list">
-                <div><Badge>Good</Badge><strong>Income lebih stabil dibanding expense.</strong><span>Cashflow tetap positif selama 6 bulan.</span></div>
-                <div><Badge tone="orange">Watch</Badge><strong>Transportation hampir menyentuh budget risk.</strong><span>Perlu daily cap sampai akhir bulan.</span></div>
-                <div><Badge tone="purple">Pattern</Badge><strong>Food spending naik pada minggu kedua.</strong><span>Buka Budget Alerts untuk membuat review threshold pengeluaran.</span></div>
+                <div><Badge>Baik</Badge><strong>Pemasukan lebih stabil dibanding pengeluaran.</strong><span>Arus kas tetap positif selama 6 bulan.</span></div>
+                <div><Badge tone="orange">Waspada</Badge><strong>Pengeluaran transportasi hampir menyentuh batas anggaran.</strong><span>Batasi pengeluaran harian sampai akhir bulan.</span></div>
+                <div><Badge tone="purple">Pola</Badge><strong>Pengeluaran makanan naik pada minggu kedua.</strong><span>Buka Notifikasi Anggaran untuk meninjau batas pengeluaran.</span></div>
               </div>
             </Card>
           </div>

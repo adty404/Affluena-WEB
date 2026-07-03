@@ -33,7 +33,7 @@ export function GoalDetailPage() {
   const currentUserId = meData?.user.id;
 
   if (isLoading || !goal) {
-    return <AppLayout title="Goal Detail" description="Loading..."><div className="loading-state">Loading...</div></AppLayout>;
+    return <AppLayout title="Detail Target" description="Memuat..."><div className="loading-state">Memuat...</div></AppLayout>;
   }
 
   const progress = goal.target_amount_minor > 0 ? Math.round((goal.collected_amount_minor / goal.target_amount_minor) * 100) : 0;
@@ -55,36 +55,36 @@ export function GoalDetailPage() {
           icon: goal.icon,
         },
       });
-      showToast(`Goal marked as ${goalStatusLabel(pending.status).toLowerCase()}.`);
+      showToast(`Target ditandai ${goalStatusLabel(pending.status).toLowerCase()}.`);
       setPending(null);
     } catch (error) {
-      showToast('Failed to update goal status.');
+      showToast('Gagal memperbarui status target.');
     }
   };
 
   return (
-    <AppLayout title="Goal Detail" description="Goal progress, members, contribution history, and next action.">
+    <AppLayout title="Detail Target" description="Progres target, anggota, dan aksi lanjutan.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
-          <div><span className="badge dark">● Goal Detail</span><h2>{goal.name}</h2></div>
+          <div><span className="badge dark">● Detail Target</span><h2>{goal.name}</h2></div>
           <div className="app-hero-actions">
-            <Button to="/goals"><AppIcon name="back" /> Back</Button>
+            <Button to="/goals"><AppIcon name="back" /> Kembali</Button>
             <Button to={`/goals/${goal.id}/edit`}><AppIcon name="edit" /> Edit</Button>
             {goal.status === 'active' && (
-              <Button to={`/goals/${goal.id}/contribute`} variant="primary"><AppIcon name="pay" /> Contribute</Button>
+              <Button to={`/goals/${goal.id}/contribute`} variant="primary"><AppIcon name="pay" /> Setor</Button>
             )}
           </div>
         </section>
 
         <section className="dashboard-grid">
           <Card className="panel-card goal-detail-card">
-            <div className="panel-head"><div><h3>Progress Overview</h3><p>Target, current saved, remaining amount, dan deadline.</p></div><Badge tone={goalStatusBadgeTone(goal.status)}>{goalStatusLabel(goal.status)}</Badge></div>
-            <div className="goal-progress-hero"><span className="preview-icon"><AppIcon name="goal" /></span><div><strong><Amount value={goal.collected_amount_minor} type="income" /></strong><small>of <Amount value={goal.target_amount_minor} /> target</small></div></div>
+            <div className="panel-head"><div><h3>Ringkasan Progres</h3><p>Target, dana terkumpul, sisa, dan batas waktu.</p></div><Badge tone={goalStatusBadgeTone(goal.status)}>{goalStatusLabel(goal.status)}</Badge></div>
+            <div className="goal-progress-hero"><span className="preview-icon"><AppIcon name="goal" /></span><div><strong><Amount value={goal.collected_amount_minor} type="income" /></strong><small>dari target <Amount value={goal.target_amount_minor} /></small></div></div>
             <ProgressBar value={progress} tone={goalProgressTone(goal.status)} />
             <div className="metric-list compact-metrics">
-              <div><span>Progress</span><strong>{progress}% funded</strong></div>
-              <div><span>Remaining</span><strong><Amount value={remaining} type="expense" /></strong></div>
-              <div><span>Deadline</span><strong>{goal.deadline ? new Date(goal.deadline).toLocaleDateString() : '-'}</strong></div>
+              <div><span>Progres</span><strong>{progress}% tercapai</strong></div>
+              <div><span>Sisa</span><strong><Amount value={remaining} type="expense" /></strong></div>
+              <div><span>Batas Waktu</span><strong>{goal.deadline ? new Date(goal.deadline).toLocaleDateString() : '-'}</strong></div>
             </div>
             <div className="form-row-between goal-status-actions">
               {goal.status === 'active' && (
@@ -92,27 +92,27 @@ export function GoalDetailPage() {
                   <Button
                     variant="primary"
                     disabled={updateGoal.isPending}
-                    onClick={() => setPending({ status: 'achieved', title: 'Mark goal as achieved?', description: 'This goal will be marked complete. You can reactivate it later if needed.', confirmLabel: 'Mark complete' })}
-                  ><AppIcon name="success" /> Mark complete</Button>
+                    onClick={() => setPending({ status: 'achieved', title: 'Tandai target tercapai?', description: 'Target akan ditandai tercapai. Kamu bisa mengaktifkannya lagi nanti kalau perlu.', confirmLabel: 'Tandai Tercapai' })}
+                  ><AppIcon name="success" /> Tandai Tercapai</Button>
                   <Button
                     variant="danger"
                     disabled={updateGoal.isPending}
-                    onClick={() => setPending({ status: 'cancelled', title: 'Cancel this goal?', description: 'The goal will be marked as cancelled. Saved funds in the goal wallet are not affected.', confirmLabel: 'Cancel goal' })}
-                  ><AppIcon name="cancelled" /> Cancel goal</Button>
+                    onClick={() => setPending({ status: 'cancelled', title: 'Batalkan target ini?', description: 'Target akan ditandai dibatalkan. Dana yang sudah terkumpul di dompet target tidak berubah.', confirmLabel: 'Batalkan Target' })}
+                  ><AppIcon name="cancelled" /> Batalkan Target</Button>
                 </>
               )}
               {goal.status !== 'active' && (
                 <Button
                   variant="primary"
                   disabled={updateGoal.isPending}
-                  onClick={() => setPending({ status: 'active', title: 'Reactivate this goal?', description: 'The goal will return to active so you can keep contributing.', confirmLabel: 'Reactivate' })}
-                ><AppIcon name="recurring" /> Reactivate goal</Button>
+                  onClick={() => setPending({ status: 'active', title: 'Aktifkan lagi target ini?', description: 'Target akan kembali aktif sehingga kamu bisa lanjut menyetor.', confirmLabel: 'Aktifkan Lagi' })}
+                ><AppIcon name="recurring" /> Aktifkan Lagi</Button>
               )}
             </div>
           </Card>
 
           <Card className="panel-card">
-            <div className="panel-head"><div><h3>Goal Members</h3><p>Owner, contributor, dan pending invite.</p></div><Button to={`/goals/${goal.id}/members`} size="small"><AppIcon name="profile" /> Manage</Button></div>
+            <div className="panel-head"><div><h3>Anggota Target</h3><p>Pemilik, anggota, dan undangan yang menunggu.</p></div><Button to={`/goals/${goal.id}/members`} size="small"><AppIcon name="profile" /> Kelola</Button></div>
             <div className="readiness-list">
               {goal.members?.map((member) => (
                 <div key={member.user_id}>
@@ -135,12 +135,12 @@ export function GoalDetailPage() {
         onClose={() => { if (!updateGoal.isPending) setPending(null); }}
       >
         <div className="form-row-between">
-          <Button onClick={() => setPending(null)} disabled={updateGoal.isPending}>Back</Button>
+          <Button onClick={() => setPending(null)} disabled={updateGoal.isPending}>Kembali</Button>
           <Button
             variant={pending?.status === 'cancelled' ? 'danger' : 'primary'}
             onClick={onConfirmTransition}
             disabled={updateGoal.isPending}
-          >{updateGoal.isPending ? 'Saving...' : pending?.confirmLabel}</Button>
+          >{updateGoal.isPending ? 'Menyimpan...' : pending?.confirmLabel}</Button>
         </div>
       </Modal>
     </AppLayout>

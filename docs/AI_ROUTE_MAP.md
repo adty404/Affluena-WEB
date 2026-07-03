@@ -2,7 +2,7 @@
 
 Use this file to understand existing routes and avoid active-link/dynamic-route mistakes.
 
-> **Hidden-from-sidebar routes (still routable):** The sidebar nav was de-cluttered and no longer links to Split Bill (`/transactions/split`), Tags (`/tags*`), Debt & Tracker (`/debts*`, `/tracker`), or the Export Center (`/exports*`). All of these routes, pages, and handlers are still mounted in `src/App.tsx` and remain reachable via the All Access menu (`/app-menu`) and direct URLs — they were hidden, not removed. Every route below is still accurate.
+> **Hidden-from-sidebar routes (still routable):** The sidebar nav was de-cluttered and no longer links to Split Bill (`/transactions/split`), Tags (`/tags*`), Debt & Tracker (`/debts*`, `/tracker`), or the Export Center (`/exports*`). All of these routes, pages, and handlers are still mounted in `src/App.tsx` and remain reachable via the All Access ("Akses Lengkap") menu (`/app-menu`) and direct URLs — they were hidden, not removed. Every route below is still accurate.
 
 ## Route Principles
 
@@ -43,7 +43,7 @@ Use this file to understand existing routes and avoid active-link/dynamic-route 
 
 ## Berbagi Dompet (account-level wallet sharing)
 
-- `/sharing` — not in the sidebar; reachable from Settings and the All Access menu (`/app-menu`).
+- `/sharing` — not in the sidebar; reachable from Settings and the All Access ("Akses Lengkap") menu (`/app-menu`).
 
 ## Categories
 

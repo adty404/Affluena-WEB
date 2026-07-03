@@ -26,12 +26,12 @@ export function CashflowChart({ trend }: { trend?: { month: string; income_minor
       <Card className="dashboard-panel chart-panel">
         <div className="panel-head">
           <div>
-            <h3>Cashflow Trend</h3>
-            <p>Income vs expense in the last 6 months.</p>
+            <h3>Tren Arus Kas</h3>
+            <p>Pemasukan vs pengeluaran 6 bulan terakhir.</p>
           </div>
         </div>
-        <div className="cashflow-chart" aria-label="Cashflow trend chart">
-          <p style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>No data available</p>
+        <div className="cashflow-chart" aria-label="Grafik tren arus kas">
+          <p style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>Belum ada data</p>
         </div>
       </Card>
     );
@@ -55,12 +55,12 @@ export function CashflowChart({ trend }: { trend?: { month: string; income_minor
     <Card className="dashboard-panel chart-panel">
       <div className="panel-head">
         <div>
-          <h3>Cashflow Trend</h3>
-          <p>Income vs expense in the last {trend.length} months.</p>
+          <h3>Tren Arus Kas</h3>
+          <p>Pemasukan vs pengeluaran {trend.length} bulan terakhir.</p>
         </div>
         <Badge tone="blue">{trend[trend.length - 1]?.month}</Badge>
       </div>
-      <div className="cashflow-chart" aria-label="Cashflow trend chart">
+      <div className="cashflow-chart" aria-label="Grafik tren arus kas">
         <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
           <text x="0" y="24" className="axis-text">{Math.round(maxVal / 1000000)}M</text>
           <text x="0" y={height / 2} className="axis-text">{Math.round(maxVal / 2000000)}M</text>
@@ -70,8 +70,8 @@ export function CashflowChart({ trend }: { trend?: { month: string; income_minor
         </svg>
       </div>
       <div className="chart-legend">
-        <span><i className="legend-dot income" />Income</span>
-        <span><i className="legend-dot expense" />Expense</span>
+        <span><i className="legend-dot income" />Pemasukan</span>
+        <span><i className="legend-dot expense" />Pengeluaran</span>
       </div>
     </Card>
   );
@@ -82,8 +82,8 @@ export function ExpenseDistribution({ items }: { items: ExpenseSlice[] }) {
     <Card className="dashboard-panel">
       <div className="panel-head">
         <div>
-          <h3>Expense Distribution</h3>
-          <p>Top spending categories this month.</p>
+          <h3>Sebaran Pengeluaran</h3>
+          <p>Kategori pengeluaran terbesar bulan ini.</p>
         </div>
       </div>
       <div className="expense-donut" />
@@ -104,8 +104,8 @@ export function RecentTransactions({ items }: { items: DashboardTransaction[] })
     <Card className="dashboard-panel">
       <div className="panel-head">
         <div>
-          <h3>Recent Transactions</h3>
-          <p>Latest financial activities.</p>
+          <h3>Transaksi Terbaru</h3>
+          <p>Aktivitas keuangan terakhir kamu.</p>
         </div>
       </div>
       <div className="transaction-list compact">
@@ -145,8 +145,8 @@ export function WalletPortfolio({ items }: { items: { name: string; value: strin
     <Card className="dashboard-panel">
       <div className="panel-head">
         <div>
-          <h3>Wallet Portfolio</h3>
-          <p>Balance distribution across wallets.</p>
+          <h3>Portofolio Dompet</h3>
+          <p>Sebaran saldo di semua dompetmu.</p>
         </div>
       </div>
       <div className="portfolio-list">

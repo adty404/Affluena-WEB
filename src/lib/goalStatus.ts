@@ -10,9 +10,9 @@ type ProgressTone = 'green' | 'orange';
 export const GOAL_STATUSES: GoalStatus[] = ['active', 'achieved', 'cancelled'];
 
 const STATUS_LABEL: Record<GoalStatus, string> = {
-  active: 'Active',
-  achieved: 'Achieved',
-  cancelled: 'Cancelled',
+  active: 'Aktif',
+  achieved: 'Tercapai',
+  cancelled: 'Dibatalkan',
 };
 
 const STATUS_BADGE_TONE: Record<GoalStatus, BadgeTone> = {

@@ -13,9 +13,12 @@ import { FinanceOverviewCard } from '../../components/finance/FinanceOverviewCar
 import { itemAccentVars } from '../../components/finance/ColorPicker';
 import { useToast } from '../../components/ui/Toast';
 import { useSubscriptions, useDeleteSubscription } from '../../hooks/useTrackers';
+import { NAV } from '../../lib/copy';
 import type { Subscription } from '../../types/tracker';
 
 const statusTone = (status: Subscription['status']) => status === 'cancelled' ? 'red' : status === 'active' ? 'blue' : 'orange';
+const statusLabel = (status: Subscription['status']) => status === 'cancelled' ? 'Dibatalkan' : status === 'active' ? 'Aktif' : 'Dijeda';
+const cycleLabel = (cycle: Subscription['billing_cycle']) => cycle === 'weekly' ? 'Mingguan' : 'Bulanan';
 
 export function SubscriptionListPage() {
   const { data, isLoading, error } = useSubscriptions();
@@ -30,26 +33,26 @@ export function SubscriptionListPage() {
     if (!target) return;
     deleteMut.mutate(target.id, {
       onSuccess: () => {
-        showToast('Subscription deleted successfully');
+        showToast('Langganan berhasil dihapus');
         setTarget(null);
       },
-      onError: (err: any) => showToast(err?.message || 'Failed to delete subscription'),
+      onError: (err: any) => showToast(err?.message || 'Gagal menghapus langganan'),
     });
   };
 
   return (
-    <AppLayout title="Subscriptions" description="Track renewal date, monthly burn, and subscription payments.">
+    <AppLayout title={NAV.langganan} description="Pantau tanggal perpanjangan, pengeluaran bulanan, dan pembayaran langganan.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
-          <div><span className="badge dark">● Subscription Tracker</span><h2>Lacak langganan digital, renewal date, dan monthly burn.</h2><p>Subscription payment dapat membuat expense transaction agar cashflow tetap akurat.</p></div>
-          <div className="app-hero-actions"><Button to="/tracker"><AppIcon name="tracker" /> Tracker</Button><Button to="/subscriptions/new" variant="primary"><AppIcon name="add" /> Add Subscription</Button></div>
+          <div><span className="badge dark">● {NAV.langganan}</span><h2>Lacak langganan digital, tanggal perpanjangan, dan pengeluaran bulanannya.</h2><p>Setiap pembayaran langganan tercatat sebagai transaksi agar arus kas tetap akurat.</p></div>
+          <div className="app-hero-actions"><Button to="/tracker"><AppIcon name="tracker" /> {NAV.pemantauUtang}</Button><Button to="/subscriptions/new" variant="primary"><AppIcon name="add" /> Tambah Langganan</Button></div>
         </section>
 
         <section className="stat-grid">
-          <Card className="stat-card"><span>Active Subs</span><strong>{subscriptions.length}</strong><small>Tracked services</small></Card>
-          <Card className="stat-card orange"><span>Monthly Burn</span><strong><Amount value={monthlyBurn} type="expense" /></strong><small>Normalized monthly</small></Card>
-          <Card className="stat-card blue"><span>Annualized</span><strong><Amount value={monthlyBurn * 12} /></strong><small>Projection</small></Card>
-          <Card className="stat-card purple"><span>Due Soon</span><strong>0</strong><small>Renewals</small></Card>
+          <Card className="stat-card"><span>Langganan Aktif</span><strong>{subscriptions.length}</strong><small>Layanan terpantau</small></Card>
+          <Card className="stat-card orange"><span>Pengeluaran Bulanan</span><strong><Amount value={monthlyBurn} type="expense" /></strong><small>Setara per bulan</small></Card>
+          <Card className="stat-card blue"><span>Setahun</span><strong><Amount value={monthlyBurn * 12} /></strong><small>Proyeksi</small></Card>
+          <Card className="stat-card purple"><span>Segera Jatuh Tempo</span><strong>0</strong><small>Perpanjangan</small></Card>
         </section>
 
         <section className="entity-card-grid stable-card-grid">
@@ -57,47 +60,47 @@ export function SubscriptionListPage() {
             <FinanceOverviewCard
               key={item.id}
               title={item.name}
-              subtitle={`Wallet ${item.wallet_id} · ${item.billing_cycle}`}
+              subtitle={`Dompet ${item.wallet_id} · ${cycleLabel(item.billing_cycle)}`}
               icon="subscription"
               iconTone="info"
-              badge={item.status.replace('_', ' ')}
+              badge={statusLabel(item.status)}
               badgeTone={statusTone(item.status)}
               amount={item.amount_minor}
               amountType="expense"
               accentColor={item.color}
-              description={`Paid from ${item.wallet_id}. Next renewal ${item.next_due_date}.`}
+              description={`Dibayar dari ${item.wallet_id}. Perpanjangan berikutnya ${item.next_due_date}.`}
               metaLeft={item.account_detail}
-              metaRight={item.billing_cycle}
-              actions={<><Button to={`/subscriptions/${item.id}/pay`} size="small" variant="primary"><AppIcon name="pay" /> Pay</Button><Button size="small" variant="danger" onClick={() => setTarget(item)}><AppIcon name="delete" /> Delete</Button></>}
+              metaRight={cycleLabel(item.billing_cycle)}
+              actions={<><Button to={`/subscriptions/${item.id}/pay`} size="small" variant="primary"><AppIcon name="pay" /> Bayar</Button><Button size="small" variant="danger" onClick={() => setTarget(item)}><AppIcon name="delete" /> Hapus</Button></>}
             />
           ))}
         </section>
 
         {isLoading && (
-          <Card className="panel-card"><div className="readiness-list"><div><span>Loading</span><strong>Memuat subscription...</strong></div></div></Card>
+          <Card className="panel-card"><div className="readiness-list"><div><span>Memuat</span><strong>Memuat langganan...</strong></div></div></Card>
         )}
         {!isLoading && !error && subscriptions.length === 0 && (
           <Card className="panel-card">
-            <EmptyState icon={<AppIcon name="subscription" />} title="Belum ada langganan" description="Tambahkan subscription untuk melacak renewal date dan monthly burn." action={<Button to="/subscriptions/new" variant="primary"><AppIcon name="add" /> Add Subscription</Button>} />
+            <EmptyState icon={<AppIcon name="subscription" />} title="Belum ada langganan" description="Tambahkan langganan untuk melacak tanggal perpanjangan dan pengeluaran bulanannya." action={<Button to="/subscriptions/new" variant="primary"><AppIcon name="add" /> Tambah Langganan</Button>} />
           </Card>
         )}
         {error && (
-          <Card className="panel-card"><EmptyState icon={<AppIcon name="empty" />} title="Gagal memuat subscription" description="Periksa koneksi lalu coba lagi." /></Card>
+          <Card className="panel-card"><EmptyState icon={<AppIcon name="empty" />} title="Gagal memuat langganan" description="Periksa koneksi lalu coba lagi." /></Card>
         )}
 
         <Card className="panel-card">
-          <div className="panel-head"><div><h3>Subscription List</h3><p>Renewal schedule dan action pembayaran.</p></div><Button to="/subscriptions/new" size="small" variant="primary"><AppIcon name="add" /> Add</Button></div>
+          <div className="panel-head"><div><h3>Daftar Langganan</h3><p>Jadwal perpanjangan dan aksi pembayaran.</p></div><Button to="/subscriptions/new" size="small" variant="primary"><AppIcon name="add" /> Tambah</Button></div>
           <DataTable<Subscription>
             data={subscriptions}
             getRowKey={(item) => item.id}
             columns={[
-              { key: 'name', header: 'Name', render: (item) => { const accent = itemAccentVars(item.color); return <div className="table-title"><span className={clsx('mini-icon', accent ? 'has-accent' : 'info')} style={accent}><AppIcon name="subscription" /></span><strong>{item.name}</strong></div>; } },
-              { key: 'wallet', header: 'Wallet', render: (item) => item.wallet_id },
-              { key: 'cycle', header: 'Cycle', render: (item) => item.billing_cycle },
-              { key: 'amount', header: 'Amount', align: 'right', render: (item) => <Amount value={item.amount_minor} type="expense" /> },
-              { key: 'renewal', header: 'Next Renewal', render: (item) => item.next_due_date },
-              { key: 'status', header: 'Status', render: (item) => <Badge tone={statusTone(item.status)}>{item.status.replace('_', ' ')}</Badge> },
-              { key: 'action', header: 'Action', render: (item) => <div className="inline-actions"><Button to={`/subscriptions/${item.id}/pay`} size="small">Pay</Button><Button size="small" variant="danger" onClick={() => setTarget(item)}><AppIcon name="delete" /></Button></div> },
+              { key: 'name', header: 'Nama', render: (item) => { const accent = itemAccentVars(item.color); return <div className="table-title"><span className={clsx('mini-icon', accent ? 'has-accent' : 'info')} style={accent}><AppIcon name="subscription" /></span><strong>{item.name}</strong></div>; } },
+              { key: 'wallet', header: 'Dompet', render: (item) => item.wallet_id },
+              { key: 'cycle', header: 'Siklus', render: (item) => cycleLabel(item.billing_cycle) },
+              { key: 'amount', header: 'Jumlah', align: 'right', render: (item) => <Amount value={item.amount_minor} type="expense" /> },
+              { key: 'renewal', header: 'Perpanjangan Berikutnya', render: (item) => item.next_due_date },
+              { key: 'status', header: 'Status', render: (item) => <Badge tone={statusTone(item.status)}>{statusLabel(item.status)}</Badge> },
+              { key: 'action', header: 'Aksi', render: (item) => <div className="inline-actions"><Button to={`/subscriptions/${item.id}/pay`} size="small">Bayar</Button><Button size="small" variant="danger" onClick={() => setTarget(item)}><AppIcon name="delete" /></Button></div> },
             ]}
           />
         </Card>
@@ -105,17 +108,17 @@ export function SubscriptionListPage() {
 
       <Modal
         open={!!target}
-        title="Delete Subscription"
-        description="Tindakan ini menghapus subscription beserta riwayat pembayarannya."
+        title="Hapus Langganan"
+        description="Tindakan ini menghapus langganan beserta riwayat pembayarannya."
         onClose={() => (deleteMut.isPending ? null : setTarget(null))}
       >
         <div className="readiness-list">
-          <div><span>Name</span><strong>{target?.name}</strong></div>
-          <div><span>Amount</span><strong>{target ? <Amount value={target.amount_minor} type="expense" /> : null}</strong></div>
+          <div><span>Nama</span><strong>{target?.name}</strong></div>
+          <div><span>Jumlah</span><strong>{target ? <Amount value={target.amount_minor} type="expense" /> : null}</strong></div>
         </div>
         <div className="modal-actions">
-          <Button onClick={() => setTarget(null)} disabled={deleteMut.isPending}>Cancel</Button>
-          <Button variant="danger" onClick={confirmDelete} disabled={deleteMut.isPending}>{deleteMut.isPending ? 'Deleting...' : 'Delete Subscription'}</Button>
+          <Button onClick={() => setTarget(null)} disabled={deleteMut.isPending}>Batal</Button>
+          <Button variant="danger" onClick={confirmDelete} disabled={deleteMut.isPending}>{deleteMut.isPending ? 'Menghapus...' : 'Hapus Langganan'}</Button>
         </div>
       </Modal>
     </AppLayout>

@@ -39,7 +39,7 @@ export function TransactionItem({ transaction }: { transaction: Transaction }) {
       <div className="transaction-main">
         <strong>{category?.name || transaction.note || transactionTypeLabels[transaction.type]}</strong>
         <span>
-          {wallet?.name || 'Unknown Wallet'}
+          {wallet?.name || 'Dompet Tidak Dikenal'}
           {toWallet ? ` → ${toWallet.name}` : ''}
           {' · '}{new Date(transaction.transaction_at).toLocaleDateString()}
         </span>
@@ -52,7 +52,7 @@ export function TransactionItem({ transaction }: { transaction: Transaction }) {
         <Badge tone={typeTone[transaction.type]}>{transactionTypeLabels[transaction.type]}</Badge>
       </div>
       <div className="inline-actions">
-        <Button size="small" to={`/transactions/${transaction.id}`}>View</Button>
+        <Button size="small" to={`/transactions/${transaction.id}`}>Lihat</Button>
         <Button size="small" to={`/transactions/${transaction.id}/edit`}>Edit</Button>
       </div>
     </div>

@@ -49,11 +49,11 @@ export function InstallmentFormPage() {
   async function onSubmit(values: CreateInstallmentInput) {
     try {
       await createMut.mutateAsync(values);
-      showToast('Installment saved.');
+      showToast('Cicilan tersimpan.');
       navigate('/installments', { replace: true });
     } catch (err) {
       const apiErr = err as ApiError;
-      showToast(apiErr.error || 'Failed to create installment.');
+      showToast(apiErr.error || 'Gagal menyimpan cicilan.');
     }
   }
 
@@ -61,26 +61,26 @@ export function InstallmentFormPage() {
   const remainingMonths = form.watch('remaining_months') || 0;
 
   return (
-    <AppLayout title="Add Installment" description="Create installment tracker with tenor, due day, and wallet.">
+    <AppLayout title="Tambah Cicilan" description="Catat cicilan baru dengan tenor, tanggal tagihan, dan dompet.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
-          <div><span className="badge dark">● Installment Form</span><h2>Buat tracker cicilan dengan jadwal pembayaran jelas.</h2><p>Installment membantu menjaga fixed outflow tetap terlihat di tracker dan dashboard.</p></div>
-          <div className="app-hero-actions"><Button to="/installments">Back</Button></div>
+          <div><span className="badge dark">● Formulir Cicilan</span><h2>Catat cicilan dengan jadwal pembayaran yang jelas.</h2><p>Cicilan yang tercatat akan selalu terlihat di Pemantau Utang dan Beranda.</p></div>
+          <div className="app-hero-actions"><Button to="/installments">Kembali</Button></div>
         </section>
         <section className="form-detail-grid">
           <Card className="panel-card">
-            <div className="panel-head"><div><h3>Installment Information</h3><p>Monthly amount, tenor, paid count, dan due day.</p></div></div>
+            <div className="panel-head"><div><h3>Informasi Cicilan</h3><p>Nominal bulanan, tenor, dan tanggal tagihan.</p></div></div>
             <form className="form-stack" onSubmit={form.handleSubmit(onSubmit)} noValidate>
               <div className="form-two">
                 <label>
-                  <span>Name</span>
-                  <Input {...form.register('name')} placeholder="Car Installment" />
+                  <span>Nama</span>
+                  <Input {...form.register('name')} placeholder="Cicilan Mobil" />
                   {form.formState.errors.name && <span className="form-error">{form.formState.errors.name.message}</span>}
                 </label>
                 <label>
-                  <span>Wallet</span>
+                  <span>Dompet</span>
                   <Select {...form.register('wallet_id')}>
-                    <option value="">Select Wallet</option>
+                    <option value="">Pilih Dompet</option>
                     {wallets.map((wallet) => <option key={wallet.id} value={wallet.id}>{wallet.name}</option>)}
                   </Select>
                   {form.formState.errors.wallet_id && <span className="form-error">{form.formState.errors.wallet_id.message}</span>}
@@ -88,43 +88,43 @@ export function InstallmentFormPage() {
               </div>
               <div className="form-three">
                 <label>
-                  <span>Total Amount (Minor)</span>
+                  <span>Nominal Total (Rp)</span>
                   <Input type="number" {...form.register('total_amount_minor', { valueAsNumber: true })} />
                   {form.formState.errors.total_amount_minor && <span className="form-error">{form.formState.errors.total_amount_minor.message}</span>}
                 </label>
                 <label>
-                  <span>Monthly Amount (Minor)</span>
+                  <span>Nominal Bulanan (Rp)</span>
                   <Input type="number" {...form.register('monthly_amount_minor', { valueAsNumber: true })} />
                   {form.formState.errors.monthly_amount_minor && <span className="form-error">{form.formState.errors.monthly_amount_minor.message}</span>}
                 </label>
                 <label>
-                  <span>Total Tenor (Months)</span>
+                  <span>Tenor (Bulan)</span>
                   <Input type="number" {...form.register('tenor_months', { valueAsNumber: true })} />
                   {form.formState.errors.tenor_months && <span className="form-error">{form.formState.errors.tenor_months.message}</span>}
                 </label>
               </div>
               <div className="form-two">
                 <label>
-                  <span>Remaining Months</span>
+                  <span>Sisa Bulan</span>
                   <Input type="number" {...form.register('remaining_months', { valueAsNumber: true })} />
                   {form.formState.errors.remaining_months && <span className="form-error">{form.formState.errors.remaining_months.message}</span>}
                 </label>
                 <label>
-                  <span>Start Date</span>
+                  <span>Tanggal Mulai</span>
                   <Input type="date" {...form.register('start_date')} />
                   {form.formState.errors.start_date && <span className="form-error">{form.formState.errors.start_date.message}</span>}
                 </label>
               </div>
               <div className="form-two">
                 <label>
-                  <span>Due Day (1-31)</span>
+                  <span>Tanggal Tagihan (1-31)</span>
                   <Input type="number" min="1" max="31" {...form.register('due_day', { valueAsNumber: true })} />
                   {form.formState.errors.due_day && <span className="form-error">{form.formState.errors.due_day.message}</span>}
                 </label>
                 <label>
-                  <span>Category</span>
+                  <span>Kategori</span>
                   <Select {...form.register('category_id')}>
-                    <option value="">Select Category</option>
+                    <option value="">Pilih Kategori</option>
                     {categories.map((cat) => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
                   </Select>
                   {form.formState.errors.category_id && <span className="form-error">{form.formState.errors.category_id.message}</span>}
@@ -139,21 +139,21 @@ export function InstallmentFormPage() {
                 <small className="field-help">Warna yang sama dipakai di aplikasi mobile.</small>
               </label>
               <label>
-                <span>Note</span>
-                <Textarea {...form.register('note')} placeholder="Monthly installment tracked inside Affluena." />
+                <span>Catatan</span>
+                <Textarea {...form.register('note')} placeholder="Cicilan bulanan yang dipantau di Affluena." />
                 {form.formState.errors.note && <span className="form-error">{form.formState.errors.note.message}</span>}
               </label>
               <div className="form-row-between">
-                <Button to="/installments">Cancel</Button>
-                <Button type="submit" variant="primary" disabled={form.formState.isSubmitting || createMut.isPending}><AppIcon name="save" /> Save Installment</Button>
+                <Button to="/installments">Batal</Button>
+                <Button type="submit" variant="primary" disabled={form.formState.isSubmitting || createMut.isPending}><AppIcon name="save" /> Simpan Cicilan</Button>
               </div>
             </form>
           </Card>
           <Card className="panel-card side-metrics-card">
-            <div className="panel-head"><div><h3>Schedule Preview</h3><p>Perhitungan cicilan sebelum disimpan.</p></div></div>
+            <div className="panel-head"><div><h3>Pratinjau Jadwal</h3><p>Perhitungan cicilan sebelum disimpan.</p></div></div>
             <div className="metric-list">
-              <div><span>Monthly payment</span><strong><Amount value={monthlyAmount} type="expense" /></strong></div>
-              <div><span>Remaining tenor</span><strong>{remainingMonths} months</strong></div>
+              <div><span>Pembayaran bulanan</span><strong><Amount value={monthlyAmount} type="expense" /></strong></div>
+              <div><span>Sisa tenor</span><strong>{remainingMonths} bulan</strong></div>
             </div>
           </Card>
         </section>

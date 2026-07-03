@@ -80,11 +80,11 @@ export function CategoryFormPage() {
   async function onCreate(values: CategoryCreateFormValues) {
     try {
       await createMut.mutateAsync(values);
-      showToast('Category created.');
+      showToast('Kategori dibuat.');
       navigate('/categories', { replace: true });
     } catch (err) {
       const apiErr = err as ApiError;
-      showToast(apiErr.error || 'Failed to create category.');
+      showToast(apiErr.error || 'Gagal membuat kategori.');
     }
   }
 
@@ -92,11 +92,11 @@ export function CategoryFormPage() {
     if (!id) return;
     try {
       await updateMut.mutateAsync(values);
-      showToast('Category updated.');
+      showToast('Kategori diperbarui.');
       navigate('/categories', { replace: true });
     } catch (err) {
       const apiErr = err as ApiError;
-      showToast(apiErr.error || 'Failed to update category.');
+      showToast(apiErr.error || 'Gagal memperbarui kategori.');
     }
   }
 
@@ -105,26 +105,26 @@ export function CategoryFormPage() {
     try {
       await deleteMut.mutateAsync(id);
       setDeleteOpen(false);
-      showToast('Category deleted.');
+      showToast('Kategori dihapus.');
       navigate('/categories', { replace: true });
     } catch (err) {
       const apiErr = err as ApiError;
-      showToast(apiErr.error || 'Failed to delete category.');
+      showToast(apiErr.error || 'Gagal menghapus kategori.');
     }
   }
 
   if (isEdit && isLoading) {
     return (
-      <AppLayout title="Edit Category" description="Loading…">
-        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Loading category</span><strong>…</strong></div></div></Card></div>
+      <AppLayout title="Edit Kategori" description="Memuat…">
+        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Memuat kategori</span><strong>…</strong></div></div></Card></div>
       </AppLayout>
     );
   }
 
   if (isEdit && !existing) {
     return (
-      <AppLayout title="Edit Category" description="Category not found.">
-        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Error</span><strong>Category not found.</strong></div></div><div className="modal-actions"><Button to="/categories">Back to list</Button></div></Card></div>
+      <AppLayout title="Edit Kategori" description="Kategori tidak ditemukan.">
+        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Error</span><strong>Kategori tidak ditemukan.</strong></div></div><div className="modal-actions"><Button to="/categories">Kembali ke daftar</Button></div></Card></div>
       </AppLayout>
     );
   }
@@ -136,112 +136,111 @@ export function CategoryFormPage() {
   const renderParentSelect = (field: ReturnType<typeof activeForm.register>) => (
     <>
       <Select {...field}>
-        <option value="">No parent (top level)</option>
+        <option value="">Tanpa induk (level teratas)</option>
         {eligibleParents.map((cat) => (
           <option key={cat.id} value={cat.id}>{cat.name}</option>
         ))}
       </Select>
-      <small>Only categories with room for another level are listed.</small>
+      <small>Hanya kategori yang masih bisa punya level tambahan yang ditampilkan.</small>
     </>
   );
 
   return (
-    <AppLayout title={isEdit ? 'Edit Category' : 'Create Category'} description="Create or edit an income or expense category.">
+    <AppLayout title={isEdit ? 'Edit Kategori' : 'Buat Kategori'} description="Buat atau edit kategori pemasukan atau pengeluaran.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <span className="badge dark">● Category Form</span>
-            <h2>{isEdit ? `Edit ${existing?.name ?? ''}` : prefillParentName ? `New subcategory under ${prefillParentName}` : 'Create a new category'}</h2>
-            <p>A subcategory must share its parent's type, belong to you, and never form a loop. The tree supports up to three levels.</p>
+            <span className="badge dark">● Kategori</span>
+            <h2>{isEdit ? `Edit ${existing?.name ?? ''}` : prefillParentName ? `Subkategori baru di bawah ${prefillParentName}` : 'Buat kategori baru.'}</h2>
+            <p>Subkategori selalu mengikuti tipe kategori induknya, dan susunannya bisa sampai tiga level.</p>
           </div>
-          <div className="app-hero-actions"><Button to="/categories"><AppIcon name="back" /> Back</Button></div>
+          <div className="app-hero-actions"><Button to="/categories"><AppIcon name="back" /> Kembali</Button></div>
         </section>
 
         <section className="dashboard-grid">
           <Card className="panel-card">
-            <div className="panel-head"><div><h3>Category Information</h3><p>Name, type, and where it sits in the hierarchy.</p></div></div>
+            <div className="panel-head"><div><h3>Informasi Kategori</h3><p>Nama, tipe, dan posisinya dalam susunan kategori.</p></div></div>
             {isEdit ? (
               <form className="form-stack" onSubmit={updateForm.handleSubmit(onUpdate)} noValidate>
                 <label>
-                  <span>Category name</span>
+                  <span>Nama kategori</span>
                   <Input {...updateForm.register('name')} />
                   {updateForm.formState.errors.name && <span className="form-error">{updateForm.formState.errors.name.message}</span>}
                 </label>
                 <div className="form-two">
                   <label>
-                    <span>Type</span>
+                    <span>Tipe</span>
                     <Select {...updateForm.register('type')}>
                       {categoryTypeOptions.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                     </Select>
                   </label>
                   <label>
-                    <span>Parent category</span>
+                    <span>Kategori induk</span>
                     {renderParentSelect(updateForm.register('parent_id'))}
                   </label>
                 </div>
                 <label>
-                  <span>Notes</span>
-                  <Textarea rows={3} placeholder="Optional notes, e.g. what this category is used for." />
+                  <span>Catatan</span>
+                  <Textarea rows={3} placeholder="Catatan opsional, mis. kegunaan kategori ini." />
                 </label>
                 <div className="form-row-between">
-                  <Button to="/categories">Cancel</Button>
+                  <Button to="/categories">Batal</Button>
                   <div className="inline-actions">
-                    <Button type="button" variant="danger" onClick={() => setDeleteOpen(true)}><AppIcon name="delete" /> Delete</Button>
-                    <Button type="submit" variant="primary" disabled={updateForm.formState.isSubmitting || updateMut.isPending}><AppIcon name="save" /> Save Category</Button>
+                    <Button type="button" variant="danger" onClick={() => setDeleteOpen(true)}><AppIcon name="delete" /> Hapus</Button>
+                    <Button type="submit" variant="primary" disabled={updateForm.formState.isSubmitting || updateMut.isPending}><AppIcon name="save" /> Simpan Kategori</Button>
                   </div>
                 </div>
               </form>
             ) : (
               <form className="form-stack" onSubmit={createForm.handleSubmit(onCreate)} noValidate>
                 <label>
-                  <span>Category name</span>
+                  <span>Nama kategori</span>
                   <Input {...createForm.register('name')} />
                   {createForm.formState.errors.name && <span className="form-error">{createForm.formState.errors.name.message}</span>}
                 </label>
                 <div className="form-two">
                   <label>
-                    <span>Type</span>
+                    <span>Tipe</span>
                     <Select {...createForm.register('type')}>
                       {categoryTypeOptions.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                     </Select>
                   </label>
                   <label>
-                    <span>Parent category</span>
+                    <span>Kategori induk</span>
                     {renderParentSelect(createForm.register('parent_id'))}
                   </label>
                 </div>
                 <label>
-                  <span>Notes</span>
-                  <Textarea rows={3} placeholder="Optional notes, e.g. what this category is used for." />
+                  <span>Catatan</span>
+                  <Textarea rows={3} placeholder="Catatan opsional, mis. kegunaan kategori ini." />
                 </label>
                 <div className="form-row-between">
-                  <Button to="/categories">Cancel</Button>
-                  <Button type="submit" variant="primary" disabled={createForm.formState.isSubmitting || createMut.isPending}><AppIcon name="save" /> Save Category</Button>
+                  <Button to="/categories">Batal</Button>
+                  <Button type="submit" variant="primary" disabled={createForm.formState.isSubmitting || createMut.isPending}><AppIcon name="save" /> Simpan Kategori</Button>
                 </div>
               </form>
             )}
           </Card>
           <Card className="panel-card">
-            <div className="panel-head"><div><h3>Rules</h3><p>What keeps the hierarchy valid.</p></div></div>
+            <div className="panel-head"><div><h3>Aturan Kategori</h3><p>Batasan yang menjaga kategorimu tetap rapi.</p></div></div>
             <div className="readiness-list">
-              <div><span>Max depth</span><strong>3 levels</strong></div>
-              <div><span>Parent type</span><strong>same type</strong></div>
-              <div><span>No cycle</span><strong>required</strong></div>
-              <div><span>User isolation</span><strong>required</strong></div>
+              <div><span>Kedalaman</span><strong>Maksimal 3 level</strong></div>
+              <div><span>Tipe induk</span><strong>Sama dengan tipe subkategorinya</strong></div>
+              <div><span>Struktur</span><strong>Kategori tidak bisa jadi induk dirinya sendiri</strong></div>
             </div>
           </Card>
         </section>
       </div>
 
-      <Modal open={deleteOpen} title="Delete Category" description="This action cannot be undone." onClose={() => setDeleteOpen(false)}>
+      <Modal open={deleteOpen} title="Hapus Kategori" description="Tindakan ini tidak bisa dibatalkan." onClose={() => setDeleteOpen(false)}>
         <div className="readiness-list">
-          <div><span>Category</span><strong>{existing?.name ?? id}</strong></div>
-          <div><span>Type</span><strong>{existing ? categoryTypeLabels[existing.type] : '—'}</strong></div>
-          <div><span>Note</span><strong>Best removed when no transactions reference it.</strong></div>
+          <div><span>Kategori</span><strong>{existing?.name ?? id}</strong></div>
+          <div><span>Tipe</span><strong>{existing ? categoryTypeLabels[existing.type] : '—'}</strong></div>
+          <div><span>Catatan</span><strong>Sebaiknya dihapus saat tidak ada transaksi yang memakainya.</strong></div>
         </div>
         <div className="modal-actions">
-          <Button onClick={() => setDeleteOpen(false)}>Cancel</Button>
-          <Button variant="danger" onClick={onDelete} disabled={deleteMut.isPending}>Delete Category</Button>
+          <Button onClick={() => setDeleteOpen(false)}>Batal</Button>
+          <Button variant="danger" onClick={onDelete} disabled={deleteMut.isPending}>Hapus Kategori</Button>
         </div>
       </Modal>
     </AppLayout>

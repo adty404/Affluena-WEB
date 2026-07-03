@@ -20,6 +20,12 @@ const progressTone = {
   exceeded: 'red',
 } as const;
 
+const statusLabel = {
+  safe: 'Aman',
+  warning: 'Peringatan',
+  exceeded: 'Terlampaui',
+} as const;
+
 type BudgetCardProps = {
   budget: BudgetSummary;
   featured?: boolean;
@@ -28,7 +34,7 @@ type BudgetCardProps = {
 export function BudgetCard({ budget, featured }: BudgetCardProps) {
   const { data: categoriesData } = useCategories({ type: 'expense' });
   const category = (categoriesData?.categories ?? []).find(c => c.id === budget.category_id);
-  const categoryName = category?.name ?? 'Unknown Category';
+  const categoryName = category?.name ?? 'Kategori tidak dikenal';
   const categoryIcon = 'categories';
 
   const usage = budget.usage_percent;
@@ -53,15 +59,15 @@ export function BudgetCard({ budget, featured }: BudgetCardProps) {
           <strong>{categoryName}</strong>
           <span>{budget.month}</span>
         </div>
-        <Badge tone={statusTone[status]}>{status}</Badge>
+        <Badge tone={statusTone[status]}>{statusLabel[status]}</Badge>
       </div>
       <div className="budget-limit"><Amount value={budget.limit_minor} /></div>
       <p className="budget-meta">
-        Spent <Amount value={budget.spent_minor} /> · {remaining >= 0 ? 'Remaining' : 'Over'} <Amount value={Math.abs(remaining)} />
+        Terpakai <Amount value={budget.spent_minor} /> · {remaining >= 0 ? 'Sisa' : 'Lebih'} <Amount value={Math.abs(remaining)} />
       </p>
       <ProgressBar value={usage} tone={progressTone[status]} />
       <div className="budget-card-foot">
-        <span>{usage}% used</span>
+        <span>{usage}% terpakai</span>
       </div>
       <div className="card-actions">
         <Button to={`/budgets/${budget.id}`} size="small">Detail</Button>

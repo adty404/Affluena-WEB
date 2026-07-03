@@ -27,8 +27,15 @@ const inviteSchema = z.object({
 type InviteValues = z.infer<typeof inviteSchema>;
 
 const roleLabels: Record<string, string> = {
-  member: 'Anggota (bisa catat)',
+  owner: 'Pemilik',
+  member: 'Anggota (bisa mencatat)',
   viewer: 'Hanya lihat',
+};
+
+const shareStatusLabels: Record<string, string> = {
+  joined: 'Bergabung',
+  pending: 'Menunggu',
+  rejected: 'Ditolak',
 };
 
 function memberLabel(email: string) {
@@ -62,7 +69,7 @@ export function WalletSharingPage() {
       form.reset();
     } catch (err) {
       const apiErr = err as ApiError;
-      showToast(apiErr.error || 'Gagal mengundang member.');
+      showToast(apiErr.error || 'Gagal mengirim undangan.');
     }
   }
 
@@ -71,7 +78,7 @@ export function WalletSharingPage() {
     setPendingAction(status);
     try {
       await respondMut.mutateAsync({ memberId, payload: { status } });
-      showToast(status === 'joined' ? 'Undangan diterima. Wallet sudah dibagikan ke kamu.' : 'Undangan ditolak.');
+      showToast(status === 'joined' ? 'Undangan diterima. Dompet sudah dibagikan ke kamu.' : 'Undangan ditolak.');
     } catch (err) {
       const apiErr = err as ApiError;
       showToast(apiErr.error || 'Gagal merespons undangan.');
@@ -82,16 +89,16 @@ export function WalletSharingPage() {
 
   if (isLoading) {
     return (
-      <AppLayout title="Wallet Sharing" description="Memuat…">
-        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Memuat wallet</span><strong>…</strong></div></div></Card></div>
+      <AppLayout title="Anggota Dompet" description="Memuat…">
+        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Memuat dompet</span><strong>…</strong></div></div></Card></div>
       </AppLayout>
     );
   }
 
   if (!wallet) {
     return (
-      <AppLayout title="Wallet Sharing" description="Wallet tidak ditemukan.">
-        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Error</span><strong>Wallet tidak ditemukan.</strong></div></div><div className="modal-actions"><Button to="/wallets">Back to list</Button></div></Card></div>
+      <AppLayout title="Anggota Dompet" description="Dompet tidak ditemukan.">
+        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Error</span><strong>Dompet tidak ditemukan.</strong></div></div><div className="modal-actions"><Button to="/wallets">Kembali ke daftar</Button></div></Card></div>
       </AppLayout>
     );
   }
@@ -105,15 +112,15 @@ export function WalletSharingPage() {
   const responding = respondMut.isPending;
 
   return (
-    <AppLayout title="Wallet Sharing" description={`Kelola akses untuk ${wallet.name}.`}>
+    <AppLayout title="Anggota Dompet" description={`Kelola akses untuk ${wallet.name}.`}>
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <span className="badge dark">● Sharing</span>
+            <span className="badge dark">● Anggota Dompet</span>
             <h2>{wallet.name}</h2>
-            <p>Role kamu: <strong>{wallet.role ?? '—'}</strong>. Status: <strong>{wallet.share_status ?? '—'}</strong>.</p>
+            <p>Peran kamu: <strong>{wallet.role ? roleLabels[wallet.role] ?? wallet.role : '—'}</strong>. Status: <strong>{wallet.share_status ? shareStatusLabels[wallet.share_status] ?? wallet.share_status : '—'}</strong>.</p>
           </div>
-          <div className="app-hero-actions"><Button to={`/wallets/${wallet.id}`}>Back to Detail</Button></div>
+          <div className="app-hero-actions"><Button to={`/wallets/${wallet.id}`}>Kembali ke Detail</Button></div>
         </section>
 
         {myInvitePending ? (
@@ -121,9 +128,9 @@ export function WalletSharingPage() {
             <div className="panel-head">
               <div>
                 <h3>Undangan untuk Kamu</h3>
-                <p>Kamu diundang ke wallet ini sebagai <strong>{myMembership?.role ?? 'member'}</strong>. Terima untuk mulai berbagi akses.</p>
+                <p>Kamu diundang ke dompet ini sebagai <strong>{roleLabels[myMembership?.role ?? 'member'] ?? myMembership?.role}</strong>. Terima untuk mulai berbagi akses.</p>
               </div>
-              <Badge tone="orange">Pending</Badge>
+              <Badge tone="orange">Menunggu</Badge>
             </div>
             <div className="inline-actions">
               <Button
@@ -146,11 +153,11 @@ export function WalletSharingPage() {
 
         <section className="dashboard-grid">
           <Card className="panel-card">
-            <div className="panel-head"><div><h3>Members ({members.length})</h3><p>Owner + user yang diundang.</p></div></div>
+            <div className="panel-head"><div><h3>Anggota ({members.length})</h3><p>Pemilik dan orang yang diundang.</p></div></div>
             {membersLoading ? (
-              <div className="readiness-list"><div><span>Memuat members</span><strong>…</strong></div></div>
+              <div className="readiness-list"><div><span>Memuat anggota</span><strong>…</strong></div></div>
             ) : members.length === 0 ? (
-              <div className="readiness-list"><div><span>Status</span><strong>Belum ada member</strong></div></div>
+              <div className="readiness-list"><div><span>Status</span><strong>Belum ada anggota</strong></div></div>
             ) : (
               <div className="member-list">
                 {members.map((m) => {
@@ -160,10 +167,10 @@ export function WalletSharingPage() {
                       <div className="avatar">{m.email.slice(0, 2).toUpperCase()}</div>
                       <div>
                         <strong>{memberLabel(m.email)}{isMe ? ' (Kamu)' : ''}</strong>
-                        <span>{m.email} · {m.role}</span>
+                        <span>{m.email} · {roleLabels[m.role] ?? m.role}</span>
                       </div>
                       <Badge tone={m.role === 'owner' ? 'green' : m.status === 'joined' ? 'blue' : m.status === 'pending' ? 'orange' : 'red'}>
-                        {m.role === 'owner' ? 'Owner' : m.status}
+                        {m.role === 'owner' ? 'Pemilik' : shareStatusLabels[m.status] ?? m.status}
                       </Badge>
                     </div>
                   );
@@ -173,16 +180,16 @@ export function WalletSharingPage() {
           </Card>
 
           <Card className="panel-card">
-            <div className="panel-head"><div><h3>Akses Kamu</h3><p>Info role dan status wallet ini untuk user yang login.</p></div></div>
+            <div className="panel-head"><div><h3>Akses Kamu</h3><p>Peran dan status kamu di dompet ini.</p></div></div>
             <div className="readiness-list">
-              <div><span>Role</span><Badge tone={wallet.role === 'owner' ? 'green' : 'purple'}>{wallet.role ?? '—'}</Badge></div>
-              <div><span>Status</span><Badge tone={wallet.share_status === 'joined' ? 'green' : wallet.share_status === 'pending' ? 'orange' : 'red'}>{wallet.share_status ?? '—'}</Badge></div>
-              <div><span>Wallet</span><strong>{wallet.name}</strong></div>
+              <div><span>Peran</span><Badge tone={wallet.role === 'owner' ? 'green' : 'purple'}>{wallet.role ? roleLabels[wallet.role] ?? wallet.role : '—'}</Badge></div>
+              <div><span>Status</span><Badge tone={wallet.share_status === 'joined' ? 'green' : wallet.share_status === 'pending' ? 'orange' : 'red'}>{wallet.share_status ? shareStatusLabels[wallet.share_status] ?? wallet.share_status : '—'}</Badge></div>
+              <div><span>Dompet</span><strong>{wallet.name}</strong></div>
             </div>
           </Card>
 
           <Card className="panel-card">
-            <div className="panel-head"><div><h3>Invite Member</h3><p>Undang user lain via email. Status awal: pending.</p></div></div>
+            <div className="panel-head"><div><h3>Undang Anggota</h3><p>Undang orang lain lewat email. Undangan menunggu sampai diterima.</p></div></div>
             <form className="form-stack" onSubmit={form.handleSubmit(onSubmit)} noValidate>
               <label>
                 <span>Email</span>
@@ -190,12 +197,12 @@ export function WalletSharingPage() {
                 {form.formState.errors.email && <span className="form-error">{form.formState.errors.email.message}</span>}
               </label>
               <label>
-                <span>Role</span>
+                <span>Peran</span>
                 <Select {...form.register('role')}>
                   <option value="member">{roleLabels.member}</option>
                   <option value="viewer">{roleLabels.viewer}</option>
                 </Select>
-                <small className="field-help">Anggota bisa mencatat transaksi di wallet ini; hanya lihat berarti read-only.</small>
+                <small className="field-help">Anggota bisa mencatat transaksi di dompet ini; hanya lihat berarti cuma bisa melihat.</small>
               </label>
               <Button type="submit" variant="primary" full disabled={form.formState.isSubmitting || inviteMut.isPending}>
                 <AppIcon name="save" /> {inviteMut.isPending ? 'Mengirim…' : 'Kirim Undangan'}
@@ -204,18 +211,18 @@ export function WalletSharingPage() {
             {lastInvite ? (
               <div className="readiness-list" style={{ marginTop: 16 }}>
                 <div><span>Undangan terakhir</span><strong>{lastInvite}</strong></div>
-                <div><span>Status</span><strong>pending</strong></div>
+                <div><span>Status</span><strong>Menunggu</strong></div>
               </div>
             ) : null}
           </Card>
         </section>
 
         <Card className="panel-card">
-          <div className="panel-head"><div><h3>Cara Kerja Sharing</h3><p>Alur akses wallet bersama.</p></div></div>
+          <div className="panel-head"><div><h3>Cara Kerja Berbagi</h3><p>Alur akses dompet bersama.</p></div></div>
           <div className="readiness-list">
-            <div><span>Owner</span><strong>Selalu join otomatis dengan role owner</strong></div>
-            <div><span>Invite</span><strong>User yang diundang mulai dengan status pending</strong></div>
-            <div><span>Respond</span><strong>Invitee menerima atau menolak undangan dari halaman ini</strong></div>
+            <div><span>Pemilik</span><strong>Selalu punya akses penuh ke dompetnya</strong></div>
+            <div><span>Undangan</span><strong>Orang yang diundang berstatus menunggu sampai merespons</strong></div>
+            <div><span>Respons</span><strong>Penerima undangan menerima atau menolak dari halaman ini</strong></div>
           </div>
         </Card>
       </div>

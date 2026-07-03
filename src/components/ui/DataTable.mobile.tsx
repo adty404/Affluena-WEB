@@ -171,7 +171,7 @@ export function MobileCardList<T>({
                       type="button"
                       className="dt-mobile-more-button"
                       aria-expanded={isActionMenuOpen}
-                      aria-label={`More actions for ${titleText}`}
+                      aria-label={`Aksi lain untuk ${titleText}`}
                       onClick={() => setOpenActionRow((current) => (current === rowKey ? null : rowKey))}
                     >
                       <span aria-hidden="true">...</span>

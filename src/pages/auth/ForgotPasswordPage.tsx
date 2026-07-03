@@ -24,18 +24,18 @@ export function ForgotPasswordPage() {
   async function onSubmit(values: Values) {
     try {
       await requestPasswordReset(values.email);
-      showToast('Jika email terdaftar, link reset sudah dikirim.');
+      showToast('Jika email terdaftar, tautan reset sudah dikirim.');
       form.reset();
     } catch (err) {
       const apiErr = err as ApiError;
-      showToast(apiErr.error || 'Gagal mengirim link reset.');
+      showToast(apiErr.error || 'Gagal mengirim tautan reset.');
     }
   }
 
   return (
-    <AuthLayout title="Reset akses akun dengan aman." description="Masukkan email, link reset akan dikirim." narrow>
-      <h2>Lupa password</h2>
-      <p>Masukkan email akun Affluena. Backend selalu mengembalikan respons sama untuk mencegah enumeration email.</p>
+    <AuthLayout title="Reset akses akun dengan aman." description="Masukkan email, tautan reset akan dikirim." narrow>
+      <h2>Lupa kata sandi</h2>
+      <p>Masukkan email akun Affluena kamu. Kami akan mengirimkan tautan reset jika email terdaftar.</p>
       <form className="form-stack" onSubmit={form.handleSubmit(onSubmit)} noValidate>
         <label>
           <span>Email</span>
@@ -43,10 +43,10 @@ export function ForgotPasswordPage() {
           {form.formState.errors.email && <span className="form-error">{form.formState.errors.email.message}</span>}
         </label>
         <Button type="submit" variant="primary" full disabled={form.formState.isSubmitting}>
-          {form.formState.isSubmitting ? 'Mengirim…' : 'Kirim link reset'}
+          {form.formState.isSubmitting ? 'Mengirim…' : 'Kirim tautan reset'}
         </Button>
       </form>
-      <p className="auth-switch"><Link to="/login">Kembali ke login</Link></p>
+      <p className="auth-switch"><Link to="/login">Kembali ke halaman masuk</Link></p>
     </AuthLayout>
   );
 }

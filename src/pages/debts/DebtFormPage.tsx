@@ -19,7 +19,7 @@ export function DebtFormPage() {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const isReceivable = pathname.includes('receivable');
-  const title = isReceivable ? 'Add Receivable' : 'Add Payable';
+  const title = isReceivable ? 'Tambah Piutang' : 'Tambah Utang';
 
   const { data: walletsData } = useWallets();
   const wallets = walletsData?.wallets ?? [];
@@ -47,52 +47,52 @@ export function DebtFormPage() {
   async function onSubmit(values: CreateDebtInput) {
     try {
       await createMut.mutateAsync(values);
-      showToast(`${title} saved.`);
+      showToast(isReceivable ? 'Piutang berhasil disimpan.' : 'Utang berhasil disimpan.');
       navigate('/debts', { replace: true });
     } catch (err) {
       const apiErr = err as ApiError;
-      showToast(apiErr.error || `Failed to create ${isReceivable ? 'receivable' : 'payable'}.`);
+      showToast(apiErr.error || `Gagal menyimpan ${isReceivable ? 'piutang' : 'utang'}.`);
     }
   }
 
   const amountMinor = form.watch('principal_amount_minor');
 
   return (
-    <AppLayout title={title} description="Create payable or receivable with due date and reminder rule.">
+    <AppLayout title={title} description="Catat utang atau piutang lengkap dengan tanggal jatuh tempo.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
-          <div><span className="badge dark">● Debt Form</span><h2>{isReceivable ? 'Catat piutang yang harus ditagih.' : 'Catat utang yang harus dibayar.'}</h2><p>Form ini terhubung ke wallet dan payment flow agar saldo tetap konsisten.</p></div>
-          <div className="app-hero-actions"><Button to="/debts">Back</Button></div>
+          <div><span className="badge dark">● Utang & Piutang</span><h2>{isReceivable ? 'Catat piutang yang harus ditagih.' : 'Catat utang yang harus dibayar.'}</h2><p>Setiap pembayaran akan langsung memperbarui saldo dompet kamu.</p></div>
+          <div className="app-hero-actions"><Button to="/debts">Kembali</Button></div>
         </section>
 
         <section className="form-detail-grid">
           <Card className="panel-card">
-            <div className="panel-head"><div><h3>Debt Information</h3><p>Lengkapi counterparty, amount, due date, dan wallet.</p></div></div>
+            <div className="panel-head"><div><h3>Informasi Utang</h3><p>Lengkapi pihak lain, nominal, tanggal jatuh tempo, dan dompet.</p></div></div>
             <form className="form-stack" onSubmit={form.handleSubmit(onSubmit)} noValidate>
               <div className="form-two">
                 <label>
-                  <span>Type</span>
+                  <span>Tipe</span>
                   <Select {...form.register('type')} disabled>
-                    <option value="payable">Payable - I owe someone</option>
-                    <option value="receivable">Receivable - Someone owes me</option>
+                    <option value="payable">Utang - Saya berutang ke orang lain</option>
+                    <option value="receivable">Piutang - Orang lain berutang ke saya</option>
                   </Select>
                 </label>
                 <label>
-                  <span>Counterparty</span>
-                  <Input {...form.register('counterparty_name')} placeholder={isReceivable ? 'Team Dinner' : 'Bank ABC'} />
+                  <span>Nama Pihak Lain</span>
+                  <Input {...form.register('counterparty_name')} placeholder={isReceivable ? 'Makan bareng tim' : 'Bank ABC'} />
                   {form.formState.errors.counterparty_name && <span className="form-error">{form.formState.errors.counterparty_name.message}</span>}
                 </label>
               </div>
               <div className="form-two">
                 <label>
-                  <span>Original Amount (Minor)</span>
+                  <span>Nominal Awal (Rp)</span>
                   <Input type="number" {...form.register('principal_amount_minor', { valueAsNumber: true })} />
                   {form.formState.errors.principal_amount_minor && <span className="form-error">{form.formState.errors.principal_amount_minor.message}</span>}
                 </label>
                 <label>
-                  <span>Wallet</span>
+                  <span>Dompet</span>
                   <Select {...form.register('wallet_id')}>
-                    <option value="">Select Wallet</option>
+                    <option value="">Pilih Dompet</option>
                     {wallets.map((wallet) => <option key={wallet.id} value={wallet.id}>{wallet.name}</option>)}
                   </Select>
                   {form.formState.errors.wallet_id && <span className="form-error">{form.formState.errors.wallet_id.message}</span>}
@@ -100,17 +100,17 @@ export function DebtFormPage() {
               </div>
               <div className="form-two">
                 <label>
-                  <span>Disbursement Category</span>
+                  <span>Kategori Pencairan</span>
                   <Select {...form.register('disbursement_category_id')}>
-                    <option value="">Select Category</option>
+                    <option value="">Pilih Kategori</option>
                     {categories.map((cat) => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
                   </Select>
                   {form.formState.errors.disbursement_category_id && <span className="form-error">{form.formState.errors.disbursement_category_id.message}</span>}
                 </label>
                 <label>
-                  <span>Payment Category</span>
+                  <span>Kategori Pembayaran</span>
                   <Select {...form.register('payment_category_id')}>
-                    <option value="">Select Category</option>
+                    <option value="">Pilih Kategori</option>
                     {categories.map((cat) => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
                   </Select>
                   {form.formState.errors.payment_category_id && <span className="form-error">{form.formState.errors.payment_category_id.message}</span>}
@@ -118,33 +118,33 @@ export function DebtFormPage() {
               </div>
               <div className="form-two">
                 <label>
-                  <span>Opened At</span>
+                  <span>Tanggal Mulai</span>
                   <Input type="date" {...form.register('opened_at')} />
                   {form.formState.errors.opened_at && <span className="form-error">{form.formState.errors.opened_at.message}</span>}
                 </label>
                 <label>
-                  <span>Due Date</span>
+                  <span>Tanggal Jatuh Tempo</span>
                   <Input type="date" {...form.register('due_date')} />
                   {form.formState.errors.due_date && <span className="form-error">{form.formState.errors.due_date.message}</span>}
                 </label>
               </div>
               <label>
-                <span>Note</span>
-                <Textarea {...form.register('note')} placeholder={isReceivable ? 'Receivable generated from split bill or manual lending.' : 'Debt that needs scheduled payment tracking.'} />
+                <span>Catatan</span>
+                <Textarea {...form.register('note')} placeholder={isReceivable ? 'Piutang dari bagi tagihan atau pinjaman ke teman.' : 'Utang yang perlu dilacak pembayarannya.'} />
                 {form.formState.errors.note && <span className="form-error">{form.formState.errors.note.message}</span>}
               </label>
               <div className="form-row-between">
-                <Button to="/debts">Cancel</Button>
-                <Button type="submit" variant="primary" disabled={form.formState.isSubmitting || createMut.isPending}><AppIcon name="save" /> Save Debt</Button>
+                <Button to="/debts">Batal</Button>
+                <Button type="submit" variant="primary" disabled={form.formState.isSubmitting || createMut.isPending}><AppIcon name="save" /> Simpan</Button>
               </div>
             </form>
           </Card>
 
           <Card className="panel-card side-metrics-card">
-            <div className="panel-head"><div><h3>Balance Impact</h3><p>Preview payment behavior setelah debt dibuat.</p></div></div>
+            <div className="panel-head"><div><h3>Dampak ke Saldo</h3><p>Pratinjau efek pembayaran setelah dicatat.</p></div></div>
             <div className="metric-list">
-              <div><span>Payment direction</span><strong>{isReceivable ? 'Wallet increases on collection' : 'Wallet decreases on payment'}</strong></div>
-              <div><span>Sample amount</span><strong><Amount value={amountMinor || 0} type={isReceivable ? 'income' : 'expense'} /></strong></div>
+              <div><span>Arah pembayaran</span><strong>{isReceivable ? 'Saldo dompet bertambah saat piutang diterima' : 'Saldo dompet berkurang saat utang dibayar'}</strong></div>
+              <div><span>Contoh nominal</span><strong><Amount value={amountMinor || 0} type={isReceivable ? 'income' : 'expense'} /></strong></div>
             </div>
           </Card>
         </section>

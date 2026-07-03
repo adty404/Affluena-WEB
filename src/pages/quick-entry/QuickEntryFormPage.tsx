@@ -56,60 +56,60 @@ export function QuickEntryFormPage() {
     try {
       if (isEdit && id) {
         await updateMutation.mutateAsync({ id, data });
-        showToast('Quick entry template updated successfully');
+        showToast('Template catat cepat berhasil diperbarui');
       } else {
         await createMutation.mutateAsync(data);
-        showToast('Quick entry template created successfully');
+        showToast('Template catat cepat berhasil dibuat');
       }
       navigate('/quick-entry');
     } catch (error) {
-      showToast('Failed to save quick entry template');
+      showToast('Gagal menyimpan template catat cepat');
     }
   };
 
   if (isEdit && isLoadingTemplate) {
-    return <AppLayout title="Edit Quick Entry" description="Loading..."><div className="p-8">Loading...</div></AppLayout>;
+    return <AppLayout title="Edit Catat Cepat" description="Memuat..."><div className="p-8">Memuat...</div></AppLayout>;
   }
 
   return (
-    <AppLayout title={isEdit ? 'Edit Quick Entry' : 'New Quick Entry'} description="Create reusable transaction template.">
+    <AppLayout title={isEdit ? 'Edit Catat Cepat' : 'Catat Cepat Baru'} description="Buat template transaksi siap pakai.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
-          <div><span className="badge dark">● Quick Entry Form</span><h2>{isEdit ? 'Edit template transaksi rutin.' : 'Buat template transaksi rutin.'}</h2><p>Execute quick entry wajib memakai confirmation modal saat production.</p></div>
-          <div className="app-hero-actions"><Button to="/quick-entry">Back</Button><Button variant="primary" onClick={handleSubmit(onSubmit)} disabled={isSubmitting}>Save Template</Button></div>
+          <div><span className="badge dark">● Catat Cepat</span><h2>{isEdit ? 'Edit template transaksi rutin.' : 'Buat template transaksi rutin.'}</h2><p>Sekali disimpan, template bisa dijalankan kapan pun untuk mencatat transaksi yang sama.</p></div>
+          <div className="app-hero-actions"><Button to="/quick-entry">Kembali</Button><Button variant="primary" onClick={handleSubmit(onSubmit)} disabled={isSubmitting}>Simpan Template</Button></div>
         </section>
-        
+
         <Card className="panel-card">
-          <div className="panel-head"><div><h3>Template Information</h3><p>Field template untuk transaksi cepat.</p></div></div>
+          <div className="panel-head"><div><h3>Informasi Template</h3><p>Detail template untuk pencatatan cepat.</p></div></div>
           <form className="form-stack" onSubmit={handleSubmit(onSubmit)}>
             <div className="form-two">
               <label>
-                <span>Name</span>
+                <span>Nama</span>
                 <Input {...register('name')} />
               </label>
               <label>
-                <span>Type</span>
+                <span>Tipe</span>
                 <Select {...register('type')}>
-                  <option value="expense">Expense</option>
-                  <option value="income">Income</option>
+                  <option value="expense">Pengeluaran</option>
+                  <option value="income">Pemasukan</option>
                   <option value="transfer">Transfer</option>
-                  <option value="adjustment">Adjustment</option>
+                  <option value="adjustment">Penyesuaian</option>
                 </Select>
               </label>
             </div>
             
             <div className="form-two">
               <label>
-                <span>Wallet</span>
+                <span>Dompet</span>
                 <Select {...register('wallet_id')}>
-                  <option value="">Select Wallet</option>
+                  <option value="">Pilih Dompet</option>
                   {wallets.map((wallet) => <option key={wallet.id} value={wallet.id}>{wallet.name}</option>)}
                 </Select>
               </label>
               <label>
-                <span>Destination Wallet (for Transfer)</span>
+                <span>Dompet Tujuan (untuk Transfer)</span>
                 <Select {...register('to_wallet_id')} disabled={type !== 'transfer'}>
-                  <option value="">Not used</option>
+                  <option value="">Tidak dipakai</option>
                   {wallets.map((wallet) => <option key={wallet.id} value={wallet.id}>{wallet.name}</option>)}
                 </Select>
               </label>
@@ -117,14 +117,14 @@ export function QuickEntryFormPage() {
             
             <div className="form-two">
               <label>
-                <span>Category</span>
+                <span>Kategori</span>
                 <Select {...register('category_id')} disabled={type === 'transfer'}>
-                  <option value="">Select Category</option>
+                  <option value="">Pilih Kategori</option>
                   {categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
                 </Select>
               </label>
               <label>
-                <span>Amount</span>
+                <span>Jumlah (Rp)</span>
                 <Input 
                   type="number" 
                   {...register('amount_minor', { valueAsNumber: true })} 
@@ -134,14 +134,14 @@ export function QuickEntryFormPage() {
             </div>
             
             <label>
-              <span>Note</span>
+              <span>Catatan</span>
               <Textarea {...register('note')} />
             </label>
-            
+
             <div className="form-row-between">
-              <Button to="/quick-entry">Cancel</Button>
+              <Button to="/quick-entry">Batal</Button>
               <Button type="submit" variant="primary" disabled={isSubmitting}>
-                {isSubmitting ? 'Saving...' : 'Save Template'}
+                {isSubmitting ? 'Menyimpan...' : 'Simpan Template'}
               </Button>
             </div>
           </form>

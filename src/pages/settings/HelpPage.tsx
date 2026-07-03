@@ -14,15 +14,15 @@ export function HelpPage() {
   const [ticketOpen, setTicketOpen] = useState(false);
 
   return (
-    <AppLayout title="Help & FAQ" description="Bantuan penggunaan Affluena dan kontak support.">
+    <AppLayout title="Bantuan & FAQ" description="Bantuan penggunaan Affluena dan kontak dukungan.">
       <div className="dashboard-page grid-stack">
-        <SettingsHero badge="● Help" title="Bantuan yang langsung mengarah ke flow nyata." description="FAQ menjelaskan konsep wallet balance, budget alert, recurring run, export, dan privacy tanpa placeholder kosong.">
-          <Button to="/settings/about"><AppIcon name="success" /> About</Button>
-          <Button variant="primary" onClick={() => setTicketOpen(true)}><AppIcon name="profile" /> Contact Support</Button>
+        <SettingsHero badge="● Bantuan" title="Bantuan yang langsung mengarah ke alur nyata." description="FAQ menjelaskan konsep saldo dompet, notifikasi anggaran, transaksi berulang, ekspor, dan privasi.">
+          <Button to="/settings/about"><AppIcon name="success" /> Tentang</Button>
+          <Button variant="primary" onClick={() => setTicketOpen(true)}><AppIcon name="profile" /> Hubungi Dukungan</Button>
         </SettingsHero>
 
         <section className="dashboard-grid">
-          <SettingsCard icon="list" title="Frequently Asked Questions" description="Penjelasan singkat untuk flow utama Affluena.">
+          <SettingsCard icon="list" title="Pertanyaan yang Sering Diajukan" description="Penjelasan singkat untuk alur utama Affluena.">
             <div className="faq-list">
               {faqItems.map((item) => (
                 <details key={item.id} open={item.id === 'faq-balance'}>
@@ -33,22 +33,22 @@ export function HelpPage() {
             </div>
           </SettingsCard>
 
-          <SettingsCard icon="health" title="Support Channels" description="Akses bantuan berdasarkan tipe masalah.">
+          <SettingsCard icon="health" title="Saluran Bantuan" description="Akses bantuan berdasarkan tipe masalah.">
             <div className="settings-list">
-              <div><span>Transaction issue</span><Button to="/transactions/filter" size="small"><AppIcon name="filter" /> Open filtered transactions</Button></div>
-              <div><span>Export issue</span><Button to="/exports/history" size="small"><AppIcon name="download" /> Check export history</Button></div>
-              <div><span>Alert issue</span><Button to="/alerts" size="small"><AppIcon name="warning" /> Open alerts</Button></div>
-              <div><span>Security issue</span><Button to="/settings/security" size="small"><AppIcon name="settings" /> Security settings</Button></div>
+              <div><span>Masalah transaksi</span><Button to="/transactions/filter" size="small"><AppIcon name="filter" /> Buka filter transaksi</Button></div>
+              <div><span>Masalah ekspor</span><Button to="/exports/history" size="small"><AppIcon name="download" /> Cek riwayat ekspor</Button></div>
+              <div><span>Masalah pemberitahuan</span><Button to="/alerts" size="small"><AppIcon name="warning" /> Buka pemberitahuan</Button></div>
+              <div><span>Masalah keamanan</span><Button to="/settings/security" size="small"><AppIcon name="settings" /> Pengaturan keamanan</Button></div>
             </div>
           </SettingsCard>
         </section>
 
-        <Modal open={ticketOpen} title="Contact Support" description="Form ini membuat support ticket internal." onClose={() => setTicketOpen(false)}>
-          <form className="form-stack" onSubmit={(event) => { event.preventDefault(); setTicketOpen(false); showToast('Support ticket created. Activity log updated.'); }}>
-            <label><span>Topic</span><Select defaultValue="transaction"><option value="transaction">Transaction issue</option><option value="security">Security issue</option><option value="export">Export issue</option><option value="bug">UI bug report</option></Select></label>
-            <label><span>Subject</span><Input defaultValue="Need help reviewing finance data" /></label>
-            <label><span>Description</span><Textarea defaultValue="Describe the issue with route, screen size, and expected behavior." /></label>
-            <div className="modal-actions"><Button onClick={() => setTicketOpen(false)}>Cancel</Button><Button type="submit" variant="primary"><AppIcon name="save" /> Submit Ticket</Button></div>
+        <Modal open={ticketOpen} title="Hubungi Dukungan" description="Ceritakan masalah kamu, tim Affluena akan menindaklanjuti." onClose={() => setTicketOpen(false)}>
+          <form className="form-stack" onSubmit={(event) => { event.preventDefault(); setTicketOpen(false); showToast('Tiket bantuan dibuat. Riwayat aktivitas diperbarui.'); }}>
+            <label><span>Topik</span><Select defaultValue="transaction"><option value="transaction">Masalah transaksi</option><option value="security">Masalah keamanan</option><option value="export">Masalah ekspor</option><option value="bug">Laporan bug UI</option></Select></label>
+            <label><span>Subjek</span><Input defaultValue="Butuh bantuan meninjau data keuangan" /></label>
+            <label><span>Deskripsi</span><Textarea defaultValue="Jelaskan masalahnya beserta halaman, ukuran layar, dan hasil yang kamu harapkan." /></label>
+            <div className="modal-actions"><Button onClick={() => setTicketOpen(false)}>Batal</Button><Button type="submit" variant="primary"><AppIcon name="save" /> Kirim Tiket</Button></div>
           </form>
         </Modal>
       </div>
