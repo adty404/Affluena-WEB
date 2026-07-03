@@ -22,7 +22,7 @@ Build must succeed. TypeScript errors are not acceptable.
 ## Visual QA
 
 Check:
-- UI still uses Affluena green primary accent.
+- UI still uses the Tinta monochrome ink primary accent (colour only for success/warning/danger, section hues, and user item colours).
 - Fonts are consistent.
 - Cards use consistent radius and shadow.
 - Icons are consistent.

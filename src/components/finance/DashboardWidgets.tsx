@@ -65,8 +65,8 @@ export function CashflowChart({ trend }: { trend?: { month: string; income_minor
           <text x="0" y="24" className="axis-text">{Math.round(maxVal / 1000000)}M</text>
           <text x="0" y={height / 2} className="axis-text">{Math.round(maxVal / 2000000)}M</text>
           <text x="0" y={height - 24} className="axis-text">0</text>
-          <path d={incomePath} fill="none" stroke="#10b981" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
-          <path d={expensePath} fill="none" stroke="#ef4444" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
+          <path d={incomePath} fill="none" stroke="var(--success, #2e8b57)" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
+          <path d={expensePath} fill="none" stroke="var(--danger, #c2553f)" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </div>
       <div className="chart-legend">

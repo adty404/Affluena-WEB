@@ -7,7 +7,7 @@ export const dataTableStyles = `
     min-width: 0;
     overflow-x: auto;
     overflow-y: hidden;
-    border: 1px solid var(--line, #e2e8f0);
+    border: 1px solid var(--line, #e5e5e3);
     border-radius: 18px;
     background: var(--surface, #ffffff);
     -webkit-overflow-scrolling: touch;
@@ -48,11 +48,11 @@ export const dataTableStyles = `
   }
   .dt-wrapper .dt-input {
     max-width: 100%;
-    border: 1px solid var(--line, #e2e8f0);
+    border: 1px solid var(--line, #e5e5e3);
     border-radius: var(--radius-sm, 10px);
     padding: 0.5rem 0.75rem;
     font-size: 0.875rem;
-    color: var(--ink, #0f172a);
+    color: var(--ink, #17181a);
     background-color: var(--surface, #ffffff);
   }
   .dt-wrapper .dt-search .dt-input {
@@ -67,12 +67,12 @@ export const dataTableStyles = `
   }
   .dt-wrapper table.dataTable thead th,
   .dt-wrapper table.dt-empty-table thead th {
-    border-bottom: 2px solid var(--line, #e2e8f0);
+    border-bottom: 2px solid var(--line, #e5e5e3);
     padding: 0.75rem 1rem;
     text-align: left;
     font-size: 0.8125rem;
     font-weight: 600;
-    color: var(--muted, #64748b);
+    color: var(--muted, #6e7073);
     text-transform: uppercase;
     letter-spacing: 0;
     white-space: nowrap;
@@ -82,9 +82,9 @@ export const dataTableStyles = `
   .dt-wrapper table.dataTable tbody td,
   .dt-wrapper table.dt-empty-table tbody td {
     padding: 0.75rem 1rem;
-    border-bottom: 1px solid var(--line-soft, #f1f5f9);
+    border-bottom: 1px solid var(--line-soft, #f1f1ef);
     font-size: 0.875rem;
-    color: var(--ink, #0f172a);
+    color: var(--ink, #17181a);
     max-width: 260px;
     overflow-wrap: anywhere;
   }
@@ -94,17 +94,17 @@ export const dataTableStyles = `
     white-space: nowrap;
   }
   .dt-wrapper table.dataTable tbody tr:hover {
-    background-color: var(--surface-alt, #f8fafc);
+    background-color: var(--surface-alt, #f7f7f5);
   }
   .dt-wrapper .table-subtitle {
     display: block;
     margin-top: 0.1875rem;
-    color: var(--muted, #64748b);
+    color: var(--muted, #6e7073);
     font-size: 0.75rem;
     line-height: 1.45;
   }
   .dt-wrapper .dt-empty-state {
-    color: var(--muted, #64748b);
+    color: var(--muted, #6e7073);
     text-align: center;
   }
   .dt-mobile-list {
@@ -124,7 +124,7 @@ export const dataTableStyles = `
     justify-content: flex-end;
   }
   .dt-wrapper .dt-paging .dt-paging-button {
-    border: 1px solid var(--line, #e2e8f0);
+    border: 1px solid var(--line, #e5e5e3);
     border-radius: var(--radius-sm, 6px);
     padding: 0.375rem 0.75rem;
     margin: 0;
@@ -132,8 +132,8 @@ export const dataTableStyles = `
     cursor: pointer;
   }
   .dt-wrapper .dt-paging .dt-paging-button.current {
-    background: var(--primary, #10b981);
-    border-color: var(--primary, #10b981);
+    background: var(--primary, #17181a);
+    border-color: var(--primary, #17181a);
     color: #ffffff;
   }
   .dt-wrapper .dt-paging .dt-paging-button.disabled {
@@ -142,7 +142,7 @@ export const dataTableStyles = `
   }
   .dt-wrapper .dt-info {
     font-size: 0.8125rem;
-    color: var(--muted, #64748b);
+    color: var(--muted, #6e7073);
   }
   ${mobileDataTableStyles}
 `;

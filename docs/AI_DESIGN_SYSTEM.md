@@ -11,14 +11,12 @@ The UI should feel clean, bright, calm, reliable, modern, premium but not flashy
 ## Core Style
 
 Use:
-- white/light background
-- green primary accent
-- blue secondary/info accent
-- orange warning
-- red danger
-- purple accent only when appropriate
+- white/light background (Tinta monochrome chrome)
+- near-black ink primary accent (`--primary` = `--ink`)
+- colour for meaning only: success green (income/positive), amber warning, coral danger
+- section identity hues (`--hue-*`) as soft decorative tints for money domains
 - rounded cards
-- soft shadows
+- soft neutral shadows
 - clear typography hierarchy
 - generous but efficient spacing
 
@@ -39,12 +37,10 @@ Expected token groups:
 - background
 - surface
 - surface soft
-- primary
-- primary soft
-- secondary
-- warning
-- danger
-- purple
+- primary (ink accent) + primary soft
+- success / warning / danger (+ soft variants)
+- section hues (`--hue-dompet`, `--hue-anggaran`, …)
+- legacy aliases (`--secondary` → dompet denim, `--purple` → langganan violet, `--surface-green` → success soft)
 - ink/text
 - muted text
 - border
@@ -107,7 +103,7 @@ Finance cards:
 Form rules:
 - every field has label
 - every important field has helper text if needed
-- primary submit button is green
+- primary submit button is ink (near-black) with white text
 - cancel/back action is present
 - validation message area is visible when needed
 - 2-column desktop allowed
@@ -118,7 +114,7 @@ Do not make forms too dense.
 ## Buttons
 
 Button variants:
-- primary: green
+- primary: ink (near-black, white text)
 - secondary/default: white with border
 - danger: red
 - ghost/subtle: minimal
