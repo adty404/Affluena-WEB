@@ -10,8 +10,8 @@ export function LandingPage() {
   const hasSession = isAuthenticated || isLoading;
   const primaryTarget = hasSession ? '/dashboard' : '/register';
   const secondaryTarget = hasSession ? '/dashboard' : '/login';
-  const primaryLabel = hasSession ? 'Buka dashboard' : 'Buat akun gratis';
-  const secondaryLabel = hasSession ? 'Lihat dashboard' : 'Lihat demo app';
+  const primaryLabel = hasSession ? 'Buka Beranda' : 'Buat akun gratis';
+  const secondaryLabel = hasSession ? 'Lihat Beranda' : 'Masuk ke akun';
 
   return (
     <LandingLayout>
@@ -19,35 +19,35 @@ export function LandingPage() {
         <section className="hero">
           <div className="container hero-grid">
             <div className="hero-copy">
-              <Badge>● Financial command center pribadi</Badge>
-              <h1>Kelola uang, budget, dan target finansial dalam satu dashboard.</h1>
+              <Badge>● Pusat kendali keuangan pribadi</Badge>
+              <h1>Kelola uang, anggaran, dan target finansial dalam satu tempat.</h1>
               <p>
-                Affluena menyatukan wallet, transaksi, kategori, budget, hutang-piutang, cicilan,
-                subscription, recurring transaction, split bill, goal, export CSV, dan aktivitas user
-                dalam pengalaman web yang bersih dan mudah dipakai.
+                Affluena menyatukan dompet, transaksi, kategori, anggaran, utang-piutang, cicilan,
+                langganan, transaksi berulang, bagi tagihan, target tabungan, ekspor CSV, dan riwayat
+                aktivitas dalam pengalaman web yang bersih dan mudah dipakai.
               </p>
               <div className="hero-actions">
                 <Button variant="primary" to={primaryTarget}>{primaryLabel}</Button>
                 <Button to={secondaryTarget}>{secondaryLabel}</Button>
               </div>
               <div className="hero-proof">
-                <span><i /> Multi wallet</span>
-                <span><i /> Budget alert</span>
-                <span><i /> Recurring scheduler</span>
-                <span><i /> CSV export</span>
+                <span><i /> Multi dompet</span>
+                <span><i /> Notifikasi anggaran</span>
+                <span><i /> Transaksi berulang</span>
+                <span><i /> Ekspor CSV</span>
               </div>
             </div>
 
-            <div className="hero-visual" aria-label="Dashboard preview">
-              <div className="floating-pill one">↗ Cashflow +15.2%</div>
-              <div className="floating-pill two">✓ Budget Food aman</div>
+            <div className="hero-visual" aria-label="Pratinjau Beranda">
+              <div className="floating-pill one">↗ Arus kas +15,2%</div>
+              <div className="floating-pill two">✓ Anggaran Makan aman</div>
               <div className="dashboard-preview">
                 <div className="preview-top">
                   <div className="preview-user">
                     <div className="avatar">AP</div>
                     <div>
-                      <strong>Good morning, Aditya</strong>
-                      <span>Financial overview · Jun 2026</span>
+                      <strong>Selamat pagi, Aditya</strong>
+                      <span>Ringkasan keuangan · Jun 2026</span>
                     </div>
                   </div>
                   <div className="preview-controls">
@@ -58,18 +58,18 @@ export function LandingPage() {
                 </div>
 
                 <div className="balance-card">
-                  <p>Total Balance</p>
+                  <p>Total Saldo</p>
                   <h3>Rp 24.560.000</h3>
-                  <Badge>+12.5% dari bulan lalu</Badge>
+                  <Badge>+12,5% dari bulan lalu</Badge>
                   <div className="balance-row">
-                    <div className="balance-mini"><span>Income</span><b>Rp 12.750.000</b></div>
-                    <div className="balance-mini"><span>Expense</span><b>Rp 6.420.000</b></div>
+                    <div className="balance-mini"><span>Pemasukan</span><b>Rp 12.750.000</b></div>
+                    <div className="balance-mini"><span>Pengeluaran</span><b>Rp 6.420.000</b></div>
                   </div>
                 </div>
 
                 <div className="preview-grid">
-                  <div className="preview-card"><h4>Cashflow Trend</h4><div className="chart-line" /></div>
-                  <div className="preview-card"><h4>Budget Usage</h4><div className="donut" /></div>
+                  <div className="preview-card"><h4>Tren Arus Kas</h4><div className="chart-line" /></div>
+                  <div className="preview-card"><h4>Pemakaian Anggaran</h4><div className="donut" /></div>
                 </div>
               </div>
             </div>
@@ -80,9 +80,9 @@ export function LandingPage() {
           <div className="container">
             <div className="section-head">
               <div>
-                <Badge tone="blue">Core value</Badge>
-                <h2>UI sederhana untuk fitur finansial yang cukup kompleks.</h2>
-                <p>Setiap modul dirancang berbasis card, table, form, empty state, dan mobile navigation agar pengalaman desktop maupun mobile tetap konsisten.</p>
+                <Badge tone="blue">Nilai utama</Badge>
+                <h2>Tampilan sederhana untuk fitur keuangan yang lengkap.</h2>
+                <p>Setiap fitur dirancang dengan kartu, tabel, dan formulir yang konsisten agar pengalaman di desktop maupun ponsel tetap nyaman.</p>
               </div>
             </div>
             <div className="cards-grid">
@@ -101,9 +101,9 @@ export function LandingPage() {
           <div className="container">
             <div className="section-head">
               <div>
-                <Badge tone="purple">Module map</Badge>
-                <h2>Disusun mengikuti struktur backend Affluena.</h2>
-                <p>Landing page ini menjadi pintu masuk ke seluruh modul utama Affluena: dashboard, wallet, transaksi, budget, debt, recurring, goals, reports, alerts, dan settings.</p>
+                <Badge tone="purple">Peta fitur</Badge>
+                <h2>Disusun rapi mengikuti seluruh fitur utama Affluena.</h2>
+                <p>Halaman ini menjadi pintu masuk ke seluruh fitur utama Affluena: Beranda, Dompet, Transaksi, Anggaran, Utang, Berulang, Target Tabungan, Laporan, Pemberitahuan, dan Pengaturan.</p>
               </div>
             </div>
             <div className="cards-grid three">
@@ -123,15 +123,15 @@ export function LandingPage() {
         <section id="workflow" className="section soft-section">
           <div className="container workflow-grid">
             <div>
-              <Badge tone="orange">User flow</Badge>
-              <h2>Onboarding cepat untuk mulai mengelola keuangan pribadi.</h2>
-              <p>Register menuju onboarding, onboarding menuju dashboard, dan setiap langkah memiliki aksi yang jelas untuk mulai memakai Affluena.</p>
+              <Badge tone="orange">Alur pengguna</Badge>
+              <h2>Mulai cepat untuk mengelola keuangan pribadi.</h2>
+              <p>Daftar dulu, lanjut persiapan awal, lalu masuk ke Beranda — setiap langkah punya aksi yang jelas untuk mulai memakai Affluena.</p>
             </div>
             <div className="workflow-card">
-              <span>Landing</span><i />
-              <span>Register</span><i />
-              <span>Onboarding</span><i />
-              <span>Dashboard</span>
+              <span>Halaman depan</span><i />
+              <span>Daftar</span><i />
+              <span>Persiapan awal</span><i />
+              <span>Beranda</span>
             </div>
           </div>
         </section>
@@ -139,11 +139,11 @@ export function LandingPage() {
         <section id="pricing" className="section cta-section">
           <div className="container cta-card">
             <Badge>Affluena siap dipakai</Badge>
-            <h2>Semua modul utama sudah tersedia dalam satu pengalaman web yang rapi.</h2>
-            <p>Kelola wallet, transaksi, budget, debt, recurring, goals, reports, alerts, dan pengaturan akun tanpa berpindah aplikasi.</p>
+            <h2>Semua fitur utama sudah tersedia dalam satu pengalaman web yang rapi.</h2>
+            <p>Kelola dompet, transaksi, anggaran, utang, transaksi berulang, target tabungan, laporan, pemberitahuan, dan pengaturan akun tanpa berpindah aplikasi.</p>
             <div className="hero-actions center">
-              <Button variant="primary" to={primaryTarget}>{hasSession ? 'Buka dashboard' : 'Mulai sekarang'}</Button>
-              <Button to={secondaryTarget}>{hasSession ? 'Lihat dashboard' : 'Masuk demo'}</Button>
+              <Button variant="primary" to={primaryTarget}>{hasSession ? 'Buka Beranda' : 'Mulai sekarang'}</Button>
+              <Button to={secondaryTarget}>{hasSession ? 'Lihat Beranda' : 'Masuk ke akun'}</Button>
             </div>
           </div>
         </section>

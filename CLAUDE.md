@@ -20,6 +20,12 @@ Affluena-API backend. This file is the quick orientation; the full working rules
 
 ## ⚠️ Gotchas a fresh / cloud session must know
 
+- **ALL user-facing copy is Bahasa Indonesia** (workspace rule; mobile terms are canon). The shared
+  glossary lives in **`src/lib/copy.ts`** (`NAV` / `NAV_SECTIONS` / `ACTIONS`); full copywriting
+  rules in `AGENTS.md` → "Copywriting Rules". Recurring = **"Berulang"** (never "Otomasi"); money
+  labels are "Jumlah (Rp)" — never "(Minor)". Keep technical terms: Transfer, Status, Edit,
+  Endpoint, Email.
+
 - **`VITE_API_BASE_URL` is baked in at BUILD time** (Vite env; defaults to `http://localhost:8080`,
   see `src/api/client.ts`). It **cannot** be changed at runtime — set it before `npm run build` to
   point at a non-local backend.

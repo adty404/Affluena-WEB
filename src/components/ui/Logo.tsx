@@ -6,7 +6,7 @@ type LogoProps = {
 
 export function Logo({ to = '/' }: LogoProps) {
   return (
-    <Link className="logo" to={to} aria-label="Affluena Home">
+    <Link className="logo" to={to} aria-label="Beranda Affluena">
       <span className="logo-mark">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M8.4 14.8c-1.68-.8-2.8-2.4-2.8-4.24C5.6 7.54 8.08 5 11.2 5h1.08" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" />

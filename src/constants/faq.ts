@@ -1,8 +1,8 @@
 import type { FAQItem } from '../types/settings';
 
 export const faqItems: FAQItem[] = [
-  { id: 'faq-balance', question: 'Why does wallet balance change automatically?', answer: 'Income increases the selected wallet, expense decreases it, transfer moves balance between wallets, and adjustment changes the balance manually with an audit trail.' },
-  { id: 'faq-budget', question: 'How are budget alerts calculated?', answer: 'Budget usage is calculated from expense transactions by category and period. Alerts are generated at configured warning and exceeded thresholds.' },
-  { id: 'faq-recurring', question: 'What happens when a recurring rule runs?', answer: 'A recurring rule creates a transaction using the configured wallet, category, amount, date rule, and tags. Each run is recorded in run history.' },
-  { id: 'faq-export', question: 'Can I export personal finance data?', answer: 'Yes. Export Center can generate CSV files for transactions, wallets, budgets, debts, goals, activities, alerts, and system logs.' },
+  { id: 'faq-balance', question: 'Kenapa saldo dompet berubah otomatis?', answer: 'Pemasukan menambah saldo dompet yang dipilih, pengeluaran menguranginya, transfer memindahkan saldo antar dompet, dan penyesuaian mengubah saldo secara manual dengan catatan yang bisa kamu telusuri.' },
+  { id: 'faq-budget', question: 'Bagaimana notifikasi anggaran dihitung?', answer: 'Pemakaian anggaran dihitung dari transaksi pengeluaran per kategori dan periode. Notifikasi muncul saat pemakaian menyentuh ambang peringatan atau melewati batas yang kamu atur.' },
+  { id: 'faq-recurring', question: 'Apa yang terjadi saat transaksi berulang dijalankan?', answer: 'Transaksi berulang membuat transaksi baru sesuai dompet, kategori, jumlah, jadwal, dan tag yang kamu atur. Setiap eksekusi tercatat di riwayat.' },
+  { id: 'faq-export', question: 'Bisakah data keuangan pribadi diekspor?', answer: 'Bisa. Pusat Ekspor dapat membuat file CSV untuk transaksi, dompet, anggaran, utang, target tabungan, aktivitas, pemberitahuan, dan log sistem.' },
 ];

@@ -22,7 +22,7 @@ export function Modal({ open, title, description, children, onClose }: ModalProp
             <h3>{title}</h3>
             {description ? <p>{description}</p> : null}
           </div>
-          <Button size="icon" onClick={onClose} aria-label="Close modal"><AppIcon name="close" /></Button>
+          <Button size="icon" onClick={onClose} aria-label="Tutup dialog"><AppIcon name="close" /></Button>
         </div>
         {children}
       </div>

@@ -10,12 +10,15 @@ import { useCategories } from '../../hooks/useCategories';
 import { useRecurringRule, useRunRecurringRule } from '../../hooks/useRecurring';
 import { useWallets } from '../../hooks/useWallets';
 import { categoryLabel, createNameById, walletPairLabel } from '../../lib/financeLabels';
+import { ACTIONS } from '../../lib/copy';
+
+const typeLabel = (type: string) => type === 'income' ? 'Pemasukan' : type === 'expense' ? 'Pengeluaran' : type === 'transfer' ? 'Transfer' : 'Penyesuaian';
 
 export function RecurringRunPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { showToast } = useToast();
-  
+
   const { data: rule, isLoading, error } = useRecurringRule(id || '');
   const { data: walletsData } = useWallets();
   const { data: categoriesData } = useCategories();
@@ -23,8 +26,8 @@ export function RecurringRunPage() {
   const walletNameById = createNameById(walletsData?.wallets ?? []);
   const categoryNameById = createNameById(categoriesData?.categories ?? []);
 
-  if (isLoading) return <AppLayout title="Manual Run" description="Loading..."><div className="p-8">Loading...</div></AppLayout>;
-  if (error || !rule) return <AppLayout title="Manual Run" description="Loading..."><div className="p-8 text-red-500">Error loading recurring rule</div></AppLayout>;
+  if (isLoading) return <AppLayout title="Jalankan Manual" description={ACTIONS.memuat}><div className="p-8">{ACTIONS.memuat}</div></AppLayout>;
+  if (error || !rule) return <AppLayout title="Jalankan Manual" description="Gagal memuat"><div className="p-8 text-red-500">Gagal memuat aturan berulang. Periksa koneksi lalu coba lagi.</div></AppLayout>;
   const walletText = walletPairLabel(walletNameById, rule.wallet_id, rule.to_wallet_id);
   const categoryText = categoryLabel(categoryNameById, rule.category_id, rule.type);
 
@@ -32,53 +35,52 @@ export function RecurringRunPage() {
     if (e) e.preventDefault();
     try {
       await runMutation.mutateAsync({ id: rule.id, data: { now: true } });
-      showToast('Recurring rule executed successfully');
+      showToast('Aturan berulang berhasil dijalankan');
       navigate(`/recurring/${rule.id}`);
     } catch (error) {
-      showToast('Failed to execute recurring rule');
+      showToast('Gagal menjalankan aturan berulang');
     }
   };
 
   return (
-    <AppLayout title="Manual Run" description="Execute one recurring rule manually with confirmation preview.">
+    <AppLayout title="Jalankan Manual" description="Jalankan satu aturan berulang secara manual dengan pratinjau konfirmasi.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
-          <div><span className="badge dark">● Manual Run</span><h2>Jalankan {rule.name} secara manual.</h2><p>Manual run membuat transaksi dari rule yang sama dan menyimpan run history.</p></div>
-          <div className="app-hero-actions"><Button to={`/recurring/${rule.id}`}>Back</Button><Button variant="primary" onClick={() => handleRun()} disabled={runMutation.isPending}><AppIcon name="run" /> {runMutation.isPending ? 'Executing...' : 'Execute Now'}</Button></div>
+          <div><span className="badge dark">● Jalankan Manual</span><h2>Jalankan {rule.name} secara manual.</h2><p>Eksekusi manual membuat transaksi dari aturan yang sama dan tercatat di riwayat eksekusi.</p></div>
+          <div className="app-hero-actions"><Button to={`/recurring/${rule.id}`}>{ACTIONS.kembali}</Button><Button variant="primary" onClick={() => handleRun()} disabled={runMutation.isPending}><AppIcon name="run" /> {runMutation.isPending ? 'Menjalankan...' : 'Jalankan Sekarang'}</Button></div>
         </section>
-        
+
         <section className="form-detail-grid">
           <Card className="panel-card">
-            <div className="panel-head"><div><h3>Run Confirmation</h3><p>Review data sebelum manual execution.</p></div></div>
+            <div className="panel-head"><div><h3>Konfirmasi Eksekusi</h3><p>Periksa data sebelum eksekusi manual.</p></div></div>
             <form className="form-stack" onSubmit={handleRun}>
               <div className="form-two">
-                <label><span>Rule</span><Input defaultValue={rule.name} readOnly /></label>
-                <label><span>Run Date</span><Input type="datetime-local" defaultValue={new Date().toISOString().slice(0, 16)} readOnly /></label>
+                <label><span>Aturan</span><Input defaultValue={rule.name} readOnly /></label>
+                <label><span>Tanggal Eksekusi</span><Input type="datetime-local" defaultValue={new Date().toISOString().slice(0, 16)} readOnly /></label>
               </div>
               <div className="form-two">
-                <label><span>Wallet</span><Input value={walletText} readOnly /></label>
-                <label><span>Amount</span><Input defaultValue={`Rp ${rule.amount_minor.toLocaleString('id-ID')}`} readOnly /></label>
+                <label><span>Dompet</span><Input value={walletText} readOnly /></label>
+                <label><span>Jumlah</span><Input defaultValue={`Rp ${rule.amount_minor.toLocaleString('id-ID')}`} readOnly /></label>
               </div>
               <div className="form-two">
-                <label><span>Execution Mode</span><Select><option>Create transaction now</option></Select></label>
-                <label><span>Duplicate Guard</span><Select><option>Allow manual duplicate</option></Select></label>
+                <label><span>Mode Eksekusi</span><Select><option>Buat transaksi sekarang</option></Select></label>
+                <label><span>Perlindungan Duplikat</span><Select><option>Izinkan duplikat manual</option></Select></label>
               </div>
-              <label><span>Run Note</span><Textarea defaultValue="Manual run requested by user from recurring detail page." readOnly /></label>
+              <label><span>Catatan Eksekusi</span><Textarea defaultValue="Eksekusi manual diminta dari halaman detail berulang." readOnly /></label>
               <div className="form-row-between">
-                <Button to={`/recurring/${rule.id}`}>Cancel</Button>
-                <Button type="submit" variant="primary" disabled={runMutation.isPending}><AppIcon name="run" /> {runMutation.isPending ? 'Executing...' : 'Execute Rule'}</Button>
+                <Button to={`/recurring/${rule.id}`}>{ACTIONS.batal}</Button>
+                <Button type="submit" variant="primary" disabled={runMutation.isPending}><AppIcon name="run" /> {runMutation.isPending ? 'Menjalankan...' : 'Jalankan Aturan'}</Button>
               </div>
             </form>
           </Card>
-          
+
           <Card className="panel-card side-metrics-card">
-            <div className="panel-head"><div><h3>Transaction Preview</h3><p>Dampak run terhadap wallet.</p></div></div>
+            <div className="panel-head"><div><h3>Pratinjau Transaksi</h3><p>Dampak eksekusi terhadap dompet.</p></div></div>
             <div className="metric-list">
-              <div><span>Type</span><strong>{rule.type}</strong></div>
-              <div><span>Amount</span><strong><Amount value={rule.amount_minor} type={rule.type === 'income' ? 'income' : 'expense'} /></strong></div>
-              <div><span>Wallet</span><strong>{walletText}</strong></div>
-              <div><span>Category</span><strong>{categoryText}</strong></div>
-              <div><span>History result</span><strong>success / failed / skipped</strong></div>
+              <div><span>Tipe</span><strong>{typeLabel(rule.type)}</strong></div>
+              <div><span>Jumlah</span><strong><Amount value={rule.amount_minor} type={rule.type === 'income' ? 'income' : 'expense'} /></strong></div>
+              <div><span>Dompet</span><strong>{walletText}</strong></div>
+              <div><span>Kategori</span><strong>{categoryText}</strong></div>
             </div>
           </Card>
         </section>

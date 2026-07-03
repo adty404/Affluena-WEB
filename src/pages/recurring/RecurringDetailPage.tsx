@@ -13,9 +13,13 @@ import { useCategories } from '../../hooks/useCategories';
 import { useRecurringRule, useDeleteRecurringRule } from '../../hooks/useRecurring';
 import { useWallets } from '../../hooks/useWallets';
 import { categoryLabel, createNameById, walletLabel } from '../../lib/financeLabels';
+import { ACTIONS } from '../../lib/copy';
 import type { RecurringRun } from '../../types/recurring';
 
 const statusTone = (status: string) => status === 'active' || status === 'success' ? 'green' : status === 'paused' || status === 'skipped' ? 'orange' : status === 'cancelled' ? 'gray' : 'red';
+const statusLabel = (status: string) => status === 'active' ? 'Aktif' : status === 'paused' ? 'Dijeda' : status === 'cancelled' ? 'Dibatalkan' : status;
+const typeLabel = (type: string) => type === 'income' ? 'Pemasukan' : type === 'expense' ? 'Pengeluaran' : type === 'transfer' ? 'Transfer' : 'Penyesuaian';
+const frequencyLabel = (frequency: string) => frequency === 'weekly' ? 'Mingguan' : 'Bulanan';
 
 export function RecurringDetailPage() {
   const { id } = useParams();
@@ -29,8 +33,8 @@ export function RecurringDetailPage() {
   const walletNameById = createNameById(walletsData?.wallets ?? []);
   const categoryNameById = createNameById(categoriesData?.categories ?? []);
 
-  if (isLoading) return <AppLayout title="Recurring Detail" description="Loading..."><div className="p-8">Loading...</div></AppLayout>;
-  if (error || !rule) return <AppLayout title="Recurring Detail" description="Loading..."><div className="p-8 text-red-500">Error loading recurring rule</div></AppLayout>;
+  if (isLoading) return <AppLayout title="Detail Berulang" description={ACTIONS.memuat}><div className="p-8">{ACTIONS.memuat}</div></AppLayout>;
+  if (error || !rule) return <AppLayout title="Detail Berulang" description="Gagal memuat"><div className="p-8 text-red-500">Gagal memuat aturan berulang. Periksa koneksi lalu coba lagi.</div></AppLayout>;
 
   // Mock run history since it's not in the rule object directly from the API
   // In a real app, we would fetch this from a separate endpoint or it would be included
@@ -42,50 +46,50 @@ export function RecurringDetailPage() {
   const handleDelete = () => {
     deleteMut.mutate(rule.id, {
       onSuccess: () => {
-        showToast('Recurring rule deleted successfully');
+        showToast('Aturan berulang berhasil dihapus');
         navigate('/recurring');
       },
-      onError: (err: any) => showToast(err?.message || 'Failed to delete recurring rule'),
+      onError: (err: any) => showToast(err?.message || 'Gagal menghapus aturan berulang'),
     });
   };
 
   return (
-    <AppLayout title="Recurring Detail" description="Rule configuration, next run, and recent execution history.">
+    <AppLayout title="Detail Berulang" description="Konfigurasi aturan, jadwal berikutnya, dan riwayat eksekusi terbaru.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
-          <div><span className="badge dark">● {rule.status}</span><h2>{rule.name}</h2><p>{rule.note}</p></div>
-          <div className="app-hero-actions"><Button to="/recurring">Back</Button><Button to={`/recurring/${rule.id}/edit`}><AppIcon name="edit" /> Edit</Button><Button to={`/recurring/${rule.id}/run`} variant="primary"><AppIcon name="run" /> Manual Run</Button><Button variant="danger" onClick={() => setDeleteOpen(true)}><AppIcon name="delete" /> Delete</Button></div>
+          <div><span className="badge dark">● {statusLabel(rule.status)}</span><h2>{rule.name}</h2><p>{rule.note}</p></div>
+          <div className="app-hero-actions"><Button to="/recurring">{ACTIONS.kembali}</Button><Button to={`/recurring/${rule.id}/edit`}><AppIcon name="edit" /> Edit</Button><Button to={`/recurring/${rule.id}/run`} variant="primary"><AppIcon name="run" /> Jalankan Manual</Button><Button variant="danger" onClick={() => setDeleteOpen(true)}><AppIcon name="delete" /> {ACTIONS.hapus}</Button></div>
         </section>
-        
+
         <section className="stat-grid">
-          <Card className="stat-card"><span>Amount</span><strong><Amount value={rule.amount_minor} type={rule.type === 'income' ? 'income' : 'expense'} /></strong><small>{rule.type}</small></Card>
-          <Card className="stat-card blue"><span>Frequency</span><strong>{rule.frequency}</strong><small>caldate schedule</small></Card>
-          <Card className="stat-card orange"><span>Next Run</span><strong>{new Date(rule.next_run_at).toLocaleDateString()}</strong><small>scheduler target</small></Card>
-          <Card className="stat-card"><span>Status</span><strong>{rule.status}</strong><small>{sourceWallet}</small></Card>
+          <Card className="stat-card"><span>Jumlah</span><strong><Amount value={rule.amount_minor} type={rule.type === 'income' ? 'income' : 'expense'} /></strong><small>{typeLabel(rule.type)}</small></Card>
+          <Card className="stat-card blue"><span>Frekuensi</span><strong>{frequencyLabel(rule.frequency)}</strong><small>jadwal pengulangan</small></Card>
+          <Card className="stat-card orange"><span>Jadwal Berikutnya</span><strong>{new Date(rule.next_run_at).toLocaleDateString()}</strong><small>tanggal eksekusi</small></Card>
+          <Card className="stat-card"><span>Status</span><strong>{statusLabel(rule.status)}</strong><small>{sourceWallet}</small></Card>
         </section>
-        
+
         <section className="form-detail-grid">
           <Card className="panel-card">
-            <div className="panel-head"><div><h3>Run History</h3><p>Audit trail dari recurring_transaction_runs.</p></div><Button to={`/recurring/${rule.id}/history`} size="small"><AppIcon name="history" /> Full History</Button></div>
-            <DataTable<RecurringRun> 
-              data={runHistory} 
-              getRowKey={(run) => run.id} 
+            <div className="panel-head"><div><h3>Riwayat Eksekusi</h3><p>Riwayat setiap kali aturan berulang ini dijalankan.</p></div><Button to={`/recurring/${rule.id}/history`} size="small"><AppIcon name="history" /> Riwayat Lengkap</Button></div>
+            <DataTable<RecurringRun>
+              data={runHistory}
+              getRowKey={(run) => run.id}
               columns={[
-                { key: 'scheduled', header: 'Scheduled', render: (run) => new Date(run.scheduled_for).toLocaleString() }, 
-                { key: 'executed', header: 'Executed', render: (run) => new Date(run.created_at).toLocaleString() }, 
-                { key: 'status', header: 'Type', render: (run) => <Badge tone="blue">{run.run_type}</Badge> }, 
-                { key: 'tx', header: 'Transaction', render: (run) => run.transaction_id ? <Badge tone="green">{run.transaction_id}</Badge> : '-' }
-              ]} 
+                { key: 'scheduled', header: 'Dijadwalkan', render: (run) => new Date(run.scheduled_for).toLocaleString() },
+                { key: 'executed', header: 'Dijalankan', render: (run) => new Date(run.created_at).toLocaleString() },
+                { key: 'status', header: 'Tipe', render: (run) => <Badge tone="blue">{run.run_type === 'manual' ? 'Manual' : 'Terjadwal'}</Badge> },
+                { key: 'tx', header: 'Transaksi', render: (run) => run.transaction_id ? <Badge tone="green">{run.transaction_id}</Badge> : '-' }
+              ]}
             />
           </Card>
-          
+
           <Card className="panel-card side-metrics-card">
-            <div className="panel-head"><div><h3>Rule Metadata</h3><p>Konfigurasi utama rule.</p></div></div>
+            <div className="panel-head"><div><h3>Detail Aturan</h3><p>Konfigurasi utama aturan.</p></div></div>
             <div className="metric-list">
-              <div><span>Source wallet</span><strong>{sourceWallet}</strong></div>
-              {rule.to_wallet_id ? <div><span>Destination</span><strong>{destinationWallet}</strong></div> : null}
-              <div><span>Category</span><strong>{ruleCategory}</strong></div>
-              <div><span>Status</span><strong><Badge tone={statusTone(rule.status)}>{rule.status}</Badge></strong></div>
+              <div><span>Dompet sumber</span><strong>{sourceWallet}</strong></div>
+              {rule.to_wallet_id ? <div><span>Dompet tujuan</span><strong>{destinationWallet}</strong></div> : null}
+              <div><span>Kategori</span><strong>{ruleCategory}</strong></div>
+              <div><span>Status</span><strong><Badge tone={statusTone(rule.status)}>{statusLabel(rule.status)}</Badge></strong></div>
             </div>
           </Card>
         </section>
@@ -93,17 +97,17 @@ export function RecurringDetailPage() {
 
       <Modal
         open={deleteOpen}
-        title="Delete Recurring Rule"
-        description="Tindakan ini menghapus rule. Run history yang sudah tercatat tidak ikut terhapus."
+        title="Hapus Aturan Berulang"
+        description="Tindakan ini menghapus aturan. Riwayat eksekusi yang sudah tercatat tidak ikut terhapus."
         onClose={() => (deleteMut.isPending ? null : setDeleteOpen(false))}
       >
         <div className="readiness-list">
-          <div><span>Rule</span><strong>{rule.name}</strong></div>
-          <div><span>Amount</span><strong><Amount value={rule.amount_minor} type={rule.type === 'income' ? 'income' : 'expense'} /></strong></div>
+          <div><span>Aturan</span><strong>{rule.name}</strong></div>
+          <div><span>Jumlah</span><strong><Amount value={rule.amount_minor} type={rule.type === 'income' ? 'income' : 'expense'} /></strong></div>
         </div>
         <div className="modal-actions">
-          <Button onClick={() => setDeleteOpen(false)} disabled={deleteMut.isPending}>Cancel</Button>
-          <Button variant="danger" onClick={handleDelete} disabled={deleteMut.isPending}>{deleteMut.isPending ? 'Deleting...' : 'Delete Rule'}</Button>
+          <Button onClick={() => setDeleteOpen(false)} disabled={deleteMut.isPending}>{ACTIONS.batal}</Button>
+          <Button variant="danger" onClick={handleDelete} disabled={deleteMut.isPending}>{deleteMut.isPending ? 'Menghapus...' : 'Hapus Aturan'}</Button>
         </div>
       </Modal>
     </AppLayout>

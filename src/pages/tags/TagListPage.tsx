@@ -4,6 +4,7 @@ import { Card } from '../../components/ui/Card';
 import { DataTable } from '../../components/ui/DataTable';
 import { TagPill } from '../../components/master-data/TagPill';
 import { useTags } from '../../hooks/useTags';
+import { NAV } from '../../lib/copy';
 import type { Tag } from '../../types/tag';
 
 export function TagListPage() {
@@ -12,19 +13,19 @@ export function TagListPage() {
 
   const columns = [
     { key: 'tag', header: 'Tag', render: (tag: Tag) => <TagPill tag={tag} /> },
-    { key: 'action', header: 'Action', render: (tag: Tag) => <Button size="small" to={`/tags/${tag.id}/edit`}>Edit</Button> },
+    { key: 'action', header: 'Aksi', render: (tag: Tag) => <Button size="small" to={`/tags/${tag.id}/edit`}>Edit</Button> },
   ];
 
   return (
-    <AppLayout title="Tags" description="Manage flexible transaction labels for filtering and reporting.">
+    <AppLayout title={NAV.tag} description="Kelola label transaksi untuk memudahkan filter dan laporan.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <span className="badge dark">● Tags</span>
-            <h2>Tag membuat transaksi lebih mudah dicari lintas category dan wallet.</h2>
-            <p>Tag dipakai di transaction form sebagai multi-select chip.</p>
+            <span className="badge dark">● {NAV.tag}</span>
+            <h2>Tag membuat transaksi lebih mudah dicari lintas kategori dan dompet.</h2>
+            <p>Tempelkan beberapa tag sekaligus saat mencatat transaksi.</p>
           </div>
-          <div className="app-hero-actions"><Button to="/tags/new" variant="primary">+ Create Tag</Button></div>
+          <div className="app-hero-actions"><Button to="/tags/new" variant="primary">+ Buat Tag</Button></div>
         </section>
 
         {error ? (
@@ -40,18 +41,18 @@ export function TagListPage() {
         ) : tags.length === 0 ? (
           <Card className="panel-card">
             <div className="panel-head"><div><h3>Belum ada tag</h3><p>Buat tag pertama untuk memudahkan filter transaksi.</p></div></div>
-            <div className="modal-actions"><Button to="/tags/new" variant="primary">+ Create Tag</Button></div>
+            <div className="modal-actions"><Button to="/tags/new" variant="primary">+ Buat Tag</Button></div>
           </Card>
         ) : (
           <>
             <section className="dashboard-grid">
               <Card className="panel-card">
-                <div className="panel-head"><div><h3>Tag Cloud</h3><p>Popular tags this month.</p></div></div>
+                <div className="panel-head"><div><h3>Tag Populer</h3><p>Tag yang paling sering dipakai bulan ini.</p></div></div>
                 <div className="tag-cloud">{tags.map((tag, index) => <TagPill key={tag.id} tag={tag} active={index < 3} />)}</div>
               </Card>
             </section>
             <Card className="panel-card">
-              <div className="panel-head"><div><h3>Tag Table</h3><p>{data?.pagination.total ?? tags.length} tag terdaftar.</p></div><Button to="/tags/new" size="small" variant="primary">+ Tag</Button></div>
+              <div className="panel-head"><div><h3>Daftar Tag</h3><p>{data?.pagination.total ?? tags.length} tag terdaftar.</p></div><Button to="/tags/new" size="small" variant="primary">+ Tag</Button></div>
               <DataTable columns={columns} data={tags} getRowKey={(tag) => tag.id} />
             </Card>
           </>

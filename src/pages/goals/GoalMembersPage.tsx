@@ -33,10 +33,10 @@ export function GoalMembersPage() {
     if (!id) return;
     try {
       await inviteMember.mutateAsync({ id, data });
-      showToast('Goal invitation sent successfully.');
+      showToast('Undangan target tabungan berhasil dikirim.');
       reset();
     } catch (error) {
-      showToast('Failed to send invitation.');
+      showToast('Gagal mengirim undangan.');
     }
   };
 
@@ -44,27 +44,27 @@ export function GoalMembersPage() {
     if (!id) return;
     try {
       await respondMember.mutateAsync({ id, userId, data: { status } });
-      showToast(`Member ${status} successfully.`);
+      showToast(status === 'joined' ? 'Undangan berhasil diterima.' : 'Undangan berhasil ditolak.');
     } catch (error) {
-      showToast('Failed to respond.');
+      showToast('Gagal merespons undangan.');
     }
   };
 
   if (isLoading || !goal) {
-    return <AppLayout title="Goal Members" description="Loading..."><div className="loading-state">Loading...</div></AppLayout>;
+    return <AppLayout title="Anggota Target" description="Memuat..."><div className="loading-state">Memuat...</div></AppLayout>;
   }
 
   return (
-    <AppLayout title="Goal Members" description="Manage members, roles, and contribution access for shared goals.">
+    <AppLayout title="Anggota Target" description="Kelola anggota dan akses setoran untuk target tabungan bersama.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
-          <div><span className="badge dark">● Goal Members</span><h2>Kelola anggota untuk {goal.name}.</h2><p>Role member membantu mengatur siapa yang bisa contribute, melihat progress, atau mengelola target.</p></div>
-          <div className="app-hero-actions"><Button to={`/goals/${goal.id}`}><AppIcon name="back" /> Back</Button></div>
+          <div><span className="badge dark">● Anggota Target</span><h2>Kelola anggota untuk {goal.name}.</h2><p>Peran anggota membantu mengatur siapa yang bisa menyetor, melihat progres, atau mengelola target.</p></div>
+          <div className="app-hero-actions"><Button to={`/goals/${goal.id}`}><AppIcon name="back" /> Kembali</Button></div>
         </section>
 
         <section className="form-detail-grid">
           <Card className="panel-card">
-            <div className="panel-head"><div><h3>Invite Member</h3><p>Tambahkan anggota baru ke shared goal.</p></div></div>
+            <div className="panel-head"><div><h3>Undang Anggota</h3><p>Tambahkan anggota baru ke target tabungan bersama.</p></div></div>
             <form className="form-stack" onSubmit={handleSubmit(onInvite)}>
               <div className="form-two">
                 <label>
@@ -73,29 +73,29 @@ export function GoalMembersPage() {
                   {errors.email && <small className="field-error">{errors.email.message}</small>}
                 </label>
               </div>
-              <div className="form-row-between"><Button to={`/goals/${goal.id}`}>Cancel</Button><Button type="submit" variant="primary" disabled={isSubmitting || inviteMember.isPending}><AppIcon name="profile" /> {inviteMember.isPending ? 'Inviting...' : 'Invite Member'}</Button></div>
+              <div className="form-row-between"><Button to={`/goals/${goal.id}`}>Batal</Button><Button type="submit" variant="primary" disabled={isSubmitting || inviteMember.isPending}><AppIcon name="profile" /> {inviteMember.isPending ? 'Mengundang...' : 'Undang Anggota'}</Button></div>
             </form>
           </Card>
 
           <Card className="panel-card side-metrics-card">
-            <div className="panel-head"><div><h3>Member Rules</h3><p>Permission yang digunakan goal_members.</p></div></div>
+            <div className="panel-head"><div><h3>Aturan Anggota</h3><p>Hak akses tiap peran di target bersama.</p></div></div>
             <div className="metric-list">
-              <div><span>Owner</span><strong>Manage goal, members, and contribution rules</strong></div>
-              <div><span>Contributor</span><strong>Can add contribution and view progress</strong></div>
-              <div><span>Viewer</span><strong>Read-only progress access</strong></div>
+              <div><span>Pemilik</span><strong>Mengelola target, anggota, dan setoran</strong></div>
+              <div><span>Penyetor</span><strong>Bisa menambah setoran dan melihat progres</strong></div>
+              <div><span>Pemantau</span><strong>Hanya bisa melihat progres</strong></div>
             </div>
           </Card>
         </section>
 
         <Card className="panel-card">
-          <div className="panel-head"><div><h3>Members</h3><p>Anggota yang sudah joined atau masih pending.</p></div></div>
+          <div className="panel-head"><div><h3>Anggota</h3><p>Anggota yang sudah bergabung atau masih menunggu.</p></div></div>
           <DataTable<GoalMember>
             data={goal.members || []}
             getRowKey={(member) => member.user_id}
             columns={[
-              { key: 'name', header: 'Member', render: (member) => <div className="table-title"><span className="mini-icon safe"><AppIcon name="profile" /></span><strong>{goalMemberLabel(member, currentUserId)}</strong><small>{member.user_id}</small></div> },
+              { key: 'name', header: 'Anggota', render: (member) => <div className="table-title"><span className="mini-icon safe"><AppIcon name="profile" /></span><strong>{goalMemberLabel(member, currentUserId)}</strong><small>{member.user_id}</small></div> },
               { key: 'status', header: 'Status', render: (member) => <Badge tone={goalMemberStatusTone(member.status)}>{goalMemberStatusLabel(member.status)}</Badge> },
-              { key: 'action', header: 'Action', render: (member) => (
+              { key: 'action', header: 'Aksi', render: (member) => (
                 <div className="inline-actions">
                   {member.status === 'pending' && member.user_id === currentUserId ? (
                     <>

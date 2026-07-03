@@ -193,11 +193,50 @@ Never allow global horizontal overflow.
 
 ## User-Facing Copy
 
+**All user-facing copy is Bahasa Indonesia.** This is a workspace-wide product rule — the mobile app is fully Indonesian and its terms are canonical. Copy style is informal ("kamu", never "Anda").
+
+The shared glossary module is **`src/lib/copy.ts`** (`NAV`, `NAV_SECTIONS`, `ACTIONS`). Use it for nav/section labels shared across Sidebar, BottomNav, App Menu, and Settings. Page-local strings stay inline but must use the same canonical terms.
+
+Canonical glossary (EN → ID):
+
+| English | Indonesian |
+| --- | --- |
+| Dashboard / Home | Beranda |
+| Analytics / Forecast | Analitik / Prakiraan |
+| Wallets | Dompet |
+| Categories / Tags | Kategori / Tag |
+| Transactions | Transaksi |
+| Quick Entry / Quick Add | Catat Cepat |
+| Split Bill | Bagi Tagihan |
+| Budgets / Budget Alerts / Budget Report | Anggaran / Notifikasi Anggaran / Laporan Anggaran |
+| Installments / Subscriptions | Cicilan / Langganan |
+| Recurring | **Berulang** (never "Otomasi") |
+| Goals | Target Tabungan |
+| Debt / Payable / Receivable | Utang / Utang / Piutang |
+| Tracker | Pemantau Utang |
+| Reports / Insights | Laporan / Wawasan |
+| Activity Log / Alerts / System Logs | Riwayat Aktivitas / Pemberitahuan / Log Sistem |
+| Export Center | Pusat Ekspor |
+| Settings / Security / Sessions | Pengaturan / Keamanan / Sesi |
+| All Access / More / Logout | Akses Lengkap / Lainnya / Keluar |
+| Wallet sharing (read-only viewers) | Berbagi Dompet (viewers = "pemantau") |
+| Sharing roles owner/member/viewer | Pemilik / Anggota (bisa mencatat) / Hanya lihat |
+| Amount / Date / Note / Name / Type | Jumlah / Tanggal / Catatan / Nama / Tipe |
+| Save / Cancel / Back / Close / View | Simpan / Batal / Kembali / Tutup / Lihat |
+| Income / Expense / Cashflow / Net Flow | Pemasukan / Pengeluaran / Arus Kas / Arus Bersih |
+| Safe / Warning / Exceeded | Aman / Peringatan / Terlampaui |
+| Loading... / Search... | Memuat... / Cari... |
+
+Keep as-is (technical/identical terms): **Transfer, Status, Edit, Endpoint, Email**, CSV, FAQ, Rp.
+
+Money labels are user-facing rupiah: **"Jumlah (Rp)"** — never expose "(Minor)"/minor-unit storage wording.
+
 Use final product copy.
 
 Do not use:
+- English UI strings (all visible copy is Indonesian)
 - Stage label copy
-- dev notes
+- dev notes (backend/minor unit/module/endpoint/pattern narration)
 - prototype wording
 - mock data wording
 - coming soon

@@ -10,6 +10,7 @@ import { FinanceOverviewCard } from '../../components/finance/FinanceOverviewCar
 import { itemAccentVars } from '../../components/finance/ColorPicker';
 import { useGoals } from '../../hooks/useGoals';
 import { goalStatusBadgeTone, goalStatusLabel, goalProgressTone } from '../../lib/goalStatus';
+import { NAV } from '../../lib/copy';
 import type { Goal } from '../../types/goal';
 
 export function GoalListPage() {
@@ -25,31 +26,31 @@ export function GoalListPage() {
   const contributeTarget = goals.find(g => g.status === 'active') ?? goals[0];
 
   return (
-    <AppLayout title="Goals" description="Financial goals, shared saving targets, members, and contribution tracking.">
+    <AppLayout title={NAV.targetTabungan} description="Target tabungan, progres, anggota, dan riwayat setoran.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <span className="badge dark">● Goals</span>
-            <h2>Rencanakan target keuangan dengan progress yang jelas dan bisa dibagi bersama anggota.</h2>
-            <p>Goal menghubungkan target amount, wallet tujuan, contribution history, dan goal members agar saving plan tetap terukur.</p>
+            <span className="badge dark">● Target Tabungan</span>
+            <h2>Rencanakan target tabungan dengan progres yang jelas, sendiri atau bareng anggota.</h2>
+            <p>Tetapkan jumlah target, setor rutin, dan pantau progres bersama anggota yang kamu undang.</p>
           </div>
           <div className="app-hero-actions">
-            <Button to="/goals/new" variant="primary"><AppIcon name="add" /> Add Goal</Button>
+            <Button to="/goals/new" variant="primary"><AppIcon name="add" /> Tambah Target</Button>
             {contributeTarget && (
-              <Button to={`/goals/${contributeTarget.id}/contribute`}><AppIcon name="pay" /> Contribute</Button>
+              <Button to={`/goals/${contributeTarget.id}/contribute`}><AppIcon name="pay" /> Setor</Button>
             )}
           </div>
         </section>
 
         <section className="stat-grid">
-          <Card className="stat-card"><span>Total Target</span><strong><Amount value={totalTarget} /></strong><small>Across goals</small></Card>
-          <Card className="stat-card"><span>Total Saved</span><strong><Amount value={totalSaved} type="income" /></strong><small>{overallProgress}% funded</small></Card>
-          <Card className="stat-card blue"><span>Active Goals</span><strong>{activeGoals}</strong><small>Currently tracked</small></Card>
-          <Card className="stat-card purple"><span>Shared Goals</span><strong>{sharedGoals}</strong><small>With members</small></Card>
+          <Card className="stat-card"><span>Total Target</span><strong><Amount value={totalTarget} /></strong><small>Semua target</small></Card>
+          <Card className="stat-card"><span>Total Terkumpul</span><strong><Amount value={totalSaved} type="income" /></strong><small>{overallProgress}% tercapai</small></Card>
+          <Card className="stat-card blue"><span>Target Aktif</span><strong>{activeGoals}</strong><small>Sedang berjalan</small></Card>
+          <Card className="stat-card purple"><span>Target Bersama</span><strong>{sharedGoals}</strong><small>Dengan anggota</small></Card>
         </section>
 
         {isLoading ? (
-          <div className="loading-state">Loading goals...</div>
+          <div className="loading-state">Memuat target...</div>
         ) : (
           <>
             <section className="entity-card-grid stable-card-grid">
@@ -59,7 +60,7 @@ export function GoalListPage() {
                   <FinanceOverviewCard
                     key={goal.id}
                     title={goal.name}
-                    subtitle={`deadline ${goal.deadline ? new Date(goal.deadline).toLocaleDateString() : 'No deadline'}`}
+                    subtitle={goal.deadline ? `batas waktu ${new Date(goal.deadline).toLocaleDateString()}` : 'tanpa batas waktu'}
                     icon="goal"
                     iconTone={goal.status === 'cancelled' ? 'warning' : 'safe'}
                     badge={goalStatusLabel(goal.status)}
@@ -70,27 +71,27 @@ export function GoalListPage() {
                     progress={progress}
                     progressTone={goalProgressTone(goal.status)}
                     accentColor={goal.color}
-                    metaLeft={`${progress}% funded`}
+                    metaLeft={`${progress}% tercapai`}
                     metaRight={`Target ${new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(goal.target_amount_minor)}`}
-                    actions={<><Button to={`/goals/${goal.id}`} size="small">Detail</Button><Button to={`/goals/${goal.id}/contribute`} size="small" variant="primary"><AppIcon name="pay" /> Contribute</Button><Button to={`/goals/${goal.id}/members`} size="small"><AppIcon name="profile" /> Members</Button></>}
+                    actions={<><Button to={`/goals/${goal.id}`} size="small">Detail</Button><Button to={`/goals/${goal.id}/contribute`} size="small" variant="primary"><AppIcon name="pay" /> Setor</Button><Button to={`/goals/${goal.id}/members`} size="small"><AppIcon name="profile" /> Anggota</Button></>}
                   />
                 );
               })}
             </section>
 
             <Card className="panel-card">
-              <div className="panel-head"><div><h3>Goal List</h3><p>Semua target keuangan dengan progress, deadline, dan action kontribusi.</p></div><Button to="/goals/new" size="small" variant="primary"><AppIcon name="add" /> Add Goal</Button></div>
+              <div className="panel-head"><div><h3>Daftar Target</h3><p>Semua target tabungan dengan progres, batas waktu, dan aksi setoran.</p></div><Button to="/goals/new" size="small" variant="primary"><AppIcon name="add" /> Tambah Target</Button></div>
               <DataTable<Goal>
                 data={goals}
                 getRowKey={(goal) => goal.id}
                 columns={[
-                  { key: 'name', header: 'Goal', render: (goal) => { const accent = itemAccentVars(goal.color); return <div className="table-title"><span className={clsx('mini-icon', accent ? 'has-accent' : 'safe')} style={accent}><AppIcon name="goal" /></span><strong>{goal.name}</strong></div>; } },
+                  { key: 'name', header: 'Nama', render: (goal) => { const accent = itemAccentVars(goal.color); return <div className="table-title"><span className={clsx('mini-icon', accent ? 'has-accent' : 'safe')} style={accent}><AppIcon name="goal" /></span><strong>{goal.name}</strong></div>; } },
                   { key: 'target', header: 'Target', align: 'right', render: (goal) => <Amount value={goal.target_amount_minor} /> },
-                  { key: 'saved', header: 'Saved', align: 'right', render: (goal) => <Amount value={goal.collected_amount_minor} type="income" /> },
-                  { key: 'deadline', header: 'Deadline', render: (goal) => goal.deadline ? new Date(goal.deadline).toLocaleDateString() : '-' },
-                  { key: 'visibility', header: 'Visibility', render: (goal) => <Badge tone={(goal.members?.length ?? 0) > 1 ? 'purple' : 'gray'}>{(goal.members?.length ?? 0) > 1 ? 'shared' : 'private'}</Badge> },
+                  { key: 'saved', header: 'Terkumpul', align: 'right', render: (goal) => <Amount value={goal.collected_amount_minor} type="income" /> },
+                  { key: 'deadline', header: 'Batas Waktu', render: (goal) => goal.deadline ? new Date(goal.deadline).toLocaleDateString() : '-' },
+                  { key: 'visibility', header: 'Visibilitas', render: (goal) => <Badge tone={(goal.members?.length ?? 0) > 1 ? 'purple' : 'gray'}>{(goal.members?.length ?? 0) > 1 ? 'bersama' : 'pribadi'}</Badge> },
                   { key: 'status', header: 'Status', render: (goal) => <Badge tone={goalStatusBadgeTone(goal.status)}>{goalStatusLabel(goal.status)}</Badge> },
-                  { key: 'action', header: 'Action', render: (goal) => <div className="inline-actions"><Button to={`/goals/${goal.id}`} size="small">View</Button><Button to={`/goals/${goal.id}/contribute`} size="small">Contribute</Button></div> },
+                  { key: 'action', header: 'Aksi', render: (goal) => <div className="inline-actions"><Button to={`/goals/${goal.id}`} size="small">Lihat</Button><Button to={`/goals/${goal.id}/contribute`} size="small">Setor</Button></div> },
                 ]}
               />
             </Card>

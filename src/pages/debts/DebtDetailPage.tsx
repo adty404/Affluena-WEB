@@ -13,6 +13,8 @@ import { useToast } from '../../components/ui/Toast';
 import { useDebt, useDeleteDebt } from '../../hooks/useDebts';
 import type { DebtPayment } from '../../types/debt';
 
+const statusLabel = (status: string) => status === 'cancelled' ? 'Dibatalkan' : status === 'paid' ? 'Lunas' : 'Belum Lunas';
+
 export function DebtDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -25,25 +27,25 @@ export function DebtDetailPage() {
     if (!debt) return;
     deleteMut.mutate(debt.id, {
       onSuccess: () => {
-        showToast('Debt deleted successfully');
+        showToast('Utang berhasil dihapus');
         navigate('/debts');
       },
-      onError: (err: any) => showToast(err?.message || 'Failed to delete debt'),
+      onError: (err: any) => showToast(err?.message || 'Gagal menghapus utang'),
     });
   };
 
   if (isLoading) {
     return (
-      <AppLayout title="Debt Detail" description="Loading...">
-        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Loading</span><strong>...</strong></div></div></Card></div>
+      <AppLayout title="Detail Utang" description="Memuat...">
+        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Memuat</span><strong>...</strong></div></div></Card></div>
       </AppLayout>
     );
   }
 
   if (!debt) {
     return (
-      <AppLayout title="Debt Detail" description="Not found">
-        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Error</span><strong>Debt not found</strong></div></div></Card></div>
+      <AppLayout title="Detail Utang" description="Tidak ditemukan">
+        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Gagal</span><strong>Utang tidak ditemukan</strong></div></div></Card></div>
       </AppLayout>
     );
   }
@@ -51,46 +53,46 @@ export function DebtDetailPage() {
   const progress = debt.principal_amount_minor > 0 ? Math.round((debt.paid_amount_minor / debt.principal_amount_minor) * 100) : 0;
 
   return (
-    <AppLayout title="Debt Detail" description="Remaining balance, payment history, and debt activity.">
+    <AppLayout title="Detail Utang" description="Sisa tagihan, riwayat pembayaran, dan aktivitas utang.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <span className="badge dark">● {debt.type}</span>
+            <span className="badge dark">● {debt.type === 'payable' ? 'Utang' : 'Piutang'}</span>
             <h2>{debt.counterparty_name}</h2>
             <p>{debt.note}</p>
           </div>
-          <div className="app-hero-actions"><Button to="/debts">Back</Button><Button to={`/debts/${debt.id}/pay`} variant="primary"><AppIcon name="pay" /> Record Payment</Button><Button variant="danger" onClick={() => setDeleteOpen(true)}><AppIcon name="delete" /> Delete</Button></div>
+          <div className="app-hero-actions"><Button to="/debts">Kembali</Button><Button to={`/debts/${debt.id}/pay`} variant="primary"><AppIcon name="pay" /> Catat Pembayaran</Button><Button variant="danger" onClick={() => setDeleteOpen(true)}><AppIcon name="delete" /> Hapus</Button></div>
         </section>
 
         <section className="stat-grid">
-          <Card className="stat-card"><span>Original</span><strong><Amount value={debt.principal_amount_minor} /></strong><small>{debt.counterparty_name}</small></Card>
-          <Card className="stat-card"><span>Paid</span><strong><Amount value={debt.paid_amount_minor} type="income" /></strong><small>{progress}% settled</small></Card>
-          <Card className="stat-card orange"><span>Remaining</span><strong><Amount value={debt.remaining_amount_minor} type={debt.type === 'payable' ? 'expense' : 'income'} /></strong><small>Due {debt.due_date || 'N/A'}</small></Card>
-          <Card className="stat-card blue"><span>Status</span><strong>{debt.status.replace('_', ' ')}</strong><small>Wallet: {debt.wallet_id}</small></Card>
+          <Card className="stat-card"><span>Nominal Awal</span><strong><Amount value={debt.principal_amount_minor} /></strong><small>{debt.counterparty_name}</small></Card>
+          <Card className="stat-card"><span>Terbayar</span><strong><Amount value={debt.paid_amount_minor} type="income" /></strong><small>{progress}% terbayar</small></Card>
+          <Card className="stat-card orange"><span>Sisa</span><strong><Amount value={debt.remaining_amount_minor} type={debt.type === 'payable' ? 'expense' : 'income'} /></strong><small>Jatuh tempo {debt.due_date || '-'}</small></Card>
+          <Card className="stat-card blue"><span>Status</span><strong>{statusLabel(debt.status)}</strong><small>Dompet: {debt.wallet_id}</small></Card>
         </section>
 
         <section className="form-detail-grid">
           <Card className="panel-card">
-            <div className="panel-head"><div><h3>Payment History</h3><p>Semua pembayaran terkait debt ini.</p></div><Button to={`/debts/${debt.id}/pay`} size="small" variant="primary"><AppIcon name="pay" /> Pay</Button></div>
+            <div className="panel-head"><div><h3>Riwayat Pembayaran</h3><p>Semua pembayaran untuk utang ini.</p></div><Button to={`/debts/${debt.id}/pay`} size="small" variant="primary"><AppIcon name="pay" /> Bayar</Button></div>
             <DataTable<DebtPayment>
               data={debt.payments || []}
               getRowKey={(payment) => payment.id}
               columns={[
-                { key: 'date', header: 'Date', render: (payment) => payment.paid_at },
-                { key: 'transaction', header: 'Transaction', render: (payment) => <Badge tone="blue">{payment.transaction_id}</Badge> },
-                { key: 'amount', header: 'Amount', align: 'right', render: (payment) => <Amount value={payment.amount_minor} type="income" /> },
-                { key: 'note', header: 'Note', render: (payment) => payment.note },
+                { key: 'date', header: 'Tanggal', render: (payment) => payment.paid_at },
+                { key: 'transaction', header: 'Transaksi', render: (payment) => <Badge tone="blue">{payment.transaction_id}</Badge> },
+                { key: 'amount', header: 'Jumlah', align: 'right', render: (payment) => <Amount value={payment.amount_minor} type="income" /> },
+                { key: 'note', header: 'Catatan', render: (payment) => payment.note },
               ]}
             />
           </Card>
 
           <Card className="panel-card side-metrics-card">
-            <div className="panel-head"><div><h3>Settlement Progress</h3><p>Payment tidak boleh melebihi remaining amount.</p></div></div>
+            <div className="panel-head"><div><h3>Progres Pelunasan</h3><p>Pembayaran tidak boleh melebihi sisa tagihan.</p></div></div>
             <div className="metric-list">
-              <div><span>Progress</span><strong>{progress}%</strong></div>
+              <div><span>Progres</span><strong>{progress}%</strong></div>
               <ProgressBar value={progress} tone={debt.type === 'payable' ? 'orange' : 'green'} />
-              <div><span>Wallet effect</span><strong>{debt.type === 'payable' ? 'Expense when paid' : 'Income when collected'}</strong></div>
-              <div><span>Due status</span><strong><Badge tone={debt.status === 'cancelled' ? 'red' : debt.status === 'paid' ? 'green' : 'orange'}>{debt.status.replace('_', ' ')}</Badge></strong></div>
+              <div><span>Efek ke dompet</span><strong>{debt.type === 'payable' ? 'Saldo berkurang saat dibayar' : 'Saldo bertambah saat diterima'}</strong></div>
+              <div><span>Status jatuh tempo</span><strong><Badge tone={debt.status === 'cancelled' ? 'red' : debt.status === 'paid' ? 'green' : 'orange'}>{statusLabel(debt.status)}</Badge></strong></div>
             </div>
           </Card>
         </section>
@@ -98,17 +100,17 @@ export function DebtDetailPage() {
 
       <Modal
         open={deleteOpen}
-        title="Delete Debt"
-        description="Tindakan ini menghapus debt beserta histori pembayarannya."
+        title="Hapus Utang"
+        description="Tindakan ini menghapus utang beserta riwayat pembayarannya."
         onClose={() => (deleteMut.isPending ? null : setDeleteOpen(false))}
       >
         <div className="readiness-list">
-          <div><span>Counterparty</span><strong>{debt.counterparty_name}</strong></div>
-          <div><span>Remaining</span><strong><Amount value={debt.remaining_amount_minor} type={debt.type === 'payable' ? 'expense' : 'income'} /></strong></div>
+          <div><span>Pihak Lain</span><strong>{debt.counterparty_name}</strong></div>
+          <div><span>Sisa</span><strong><Amount value={debt.remaining_amount_minor} type={debt.type === 'payable' ? 'expense' : 'income'} /></strong></div>
         </div>
         <div className="modal-actions">
-          <Button onClick={() => setDeleteOpen(false)} disabled={deleteMut.isPending}>Cancel</Button>
-          <Button variant="danger" onClick={handleDelete} disabled={deleteMut.isPending}>{deleteMut.isPending ? 'Deleting...' : 'Delete Debt'}</Button>
+          <Button onClick={() => setDeleteOpen(false)} disabled={deleteMut.isPending}>Batal</Button>
+          <Button variant="danger" onClick={handleDelete} disabled={deleteMut.isPending}>{deleteMut.isPending ? 'Menghapus...' : 'Hapus Utang'}</Button>
         </div>
       </Modal>
     </AppLayout>

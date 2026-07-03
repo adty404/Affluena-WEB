@@ -40,50 +40,50 @@ export function DataSettingsPage() {
       a.click();
       a.remove();
       window.URL.revokeObjectURL(url);
-      showToast('Personal data export berhasil diunduh.');
+      showToast('Ekspor data pribadi berhasil diunduh.');
     } catch (err) {
       const apiErr = err as ApiError;
-      showToast(apiErr.error || 'Gagal membuat export.');
+      showToast(apiErr.error || 'Gagal membuat ekspor.');
     }
   }
 
   return (
-    <AppLayout title="Data & Account Lifecycle" description="Export personal data, retention, dan delete account.">
+    <AppLayout title="Data & Siklus Akun" description="Ekspor data pribadi, retensi data, dan hapus akun.">
       <div className="dashboard-page grid-stack">
-        <SettingsHero badge="● Data" title="Data tools untuk export dan lifecycle akun." description="User bisa membuat export personal data dan menjalankan delete account flow dengan confirmation yang aman.">
-          <Button to="/exports/new"><AppIcon name="export" /> Create Export</Button>
-          <Button variant="danger" onClick={() => setDeleteOpen(true)}><AppIcon name="delete" /> Delete Account</Button>
+        <SettingsHero badge="● Data" title="Alat data untuk ekspor dan siklus hidup akun." description="Kamu bisa membuat ekspor data pribadi dan menghapus akun dengan konfirmasi yang aman.">
+          <Button to="/exports/new"><AppIcon name="export" /> Buat Ekspor</Button>
+          <Button variant="danger" onClick={() => setDeleteOpen(true)}><AppIcon name="delete" /> Hapus Akun</Button>
         </SettingsHero>
 
         <section className="dashboard-grid">
-          <SettingsCard icon="download" title="Personal Data Export" description="Unduh transaksi dan data penting dari Affluena sebagai file CSV.">
+          <SettingsCard icon="download" title="Ekspor Data Pribadi" description="Unduh transaksi dan data penting dari Affluena sebagai file CSV.">
             <form className="form-stack" onSubmit={handleExport}>
               <div className="form-two">
-                <label><span>Date range</span><Select value={dateRange} onChange={(e) => setDateRange(e.target.value)}><option value="all-time">All time</option><option value="this-year">This year</option></Select></label>
-                <label><span>Format</span><Select value="csv" disabled><option value="csv">CSV bundle</option></Select></label>
+                <label><span>Rentang tanggal</span><Select value={dateRange} onChange={(e) => setDateRange(e.target.value)}><option value="all-time">Semua waktu</option><option value="this-year">Tahun ini</option></Select></label>
+                <label><span>Format</span><Select value="csv" disabled><option value="csv">Paket CSV</option></Select></label>
               </div>
-              <Button type="submit" variant="primary" disabled={exportMut.isPending}><AppIcon name="download" /> {exportMut.isPending ? 'Menyiapkan…' : 'Generate Export'}</Button>
-              <span className="muted-text">Butuh format atau filter modul lain? Gunakan Export Center.</span>
+              <Button type="submit" variant="primary" disabled={exportMut.isPending}><AppIcon name="download" /> {exportMut.isPending ? 'Menyiapkan…' : 'Buat Ekspor'}</Button>
+              <span className="muted-text">Butuh format atau filter lain? Gunakan Pusat Ekspor.</span>
             </form>
           </SettingsCard>
 
-          <SettingsCard icon="list" title="Retention & Delete Policy" description="Aturan data ketika akun ditutup.">
+          <SettingsCard icon="list" title="Kebijakan Retensi & Penghapusan" description="Aturan data ketika akun ditutup.">
             <div className="settings-list compact">
-              <div><span>Transactions</span><strong>Included in export before deletion</strong></div>
-              <div><span>Wallet shares</span><strong>Revoked automatically</strong></div>
-              <div><span>Refresh tokens</span><strong>Revoked immediately</strong></div>
-              <div><span>API logs</span><strong>Anonymized after account closure</strong></div>
-              <div><span>Recovery window</span><strong>7 days soft-delete period</strong></div>
+              <div><span>Transaksi</span><strong>Disertakan dalam ekspor sebelum penghapusan</strong></div>
+              <div><span>Berbagi Dompet</span><strong>Dicabut otomatis</strong></div>
+              <div><span>Sesi masuk</span><strong>Langsung dicabut</strong></div>
+              <div><span>Riwayat aktivitas</span><strong>Dianonimkan setelah akun ditutup</strong></div>
+              <div><span>Masa pemulihan</span><strong>7 hari masa tunggu penghapusan</strong></div>
             </div>
-            <div className="modal-actions left-actions"><Button to="/exports/history"><AppIcon name="history" /> Export History</Button></div>
+            <div className="modal-actions left-actions"><Button to="/exports/history"><AppIcon name="history" /> Riwayat Ekspor</Button></div>
           </SettingsCard>
         </section>
 
-        <Modal open={deleteOpen} title="Delete Account" description="Ketik DELETE untuk mengaktifkan tombol delete account." onClose={() => setDeleteOpen(false)}>
-          <div className="notice-card danger-note"><strong>Important:</strong> akun akan masuk 7-day soft-delete window. Semua refresh token dicabut dan wallet sharing direvoke.</div>
+        <Modal open={deleteOpen} title="Hapus Akun" description={'Ketik "DELETE" untuk mengaktifkan tombol hapus akun.'} onClose={() => setDeleteOpen(false)}>
+          <div className="notice-card danger-note"><strong>Penting:</strong> akun akan masuk masa tunggu penghapusan 7 hari. Semua sesi masuk dicabut dan Berbagi Dompet dihentikan.</div>
           <form className="form-stack" onSubmit={(event) => { event.preventDefault(); setDeleteOpen(false); setConfirmText(''); showToast('Permintaan hapus akun tercatat. Tim Affluena akan memproses penutupan akun.'); }}>
-            <label><span>Confirmation</span><Input value={confirmText} onChange={(event) => setConfirmText(event.target.value)} placeholder="DELETE" /></label>
-            <div className="modal-actions"><Button onClick={() => setDeleteOpen(false)}>Cancel</Button><Button type="submit" variant="danger" disabled={confirmText !== 'DELETE'}><AppIcon name="delete" /> Confirm Delete</Button></div>
+            <label><span>Konfirmasi</span><Input value={confirmText} onChange={(event) => setConfirmText(event.target.value)} placeholder="DELETE" /></label>
+            <div className="modal-actions"><Button onClick={() => setDeleteOpen(false)}>Batal</Button><Button type="submit" variant="danger" disabled={confirmText !== 'DELETE'}><AppIcon name="delete" /> Konfirmasi Hapus</Button></div>
           </form>
         </Modal>
       </div>

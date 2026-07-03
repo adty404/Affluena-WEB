@@ -18,6 +18,7 @@ import {
   useRevokePartner,
 } from '../../hooks/usePartners';
 import { MAX_PARTNER_SHARES, type PartnerLink, type PartnerStatus } from '../../types/partner';
+import { NAV } from '../../lib/copy';
 import type { ApiError } from '../../api/types';
 
 const inviteSchema = z.object({
@@ -104,20 +105,20 @@ export function SharingPage() {
   }
 
   return (
-    <AppLayout title="Berbagi Dompet" description="Undang pemantau untuk melihat semua riwayat dompetmu (hanya lihat).">
+    <AppLayout title={NAV.berbagiDompet} description="Undang pemantau untuk melihat semua riwayat dompetmu (hanya lihat).">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <span className="badge dark">● Berbagi Dompet</span>
+            <span className="badge dark">● {NAV.berbagiDompet}</span>
             <h2>Bagikan riwayat semua dompetmu ke orang terpercaya.</h2>
             <p>
               Undang maksimal {MAX_PARTNER_SHARES} orang untuk melihat semua riwayat dompetmu (hanya lihat, termasuk
-              dompet baru). Mereka tidak bisa mengubah apa pun, dan budget tetap privat.
+              dompet baru). Mereka tidak bisa mengubah apa pun, dan anggaran tetap privat.
             </p>
           </div>
           <div className="app-hero-actions">
-            <Button to="/wallets"><AppIcon name="wallet" /> Wallets</Button>
-            <Button to="/settings"><AppIcon name="settings" /> Settings</Button>
+            <Button to="/wallets"><AppIcon name="wallet" /> {NAV.dompet}</Button>
+            <Button to="/settings"><AppIcon name="settings" /> {NAV.pengaturan}</Button>
           </div>
         </section>
 
@@ -232,7 +233,7 @@ export function SharingPage() {
                   <div className="avatar">{displayName(link).slice(0, 2).toUpperCase()}</div>
                   <div>
                     <strong>{displayName(link)}</strong>
-                    <span>{link.email} · dompetnya tampil di daftar wallet kamu</span>
+                    <span>{link.email} · dompetnya tampil di daftar dompetmu</span>
                   </div>
                   <div className="inline-actions">
                     <Badge tone="green">{statusLabel.joined}</Badge>
@@ -252,7 +253,7 @@ export function SharingPage() {
             <div><span>Akses</span><strong>Hanya lihat — pemantau tidak bisa mencatat transaksi</strong></div>
             <div><span>Cakupan</span><strong>Semua dompetmu, termasuk yang dibuat setelah undangan diterima</strong></div>
             <div><span>Satu arah</span><strong>Kamu tidak otomatis melihat dompet pemantau</strong></div>
-            <div><span>Budget</span><strong>Tetap privat, tidak ikut dibagikan</strong></div>
+            <div><span>Anggaran</span><strong>Tetap privat, tidak ikut dibagikan</strong></div>
           </div>
         </Card>
       </div>
@@ -263,7 +264,7 @@ export function SharingPage() {
         description={
           revokeTarget?.direction === 'owned'
             ? `${revokeTarget ? displayName(revokeTarget) : ''} tidak akan bisa lagi melihat dompetmu. Lanjutkan?`
-            : `Dompet ${revokeTarget ? displayName(revokeTarget) : ''} tidak akan tampil lagi di daftar wallet kamu. Lanjutkan?`
+            : `Dompet ${revokeTarget ? displayName(revokeTarget) : ''} tidak akan tampil lagi di daftar dompetmu. Lanjutkan?`
         }
         onClose={() => (revokeMut.isPending ? null : setRevokeTarget(null))}
       >

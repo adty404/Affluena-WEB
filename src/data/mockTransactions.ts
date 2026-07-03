@@ -10,7 +10,7 @@ export const mockTransactions: Transaction[] = [
     amount_minor: 50000,
     tag_ids: ['1'],
     transaction_at: new Date().toISOString(),
-    note: 'Lunch',
+    note: 'Makan siang',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   },
@@ -23,17 +23,17 @@ export const mockTransactions: Transaction[] = [
     amount_minor: 10000000,
     tag_ids: [],
     transaction_at: new Date(Date.now() - 86400000).toISOString(),
-    note: 'Salary',
+    note: 'Gaji',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   },
 ]
 
 export const transactionTypeLabels: Record<string, string> = {
-  income: 'Income',
-  expense: 'Expense',
+  income: 'Pemasukan',
+  expense: 'Pengeluaran',
   transfer: 'Transfer',
-  adjustment: 'Adjustment',
+  adjustment: 'Penyesuaian',
 };
 
 export const mockSplitParticipants = [

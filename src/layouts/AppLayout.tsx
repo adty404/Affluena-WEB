@@ -26,7 +26,7 @@ export function AppLayout({ title, description, children }: AppLayoutProps) {
       </section>
       <BottomNav />
       {hideMobileFab ? null : (
-        <Link to="/transactions/new" className="mobile-fab" aria-label="Add transaction">
+        <Link to="/transactions/new" className="mobile-fab" aria-label="Tambah transaksi">
           <AppIcon name="add" />
         </Link>
       )}

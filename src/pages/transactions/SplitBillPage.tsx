@@ -56,7 +56,7 @@ export function SplitBillPage() {
   const handleAddParticipant = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newParticipant.counterparty_name || newParticipant.amount_minor <= 0 || !newParticipant.disbursement_category_id || !newParticipant.payment_category_id) {
-      showToast('Please fill all participant fields correctly');
+      showToast('Lengkapi semua data peserta dengan benar');
       return;
     }
     append(newParticipant);
@@ -67,7 +67,7 @@ export function SplitBillPage() {
       disbursement_category_id: '',
       payment_category_id: '',
     });
-    showToast('Participant added to split bill.');
+    showToast('Peserta ditambahkan ke bagi tagihan.');
   };
 
   const onSubmit = (data: SplitTransactionFormData) => {
@@ -78,54 +78,54 @@ export function SplitBillPage() {
 
     splitMutation.mutate(payload, {
       onSuccess: () => {
-        showToast('Split bill created successfully.');
+        showToast('Bagi tagihan berhasil dibuat.');
         navigate('/transactions');
       },
       onError: (err: any) => {
-        showToast(err.message || 'Failed to create split bill');
+        showToast(err.message || 'Gagal membuat bagi tagihan');
       }
     });
   };
 
   return (
-    <AppLayout title="Split Bill" description="Create one expense transaction and receivable debts for participants.">
+    <AppLayout title="Bagi Tagihan" description="Catat satu pengeluaran dan buat piutang untuk tiap peserta.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <span className="badge dark">● Split Bill</span>
-            <h2>Split bill harus atomic: expense berhasil, receivable debt juga harus berhasil.</h2>
-            <p>Jika debt creation gagal, semua write sebaiknya rollback. UI menampilkan total bill, user share, participant share, dan receivable total.</p>
+            <span className="badge dark">● Bagi Tagihan</span>
+            <h2>Bagi tagihan bersama teman tanpa repot hitung manual.</h2>
+            <p>Bagianmu tercatat sebagai pengeluaran dan bagian tiap peserta otomatis menjadi piutang.</p>
           </div>
           <div className="app-hero-actions">
-            <Button to="/transactions">Back</Button>
+            <Button to="/transactions">Kembali</Button>
             <Button variant="primary" onClick={() => setConfirmOpen(true)} disabled={watchSplits.length === 0 || userShare < 0}>
-              <AppIcon name="split" /> Create Split Bill
+              <AppIcon name="split" /> Buat Bagi Tagihan
             </Button>
           </div>
         </section>
         <section className="stat-grid">
-          <Card className="stat-card"><span>Total Bill</span><strong><Amount value={watchTotal} variant="expense" /></strong><small>Dinner bill</small></Card>
-          <Card className="stat-card blue"><span>User Share</span><strong><Amount value={userShare} variant="expense" /></strong><small>Final expense</small></Card>
-          <Card className="stat-card purple"><span>Receivable</span><strong><Amount value={receivable} variant="income" /></strong><small>Created as debt</small></Card>
-          <Card className="stat-card orange"><span>Participants</span><strong>{watchSplits.length}</strong><small>Team members</small></Card>
+          <Card className="stat-card"><span>Total Tagihan</span><strong><Amount value={watchTotal} variant="expense" /></strong><small>Tagihan bersama</small></Card>
+          <Card className="stat-card blue"><span>Bagianmu</span><strong><Amount value={userShare} variant="expense" /></strong><small>Tercatat sebagai pengeluaran</small></Card>
+          <Card className="stat-card purple"><span>Piutang</span><strong><Amount value={receivable} variant="income" /></strong><small>Tercatat sebagai piutang</small></Card>
+          <Card className="stat-card orange"><span>Peserta</span><strong>{watchSplits.length}</strong><small>Ikut patungan</small></Card>
         </section>
         <section className="dashboard-grid transaction-entry-grid">
           <Card className="panel-card">
-            <div className="panel-head"><div><h3>Bill Information</h3><p>Expense transaction source.</p></div></div>
+            <div className="panel-head"><div><h3>Informasi Tagihan</h3><p>Detail pengeluaran dari tagihan ini.</p></div></div>
             <form className="form-stack">
               <div className="form-two">
                 <label>
-                  <span>Wallet</span>
+                  <span>Dompet</span>
                   <Select {...register('wallet_id')}>
-                    <option value="">Select Wallet</option>
+                    <option value="">Pilih Dompet</option>
                     {walletsData?.wallets?.map((wallet) => <option key={wallet.id} value={wallet.id}>{wallet.name}</option>)}
                   </Select>
                   {errors.wallet_id && <span className="error-text">{errors.wallet_id.message}</span>}
                 </label>
                 <label>
-                  <span>Category</span>
+                  <span>Kategori</span>
                   <Select {...register('category_id')}>
-                    <option value="">Select Category</option>
+                    <option value="">Pilih Kategori</option>
                     {categoriesData?.categories?.filter(c => c.type === 'expense').map((cat) => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
                   </Select>
                   {errors.category_id && <span className="error-text">{errors.category_id.message}</span>}
@@ -133,18 +133,18 @@ export function SplitBillPage() {
               </div>
               <div className="form-two">
                 <label>
-                  <span>Total Amount (Rp)</span>
+                  <span>Jumlah Total (Rp)</span>
                   <Input type="number" {...register('total_amount_minor', { valueAsNumber: true })} />
                   {errors.total_amount_minor && <span className="error-text">{errors.total_amount_minor.message}</span>}
                 </label>
                 <label>
-                  <span>Date</span>
+                  <span>Tanggal</span>
                   <Input type="datetime-local" {...register('transaction_at')} />
                   {errors.transaction_at && <span className="error-text">{errors.transaction_at.message}</span>}
                 </label>
               </div>
               <label>
-                <span>Note</span>
+                <span>Catatan</span>
                 <Textarea {...register('note')} />
                 {errors.note && <span className="error-text">{errors.note.message}</span>}
               </label>
@@ -152,8 +152,8 @@ export function SplitBillPage() {
           </Card>
           <Card className="panel-card">
             <div className="panel-head">
-              <div><h3>Participants</h3><p>Receivable debt per participant.</p></div>
-              <Button size="small" onClick={() => setParticipantOpen(true)}><AppIcon name="add" /> Add</Button>
+              <div><h3>Peserta</h3><p>Piutang untuk tiap peserta.</p></div>
+              <Button size="small" onClick={() => setParticipantOpen(true)}><AppIcon name="add" /> Tambah</Button>
             </div>
             <div className="participant-list">
               {fields.map((item, index) => (
@@ -162,29 +162,29 @@ export function SplitBillPage() {
                     <strong>{item.counterparty_name}</strong>
                   </div>
                   <Amount value={item.amount_minor} variant="income" />
-                  <Button size="small" onClick={() => remove(index)}>Remove</Button>
+                  <Button size="small" onClick={() => remove(index)}>Hapus</Button>
                 </div>
               ))}
-              {fields.length === 0 && <p>No participants added yet.</p>}
+              {fields.length === 0 && <p>Belum ada peserta.</p>}
               {errors.splits && <span className="error-text">{errors.splits.message}</span>}
             </div>
           </Card>
         </section>
       </div>
 
-      <Modal open={participantOpen} title="Add Participant" description="Tambahkan participant dan share amount untuk receivable debt." onClose={() => setParticipantOpen(false)}>
+      <Modal open={participantOpen} title="Tambah Peserta" description="Tambahkan peserta dan jumlah bagiannya sebagai piutang." onClose={() => setParticipantOpen(false)}>
         <form className="form-stack" onSubmit={handleAddParticipant}>
           <div className="form-two">
             <label>
-              <span>Name</span>
-              <Input 
-                placeholder="Participant name" 
-                value={newParticipant.counterparty_name} 
-                onChange={(e) => setNewParticipant({...newParticipant, counterparty_name: e.target.value})} 
+              <span>Nama</span>
+              <Input
+                placeholder="Nama peserta"
+                value={newParticipant.counterparty_name}
+                onChange={(e) => setNewParticipant({...newParticipant, counterparty_name: e.target.value})}
               />
             </label>
             <label>
-              <span>Share Amount (Rp)</span>
+              <span>Jumlah Bagian (Rp)</span>
               <Input 
                 type="number" 
                 value={newParticipant.amount_minor || ''} 
@@ -194,44 +194,43 @@ export function SplitBillPage() {
           </div>
           <div className="form-two">
             <label>
-              <span>Disbursement Category</span>
-              <Select 
-                value={newParticipant.disbursement_category_id} 
+              <span>Kategori Pengeluaran</span>
+              <Select
+                value={newParticipant.disbursement_category_id}
                 onChange={(e) => setNewParticipant({...newParticipant, disbursement_category_id: e.target.value})}
               >
-                <option value="">Select Category</option>
+                <option value="">Pilih Kategori</option>
                 {categoriesData?.categories?.filter(c => c.type === 'expense').map((cat) => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
               </Select>
             </label>
             <label>
-              <span>Payment Category</span>
-              <Select 
-                value={newParticipant.payment_category_id} 
+              <span>Kategori Pembayaran</span>
+              <Select
+                value={newParticipant.payment_category_id}
                 onChange={(e) => setNewParticipant({...newParticipant, payment_category_id: e.target.value})}
               >
-                <option value="">Select Category</option>
+                <option value="">Pilih Kategori</option>
                 {categoriesData?.categories?.filter(c => c.type === 'income').map((cat) => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
               </Select>
             </label>
           </div>
           <div className="modal-actions">
-            <Button onClick={() => setParticipantOpen(false)} type="button">Cancel</Button>
-            <Button type="submit" variant="primary">Add Participant</Button>
+            <Button onClick={() => setParticipantOpen(false)} type="button">Batal</Button>
+            <Button type="submit" variant="primary">Tambah Peserta</Button>
           </div>
         </form>
       </Modal>
 
-      <Modal open={confirmOpen} title="Create Split Bill" description="Review atomic write plan sebelum split bill dibuat." onClose={() => setConfirmOpen(false)}>
+      <Modal open={confirmOpen} title="Buat Bagi Tagihan" description="Periksa rincian sebelum bagi tagihan dibuat." onClose={() => setConfirmOpen(false)}>
         <div className="readiness-list">
-          <div><span>Expense transaction</span><strong><Amount value={userShare} variant="expense" /></strong></div>
-          <div><span>Receivable debts</span><strong><Amount value={receivable} variant="income" /></strong></div>
-          <div><span>Participants</span><strong>{watchSplits.length} people</strong></div>
-          <div><span>Rollback rule</span><strong>Cancel all writes if one fails</strong></div>
+          <div><span>Pengeluaran kamu</span><strong><Amount value={userShare} variant="expense" /></strong></div>
+          <div><span>Piutang</span><strong><Amount value={receivable} variant="income" /></strong></div>
+          <div><span>Peserta</span><strong>{watchSplits.length} orang</strong></div>
         </div>
         <div className="modal-actions">
-          <Button onClick={() => setConfirmOpen(false)}>Cancel</Button>
+          <Button onClick={() => setConfirmOpen(false)}>Batal</Button>
           <Button variant="primary" onClick={() => { setConfirmOpen(false); handleSubmit(onSubmit)(); }} disabled={splitMutation.isPending}>
-            {splitMutation.isPending ? 'Creating...' : 'Confirm Split Bill'}
+            {splitMutation.isPending ? 'Membuat...' : 'Konfirmasi Bagi Tagihan'}
           </Button>
         </div>
       </Modal>

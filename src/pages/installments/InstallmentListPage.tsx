@@ -13,9 +13,11 @@ import { FinanceOverviewCard } from '../../components/finance/FinanceOverviewCar
 import { itemAccentVars } from '../../components/finance/ColorPicker';
 import { useToast } from '../../components/ui/Toast';
 import { useInstallments, useDeleteInstallment } from '../../hooks/useTrackers';
+import { NAV } from '../../lib/copy';
 import type { Installment } from '../../types/tracker';
 
 const statusTone = (status: Installment['status']) => status === 'cancelled' ? 'red' : status === 'paid' ? 'green' : 'blue';
+const statusLabel = (status: Installment['status']) => status === 'cancelled' ? 'Dibatalkan' : status === 'paid' ? 'Lunas' : 'Aktif';
 
 export function InstallmentListPage() {
   const { data, isLoading, error } = useInstallments();
@@ -31,26 +33,26 @@ export function InstallmentListPage() {
     if (!target) return;
     deleteMut.mutate(target.id, {
       onSuccess: () => {
-        showToast('Installment deleted successfully');
+        showToast('Cicilan berhasil dihapus');
         setTarget(null);
       },
-      onError: (err: any) => showToast(err?.message || 'Failed to delete installment'),
+      onError: (err: any) => showToast(err?.message || 'Gagal menghapus cicilan'),
     });
   };
 
   return (
-    <AppLayout title="Installments" description="Track installment tenor, outstanding balance, and monthly due schedule.">
+    <AppLayout title={NAV.cicilan} description="Pantau tenor cicilan, sisa pokok, dan jadwal tagihan bulanan.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
-          <div><span className="badge dark">● Installment Tracker</span><h2>Pantau cicilan tetap, sisa tenor, dan pembayaran berikutnya.</h2><p>Setiap installment punya wallet pembayaran, monthly amount, tenor, paid count, dan reminder yang jelas.</p></div>
-          <div className="app-hero-actions"><Button to="/tracker"><AppIcon name="tracker" /> Tracker</Button><Button to="/installments/new" variant="primary"><AppIcon name="add" /> Add Installment</Button></div>
+          <div><span className="badge dark">● {NAV.cicilan}</span><h2>Pantau cicilan tetap, sisa tenor, dan pembayaran berikutnya.</h2><p>Setiap cicilan punya dompet pembayaran, nominal bulanan, tenor, dan pengingat yang jelas.</p></div>
+          <div className="app-hero-actions"><Button to="/tracker"><AppIcon name="tracker" /> {NAV.pemantauUtang}</Button><Button to="/installments/new" variant="primary"><AppIcon name="add" /> Tambah Cicilan</Button></div>
         </section>
 
         <section className="stat-grid">
-          <Card className="stat-card"><span>Active Items</span><strong>{installments.length}</strong><small>Installments</small></Card>
-          <Card className="stat-card orange"><span>Monthly Due</span><strong><Amount value={monthlyDue} type="expense" /></strong><small>Fixed outflow</small></Card>
-          <Card className="stat-card blue"><span>Outstanding</span><strong><Amount value={outstanding} /></strong><small>Remaining principal</small></Card>
-          <Card className="stat-card purple"><span>Due Soon</span><strong>0</strong><small>Next 7 days</small></Card>
+          <Card className="stat-card"><span>Cicilan Aktif</span><strong>{installments.length}</strong><small>Sedang berjalan</small></Card>
+          <Card className="stat-card orange"><span>Tagihan Bulanan</span><strong><Amount value={monthlyDue} type="expense" /></strong><small>Pengeluaran tetap</small></Card>
+          <Card className="stat-card blue"><span>Sisa Pokok</span><strong><Amount value={outstanding} /></strong><small>Belum terbayar</small></Card>
+          <Card className="stat-card purple"><span>Segera Jatuh Tempo</span><strong>0</strong><small>7 hari ke depan</small></Card>
         </section>
 
         <section className="entity-card-grid stable-card-grid">
@@ -61,50 +63,50 @@ export function InstallmentListPage() {
               <FinanceOverviewCard
                 key={item.id}
                 title={item.name}
-                subtitle={`${paidCount} of ${item.tenor_months} months · Wallet ${item.wallet_id}`}
+                subtitle={`${paidCount} dari ${item.tenor_months} bulan · Dompet ${item.wallet_id}`}
                 icon="installment"
                 iconTone="info"
-                badge={item.status.replace('_', ' ')}
+                badge={statusLabel(item.status)}
                 badgeTone={statusTone(item.status)}
                 amount={item.monthly_amount_minor}
                 amountType="expense"
-                description={<>Remaining principal <Amount value={item.monthly_amount_minor * item.remaining_months} /></>}
+                description={<>Sisa pokok <Amount value={item.monthly_amount_minor * item.remaining_months} /></>}
                 accentColor={item.color}
                 progress={pct}
                 progressTone="blue"
-                metaLeft={`${pct}% completed`}
-                metaRight={`Due Day ${item.due_day}`}
-                actions={<><Button to={`/installments/${item.id}/pay`} size="small" variant="primary"><AppIcon name="pay" /> Pay</Button><Button size="small" variant="danger" onClick={() => setTarget(item)}><AppIcon name="delete" /> Delete</Button></>}
+                metaLeft={`${pct}% selesai`}
+                metaRight={`Jatuh tempo tanggal ${item.due_day}`}
+                actions={<><Button to={`/installments/${item.id}/pay`} size="small" variant="primary"><AppIcon name="pay" /> Bayar</Button><Button size="small" variant="danger" onClick={() => setTarget(item)}><AppIcon name="delete" /> Hapus</Button></>}
               />
             );
           })}
         </section>
 
         {isLoading && (
-          <Card className="panel-card"><div className="readiness-list"><div><span>Loading</span><strong>Memuat installment...</strong></div></div></Card>
+          <Card className="panel-card"><div className="readiness-list"><div><span>Memuat</span><strong>Memuat cicilan...</strong></div></div></Card>
         )}
         {!isLoading && !error && installments.length === 0 && (
           <Card className="panel-card">
-            <EmptyState icon={<AppIcon name="installment" />} title="Belum ada cicilan" description="Tambahkan installment untuk melacak tenor, monthly due, dan sisa pembayaran." action={<Button to="/installments/new" variant="primary"><AppIcon name="add" /> Add Installment</Button>} />
+            <EmptyState icon={<AppIcon name="installment" />} title="Belum ada cicilan" description="Tambahkan cicilan untuk melacak tenor, tagihan bulanan, dan sisa pembayaran." action={<Button to="/installments/new" variant="primary"><AppIcon name="add" /> Tambah Cicilan</Button>} />
           </Card>
         )}
         {error && (
-          <Card className="panel-card"><EmptyState icon={<AppIcon name="empty" />} title="Gagal memuat installment" description="Periksa koneksi lalu coba lagi." /></Card>
+          <Card className="panel-card"><EmptyState icon={<AppIcon name="empty" />} title="Gagal memuat cicilan" description="Periksa koneksi lalu coba lagi." /></Card>
         )}
 
         <Card className="panel-card">
-          <div className="panel-head"><div><h3>Installment List</h3><p>Daftar cicilan aktif dan jadwal berikutnya.</p></div><Button to="/installments/new" size="small" variant="primary"><AppIcon name="add" /> Add</Button></div>
+          <div className="panel-head"><div><h3>Daftar Cicilan</h3><p>Cicilan aktif dan jadwal pembayaran berikutnya.</p></div><Button to="/installments/new" size="small" variant="primary"><AppIcon name="add" /> Tambah</Button></div>
           <DataTable<Installment>
             data={installments}
             getRowKey={(item) => item.id}
             columns={[
-              { key: 'name', header: 'Name', render: (item) => { const accent = itemAccentVars(item.color); return <div className="table-title"><span className={clsx('mini-icon', accent ? 'has-accent' : 'info')} style={accent}><AppIcon name="installment" /></span><strong>{item.name}</strong></div>; } },
-              { key: 'wallet', header: 'Wallet', render: (item) => item.wallet_id },
-              { key: 'monthly', header: 'Monthly', align: 'right', render: (item) => <Amount value={item.monthly_amount_minor} type="expense" /> },
+              { key: 'name', header: 'Nama', render: (item) => { const accent = itemAccentVars(item.color); return <div className="table-title"><span className={clsx('mini-icon', accent ? 'has-accent' : 'info')} style={accent}><AppIcon name="installment" /></span><strong>{item.name}</strong></div>; } },
+              { key: 'wallet', header: 'Dompet', render: (item) => item.wallet_id },
+              { key: 'monthly', header: 'Bulanan', align: 'right', render: (item) => <Amount value={item.monthly_amount_minor} type="expense" /> },
               { key: 'tenor', header: 'Tenor', render: (item) => `${item.tenor_months - item.remaining_months}/${item.tenor_months}` },
-              { key: 'due', header: 'Due Day', render: (item) => item.due_day },
-              { key: 'status', header: 'Status', render: (item) => <Badge tone={statusTone(item.status)}>{item.status.replace('_', ' ')}</Badge> },
-              { key: 'action', header: 'Action', render: (item) => <div className="inline-actions"><Button to={`/installments/${item.id}/pay`} size="small">Pay</Button><Button size="small" variant="danger" onClick={() => setTarget(item)}><AppIcon name="delete" /></Button></div> },
+              { key: 'due', header: 'Tanggal Tagihan', render: (item) => item.due_day },
+              { key: 'status', header: 'Status', render: (item) => <Badge tone={statusTone(item.status)}>{statusLabel(item.status)}</Badge> },
+              { key: 'action', header: 'Aksi', render: (item) => <div className="inline-actions"><Button to={`/installments/${item.id}/pay`} size="small">Bayar</Button><Button size="small" variant="danger" onClick={() => setTarget(item)}><AppIcon name="delete" /></Button></div> },
             ]}
           />
         </Card>
@@ -112,17 +114,17 @@ export function InstallmentListPage() {
 
       <Modal
         open={!!target}
-        title="Delete Installment"
-        description="Tindakan ini menghapus installment beserta jadwal pembayarannya."
+        title="Hapus Cicilan"
+        description="Tindakan ini menghapus cicilan beserta jadwal pembayarannya."
         onClose={() => (deleteMut.isPending ? null : setTarget(null))}
       >
         <div className="readiness-list">
-          <div><span>Name</span><strong>{target?.name}</strong></div>
-          <div><span>Monthly</span><strong>{target ? <Amount value={target.monthly_amount_minor} type="expense" /> : null}</strong></div>
+          <div><span>Nama</span><strong>{target?.name}</strong></div>
+          <div><span>Bulanan</span><strong>{target ? <Amount value={target.monthly_amount_minor} type="expense" /> : null}</strong></div>
         </div>
         <div className="modal-actions">
-          <Button onClick={() => setTarget(null)} disabled={deleteMut.isPending}>Cancel</Button>
-          <Button variant="danger" onClick={confirmDelete} disabled={deleteMut.isPending}>{deleteMut.isPending ? 'Deleting...' : 'Delete Installment'}</Button>
+          <Button onClick={() => setTarget(null)} disabled={deleteMut.isPending}>Batal</Button>
+          <Button variant="danger" onClick={confirmDelete} disabled={deleteMut.isPending}>{deleteMut.isPending ? 'Menghapus...' : 'Hapus Cicilan'}</Button>
         </div>
       </Modal>
     </AppLayout>

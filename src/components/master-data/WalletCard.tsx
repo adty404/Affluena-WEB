@@ -37,10 +37,16 @@ function memberCount(wallet: Wallet): number {
   return wallet.members?.length ?? (isShared(wallet) ? 2 : 1);
 }
 
+const walletRoleLabels: Record<string, string> = {
+  owner: 'Pemilik',
+  member: 'Anggota (bisa mencatat)',
+  viewer: 'Hanya lihat',
+};
+
 export function WalletCard({ wallet }: WalletCardProps) {
   const shared = isShared(wallet);
   const subtitle = shared
-    ? `${walletTypeLabels[wallet.type]} · ${wallet.role} · ${memberCount(wallet)} members`
+    ? `${walletTypeLabels[wallet.type]} · ${walletRoleLabels[wallet.role ?? ''] ?? wallet.role} · ${memberCount(wallet)} anggota`
     : walletTypeLabels[wallet.type];
   // Stored hex colors (and normalized legacy names) tint via --item-accent;
   // wallets without a color keep the type-based default tint.
@@ -57,7 +63,7 @@ export function WalletCard({ wallet }: WalletCardProps) {
           <strong>{wallet.name}</strong>
           <span>{subtitle}</span>
         </div>
-        <Badge tone={shared ? 'purple' : 'green'}>{shared ? 'Shared' : 'Private'}</Badge>
+        <Badge tone={shared ? 'purple' : 'green'}>{shared ? 'Bersama' : 'Pribadi'}</Badge>
       </div>
       <div className="wallet-balance"><Amount value={wallet.balance_minor} /></div>
       <p className="wallet-description">
@@ -66,7 +72,7 @@ export function WalletCard({ wallet }: WalletCardProps) {
       <div className="wallet-card-actions">
         <Button size="small" to={`/wallets/${wallet.id}`}>Detail</Button>
         <Button size="small" to={`/wallets/${wallet.id}/edit`}>Edit</Button>
-        {shared ? <Button size="small" to={`/wallets/${wallet.id}/sharing`}>Sharing</Button> : null}
+        {shared ? <Button size="small" to={`/wallets/${wallet.id}/sharing`}>Anggota</Button> : null}
       </div>
     </article>
   );

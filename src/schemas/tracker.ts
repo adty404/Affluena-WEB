@@ -2,14 +2,14 @@ import { z } from 'zod';
 import { itemColorSchema, itemIconSchema } from './appearance';
 
 export const createInstallmentSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  wallet_id: z.string().min(1, 'Wallet is required'),
-  category_id: z.string().min(1, 'Category is required'),
-  total_amount_minor: z.number().int().positive('Total amount must be positive'),
-  monthly_amount_minor: z.number().int().positive('Monthly amount must be positive'),
-  tenor_months: z.number().int().positive('Tenor must be positive'),
+  name: z.string().min(1, 'Nama wajib diisi'),
+  wallet_id: z.string().min(1, 'Dompet wajib dipilih'),
+  category_id: z.string().min(1, 'Kategori wajib dipilih'),
+  total_amount_minor: z.number().int().positive('Nominal total harus lebih dari 0'),
+  monthly_amount_minor: z.number().int().positive('Nominal bulanan harus lebih dari 0'),
+  tenor_months: z.number().int().positive('Tenor harus lebih dari 0'),
   remaining_months: z.number().int().nonnegative().optional(),
-  start_date: z.string().min(1, 'Start date is required'),
+  start_date: z.string().min(1, 'Tanggal mulai wajib diisi'),
   due_day: z.number().int().min(1).max(31),
   status: z.enum(['active', 'paid', 'cancelled']).optional(),
   note: z.string().optional().default(''),
@@ -31,13 +31,13 @@ export const payInstallmentSchema = z.object({
 export type PayInstallmentInput = z.infer<typeof payInstallmentSchema>;
 
 export const createSubscriptionSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
+  name: z.string().min(1, 'Nama wajib diisi'),
   account_detail: z.string().optional().default(''),
-  wallet_id: z.string().min(1, 'Wallet is required'),
-  category_id: z.string().min(1, 'Category is required'),
-  amount_minor: z.number().int().positive('Amount must be positive'),
+  wallet_id: z.string().min(1, 'Dompet wajib dipilih'),
+  category_id: z.string().min(1, 'Kategori wajib dipilih'),
+  amount_minor: z.number().int().positive('Jumlah harus lebih dari 0'),
   billing_cycle: z.enum(['weekly', 'monthly']),
-  next_due_date: z.string().min(1, 'Next due date is required'),
+  next_due_date: z.string().min(1, 'Tanggal jatuh tempo berikutnya wajib diisi'),
   status: z.enum(['active', 'paused', 'cancelled']).optional(),
   note: z.string().optional().default(''),
   color: itemColorSchema,

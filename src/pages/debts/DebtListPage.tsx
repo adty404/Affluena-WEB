@@ -11,10 +11,12 @@ import { Amount } from '../../components/finance/Amount';
 import { FinanceOverviewCard } from '../../components/finance/FinanceOverviewCard';
 import { useToast } from '../../components/ui/Toast';
 import { useDebts, useDeleteDebt } from '../../hooks/useDebts';
+import { NAV } from '../../lib/copy';
 import type { Debt } from '../../types/debt';
 
 const tone = (status: Debt['status']) => status === 'cancelled' ? 'red' : status === 'paid' ? 'green' : 'blue';
-const label = (status: Debt['status']) => status.replace('_', ' ');
+const label = (status: Debt['status']) => status === 'cancelled' ? 'Dibatalkan' : status === 'paid' ? 'Lunas' : 'Belum Lunas';
+const typeLabel = (type: Debt['type']) => type === 'payable' ? 'Utang' : 'Piutang';
 
 export function DebtListPage() {
   const { data, isLoading, error } = useDebts();
@@ -27,10 +29,10 @@ export function DebtListPage() {
     if (!target) return;
     deleteMut.mutate(target.id, {
       onSuccess: () => {
-        showToast('Debt deleted successfully');
+        showToast('Utang berhasil dihapus');
         setTarget(null);
       },
-      onError: (err: any) => showToast(err?.message || 'Failed to delete debt'),
+      onError: (err: any) => showToast(err?.message || 'Gagal menghapus utang'),
     });
   };
 
@@ -40,26 +42,26 @@ export function DebtListPage() {
   const dueSoon = debts.filter(d => d.status === 'open' && d.due_date).length; // Simplified
 
   return (
-    <AppLayout title="Debt & Tracker" description="Payable, receivable, debt payment, and due reminder center.">
+    <AppLayout title={NAV.utang} description="Kelola utang, piutang, pembayaran, dan pengingat jatuh tempo.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <span className="badge dark">● Debt & Tracker</span>
-            <h2>Lacak utang dan piutang tanpa kehilangan histori pembayaran.</h2>
-            <p>Payable mengurangi wallet saat dibayar. Receivable menambah wallet saat ditagih dan diterima.</p>
+            <span className="badge dark">● Utang & Piutang</span>
+            <h2>Lacak utang dan piutang tanpa kehilangan riwayat pembayaran.</h2>
+            <p>Saldo dompet kamu ikut terbarui setiap kali utang dibayar atau piutang diterima.</p>
           </div>
           <div className="app-hero-actions">
-            <Button to="/debts/new/payable" variant="primary"><AppIcon name="payable" /> Add Payable</Button>
-            <Button to="/debts/new/receivable"><AppIcon name="receivable" /> Add Receivable</Button>
-            <Button to="/tracker"><AppIcon name="tracker" /> Tracker</Button>
+            <Button to="/debts/new/payable" variant="primary"><AppIcon name="payable" /> Tambah Utang</Button>
+            <Button to="/debts/new/receivable"><AppIcon name="receivable" /> Tambah Piutang</Button>
+            <Button to="/tracker"><AppIcon name="tracker" /> {NAV.pemantauUtang}</Button>
           </div>
         </section>
 
         <section className="stat-grid">
-          <Card className="stat-card orange"><span>Total Payable</span><strong><Amount value={totalPayable} type="expense" /></strong><small>Must be paid</small></Card>
-          <Card className="stat-card"><span>Total Receivable</span><strong><Amount value={totalReceivable} type="income" /></strong><small>Need collection</small></Card>
-          <Card className="stat-card blue"><span>Paid This Month</span><strong><Amount value={paidThisMonth} /></strong><small>Debt payments</small></Card>
-          <Card className="stat-card purple"><span>Due Soon</span><strong>{dueSoon}</strong><small>open debts</small></Card>
+          <Card className="stat-card orange"><span>Total Utang</span><strong><Amount value={totalPayable} type="expense" /></strong><small>Harus dibayar</small></Card>
+          <Card className="stat-card"><span>Total Piutang</span><strong><Amount value={totalReceivable} type="income" /></strong><small>Perlu ditagih</small></Card>
+          <Card className="stat-card blue"><span>Lunas Bulan Ini</span><strong><Amount value={paidThisMonth} /></strong><small>Pembayaran utang</small></Card>
+          <Card className="stat-card purple"><span>Segera Jatuh Tempo</span><strong>{dueSoon}</strong><small>utang berjalan</small></Card>
         </section>
 
         <section className="entity-card-grid stable-card-grid">
@@ -70,19 +72,19 @@ export function DebtListPage() {
               <FinanceOverviewCard
                 key={debt.id}
                 title={debt.counterparty_name}
-                subtitle={`Due ${debt.due_date || 'N/A'}`}
+                subtitle={`Jatuh tempo ${debt.due_date || '-'}`}
                 icon={isPayable ? 'payable' : 'receivable'}
                 iconTone={isPayable ? 'danger' : 'safe'}
-                badge={debt.type}
+                badge={typeLabel(debt.type)}
                 badgeTone={isPayable ? 'red' : 'green'}
                 amount={debt.remaining_amount_minor}
                 amountType={isPayable ? 'expense' : 'income'}
                 description={debt.note}
                 progress={pct}
                 progressTone={isPayable ? 'orange' : 'green'}
-                metaLeft={`${pct}% settled`}
+                metaLeft={`${pct}% terbayar`}
                 metaRight={label(debt.status)}
-                actions={<><Button to={`/debts/${debt.id}`} size="small">Detail</Button><Button to={`/debts/${debt.id}/pay`} size="small" variant="primary"><AppIcon name="pay" /> Pay</Button><Button size="small" variant="danger" onClick={() => setTarget(debt)}><AppIcon name="delete" /> Delete</Button></>}
+                actions={<><Button to={`/debts/${debt.id}`} size="small">Detail</Button><Button to={`/debts/${debt.id}/pay`} size="small" variant="primary"><AppIcon name="pay" /> Bayar</Button><Button size="small" variant="danger" onClick={() => setTarget(debt)}><AppIcon name="delete" /> Hapus</Button></>}
               />
             );
           })}
@@ -90,35 +92,35 @@ export function DebtListPage() {
 
         {isLoading && (
           <Card className="panel-card">
-            <div className="readiness-list"><div><span>Loading</span><strong>Memuat debt...</strong></div></div>
+            <div className="readiness-list"><div><span>Memuat</span><strong>Memuat utang...</strong></div></div>
           </Card>
         )}
         {!isLoading && !error && debts.length === 0 && (
           <Card className="panel-card">
-            <EmptyState icon={<AppIcon name="empty" />} title="Belum ada utang atau piutang" description="Catat payable atau receivable untuk melacak sisa pembayaran dan histori penagihan." action={<Button to="/debts/new/payable" variant="primary"><AppIcon name="payable" /> Add Payable</Button>} />
+            <EmptyState icon={<AppIcon name="empty" />} title="Belum ada utang atau piutang" description="Catat utang atau piutang untuk melacak sisa pembayaran dan riwayat penagihan." action={<Button to="/debts/new/payable" variant="primary"><AppIcon name="payable" /> Tambah Utang</Button>} />
           </Card>
         )}
         {error && (
           <Card className="panel-card">
-            <EmptyState icon={<AppIcon name="empty" />} title="Gagal memuat debt" description="Periksa koneksi lalu coba lagi." />
+            <EmptyState icon={<AppIcon name="empty" />} title="Gagal memuat utang" description="Periksa koneksi lalu coba lagi." />
           </Card>
         )}
 
         <Card className="panel-card">
           <div className="panel-head">
-            <div><h3>Debt List</h3><p>Semua payable dan receivable dengan action jelas.</p></div>
-            <div className="panel-actions"><Button to="/debts/new/payable" size="small"><AppIcon name="payable" /> Payable</Button><Button to="/debts/new/receivable" size="small" variant="primary"><AppIcon name="receivable" /> Receivable</Button></div>
+            <div><h3>Daftar Utang & Piutang</h3><p>Semua utang dan piutang beserta aksinya.</p></div>
+            <div className="panel-actions"><Button to="/debts/new/payable" size="small"><AppIcon name="payable" /> Utang</Button><Button to="/debts/new/receivable" size="small" variant="primary"><AppIcon name="receivable" /> Piutang</Button></div>
           </div>
           <DataTable<Debt>
             data={debts}
             getRowKey={(debt) => debt.id}
             columns={[
-              { key: 'title', header: 'Debt', render: (debt) => <div className="table-title"><span className={`mini-icon ${debt.type === 'payable' ? 'danger' : 'safe'}`}><AppIcon name={debt.type === 'payable' ? 'payable' : 'receivable'} /></span><strong>{debt.counterparty_name}</strong></div> },
-              { key: 'type', header: 'Type', render: (debt) => <Badge tone={debt.type === 'payable' ? 'red' : 'green'}>{debt.type}</Badge> },
-              { key: 'remaining', header: 'Remaining', align: 'right', render: (debt) => <Amount value={debt.remaining_amount_minor} type={debt.type === 'payable' ? 'expense' : 'income'} /> },
-              { key: 'due', header: 'Due', render: (debt) => debt.due_date || 'N/A' },
+              { key: 'title', header: 'Nama', render: (debt) => <div className="table-title"><span className={`mini-icon ${debt.type === 'payable' ? 'danger' : 'safe'}`}><AppIcon name={debt.type === 'payable' ? 'payable' : 'receivable'} /></span><strong>{debt.counterparty_name}</strong></div> },
+              { key: 'type', header: 'Tipe', render: (debt) => <Badge tone={debt.type === 'payable' ? 'red' : 'green'}>{typeLabel(debt.type)}</Badge> },
+              { key: 'remaining', header: 'Sisa', align: 'right', render: (debt) => <Amount value={debt.remaining_amount_minor} type={debt.type === 'payable' ? 'expense' : 'income'} /> },
+              { key: 'due', header: 'Jatuh Tempo', render: (debt) => debt.due_date || '-' },
               { key: 'status', header: 'Status', render: (debt) => <Badge tone={tone(debt.status)}>{label(debt.status)}</Badge> },
-              { key: 'action', header: 'Action', render: (debt) => <div className="inline-actions"><Button to={`/debts/${debt.id}`} size="small">View</Button><Button to={`/debts/${debt.id}/pay`} size="small">Pay</Button><Button size="small" variant="danger" onClick={() => setTarget(debt)}><AppIcon name="delete" /></Button></div> },
+              { key: 'action', header: 'Aksi', render: (debt) => <div className="inline-actions"><Button to={`/debts/${debt.id}`} size="small">Lihat</Button><Button to={`/debts/${debt.id}/pay`} size="small">Bayar</Button><Button size="small" variant="danger" onClick={() => setTarget(debt)}><AppIcon name="delete" /></Button></div> },
             ]}
           />
         </Card>
@@ -126,17 +128,17 @@ export function DebtListPage() {
 
       <Modal
         open={!!target}
-        title="Delete Debt"
-        description="Tindakan ini menghapus debt beserta histori pembayarannya."
+        title="Hapus Utang"
+        description="Tindakan ini menghapus utang beserta riwayat pembayarannya."
         onClose={() => (deleteMut.isPending ? null : setTarget(null))}
       >
         <div className="readiness-list">
-          <div><span>Counterparty</span><strong>{target?.counterparty_name}</strong></div>
-          <div><span>Remaining</span><strong>{target ? <Amount value={target.remaining_amount_minor} type={target.type === 'payable' ? 'expense' : 'income'} /> : null}</strong></div>
+          <div><span>Pihak Lain</span><strong>{target?.counterparty_name}</strong></div>
+          <div><span>Sisa</span><strong>{target ? <Amount value={target.remaining_amount_minor} type={target.type === 'payable' ? 'expense' : 'income'} /> : null}</strong></div>
         </div>
         <div className="modal-actions">
-          <Button onClick={() => setTarget(null)} disabled={deleteMut.isPending}>Cancel</Button>
-          <Button variant="danger" onClick={confirmDelete} disabled={deleteMut.isPending}>{deleteMut.isPending ? 'Deleting...' : 'Delete Debt'}</Button>
+          <Button onClick={() => setTarget(null)} disabled={deleteMut.isPending}>Batal</Button>
+          <Button variant="danger" onClick={confirmDelete} disabled={deleteMut.isPending}>{deleteMut.isPending ? 'Menghapus...' : 'Hapus Utang'}</Button>
         </div>
       </Modal>
     </AppLayout>

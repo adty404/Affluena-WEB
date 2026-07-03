@@ -62,21 +62,21 @@ export function TransactionFormPage() {
     if (isEdit) {
       updateMutation.mutate(payload, {
         onSuccess: () => {
-          showToast('Transaction updated successfully.');
+          showToast('Transaksi berhasil diperbarui.');
           navigate('/transactions');
         },
         onError: (err: any) => {
-          showToast(err.message || 'Failed to update transaction');
+          showToast(err.message || 'Gagal memperbarui transaksi');
         }
       });
     } else {
       createMutation.mutate(payload, {
         onSuccess: () => {
-          showToast('Transaction created successfully.');
+          showToast('Transaksi berhasil dibuat.');
           navigate('/transactions');
         },
         onError: (err: any) => {
-          showToast(err.message || 'Failed to create transaction');
+          showToast(err.message || 'Gagal membuat transaksi');
         }
       });
     }
@@ -91,33 +91,33 @@ export function TransactionFormPage() {
   const delta = watchType === 'income' ? watchAmount : -watchAmount;
 
   if (isEdit && isLoadingTx) {
-    return <AppLayout title="Edit Transaction" description="Loading transaction detail"><p>Loading...</p></AppLayout>;
+    return <AppLayout title="Edit Transaksi" description="Memuat detail transaksi"><p>Memuat...</p></AppLayout>;
   }
 
   return (
-    <AppLayout title={isEdit ? 'Edit Transaction' : 'New Transaction'} description="Create income or expense transaction with category and tags.">
+    <AppLayout title={isEdit ? 'Edit Transaksi' : 'Transaksi Baru'} description="Catat pemasukan atau pengeluaran dengan kategori dan tag.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
-          <div><span className="badge dark">● Income / Expense</span><h2>{isEdit ? 'Update transaction dengan reverse old delta lalu apply new delta.' : 'Buat income atau expense transaction.'}</h2><p>Form ini memakai wallet, category, amount, note, dan multiple tags dengan preview balance delta yang jelas.</p></div>
-          <div className="app-hero-actions"><Button to="/transactions">Back</Button><Button variant="primary" onClick={handleSubmit(onSubmit)}>Save</Button></div>
+          <div><span className="badge dark">● Pemasukan / Pengeluaran</span><h2>{isEdit ? 'Perbarui detail transaksi kamu.' : 'Catat pemasukan atau pengeluaran baru.'}</h2><p>Lengkapi dompet, kategori, jumlah, dan catatan — perubahan saldo langsung terlihat sebelum disimpan.</p></div>
+          <div className="app-hero-actions"><Button to="/transactions">Kembali</Button><Button variant="primary" onClick={handleSubmit(onSubmit)}>Simpan</Button></div>
         </section>
         <section className="dashboard-grid transaction-entry-grid">
           <Card className="panel-card">
-            <div className="panel-head"><div><h3>Transaction Information</h3><p>Pilih type, wallet, category, dan amount.</p></div></div>
+            <div className="panel-head"><div><h3>Informasi Transaksi</h3><p>Pilih tipe, dompet, kategori, dan jumlah.</p></div></div>
             <form className="form-stack" onSubmit={handleSubmit(onSubmit)}>
               <div className="form-two">
                 <label>
-                  <span>Type</span>
+                  <span>Tipe</span>
                   <Select {...register('type')}>
-                    <option value="expense">Expense</option>
-                    <option value="income">Income</option>
+                    <option value="expense">Pengeluaran</option>
+                    <option value="income">Pemasukan</option>
                   </Select>
                   {errors.type && <span className="error-text">{errors.type.message}</span>}
                 </label>
                 <label>
-                  <span>Wallet</span>
+                  <span>Dompet</span>
                   <Select {...register('wallet_id')}>
-                    <option value="">Select Wallet</option>
+                    <option value="">Pilih Dompet</option>
                     {walletsData?.wallets?.map((wallet) => <option key={wallet.id} value={wallet.id}>{wallet.name}</option>)}
                   </Select>
                   {errors.wallet_id && <span className="error-text">{errors.wallet_id.message}</span>}
@@ -125,27 +125,27 @@ export function TransactionFormPage() {
               </div>
               <div className="form-two">
                 <label>
-                  <span>Category</span>
+                  <span>Kategori</span>
                   <Select {...register('category_id')}>
-                    <option value="">Select Category</option>
+                    <option value="">Pilih Kategori</option>
                     {categoriesData?.categories?.filter(c => c.type === watchType).map((cat) => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
                   </Select>
                   {errors.category_id && <span className="error-text">{errors.category_id.message}</span>}
                 </label>
                 <label>
-                  <span>Amount (Rp)</span>
+                  <span>Jumlah (Rp)</span>
                   <Input type="number" {...register('amount_minor', { valueAsNumber: true })} />
                   {errors.amount_minor && <span className="error-text">{errors.amount_minor.message}</span>}
                 </label>
               </div>
               <div className="form-two">
                 <label>
-                  <span>Date</span>
+                  <span>Tanggal</span>
                   <Input type="datetime-local" {...register('transaction_at')} />
                   {errors.transaction_at && <span className="error-text">{errors.transaction_at.message}</span>}
                 </label>
                 <label>
-                  <span>Tags</span>
+                  <span>Tag</span>
                   <Select multiple {...register('tag_ids')}>
                     {tagsData?.tags?.map((tag) => <option key={tag.id} value={tag.id}>{tag.name}</option>)}
                   </Select>
@@ -153,24 +153,24 @@ export function TransactionFormPage() {
                 </label>
               </div>
               <label>
-                <span>Note</span>
+                <span>Catatan</span>
                 <Textarea {...register('note')} />
                 {errors.note && <span className="error-text">{errors.note.message}</span>}
               </label>
               <div className="form-row-between">
-                <Button to="/transactions">Cancel</Button>
+                <Button to="/transactions">Batal</Button>
                 <Button type="submit" variant="primary" disabled={createMutation.isPending || updateMutation.isPending}>
-                  {createMutation.isPending || updateMutation.isPending ? 'Saving...' : 'Save Transaction'}
+                  {createMutation.isPending || updateMutation.isPending ? 'Menyimpan...' : 'Simpan Transaksi'}
                 </Button>
               </div>
             </form>
           </Card>
-          <BalanceDeltaPreview 
-            title="Wallet Balance Preview" 
-            before={currentBalance} 
-            delta={delta} 
-            after={currentBalance + delta} 
-            description={watchType === 'income' ? 'Income menambah saldo wallet setelah transaction posted.' : 'Expense mengurangi saldo wallet setelah transaction posted.'} 
+          <BalanceDeltaPreview
+            title="Pratinjau Saldo Dompet"
+            before={currentBalance}
+            delta={delta}
+            after={currentBalance + delta}
+            description={watchType === 'income' ? 'Pemasukan menambah saldo dompet setelah transaksi disimpan.' : 'Pengeluaran mengurangi saldo dompet setelah transaksi disimpan.'}
           />
         </section>
       </div>

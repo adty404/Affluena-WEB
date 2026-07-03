@@ -79,7 +79,7 @@ function DataTableInner<T>({
   pageSize = 10,
   searchable = true,
   initialSort,
-  emptyMessage = 'No data available',
+  emptyMessage = 'Tidak ada data',
   activeFilters = emptyActiveFilters,
 }: DataTableProps<T>) {
   const reactId = useId();
@@ -135,14 +135,14 @@ function DataTableInner<T>({
       order: sortIndex >= 0 && initialSort ? [[sortIndex, initialSort.dir]] : [],
       language: {
         search: '',
-        searchPlaceholder: 'Search...',
+        searchPlaceholder: 'Cari...',
         emptyTable: emptyMessage,
         zeroRecords: emptyMessage,
-        lengthMenu: 'Show _MENU_',
-        info: 'Showing _START_ to _END_ of _TOTAL_ entries',
-        infoEmpty: 'No entries to show',
-        infoFiltered: '(filtered from _MAX_ total)',
-        paginate: { previous: '‹', next: '›' },
+        lengthMenu: 'Tampilkan _MENU_',
+        info: 'Menampilkan _START_–_END_ dari _TOTAL_ entri',
+        infoEmpty: 'Tidak ada entri',
+        infoFiltered: '(disaring dari _MAX_ total)',
+        paginate: { first: '«', previous: '‹', next: '›', last: '»' },
       },
     };
   }, [columns, emptyMessage, initialSort, pageSize, pagination, searchable, sortable]);
@@ -176,7 +176,7 @@ function DataTableInner<T>({
 
   const mobileActiveFilters = useMemo(() => {
     if (!mobileSearchValue) return activeFilters;
-    return [...activeFilters, `Search: ${mobileSearchValue}`];
+    return [...activeFilters, `Cari: ${mobileSearchValue}`];
   }, [activeFilters, mobileSearchValue]);
 
   if (data.length === 0) {
@@ -221,7 +221,7 @@ function DataTableInner<T>({
         onInit={scheduleMobileRowsSync}
       />
       {mobileActiveFilters.length > 0 ? (
-        <div className="dt-mobile-active-filters" aria-label="Active table filters">
+        <div className="dt-mobile-active-filters" aria-label="Filter tabel aktif">
           {mobileActiveFilters.map((filter, index) => (
             <span className="dt-mobile-filter-chip" key={`${filter}-${index}`}>
               {filter}

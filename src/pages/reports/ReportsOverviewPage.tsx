@@ -12,6 +12,7 @@ import { useReportMonth } from '../../hooks/useReportMonth';
 import { MonthPicker } from '../../components/reports/MonthPicker';
 import { ReportMetricCard, ReportShortcutCard, statusTone } from '../../components/reports/ReportCards';
 import { exportReportCsv, formatMonthLabel } from '../../lib/reporting';
+import { NAV } from '../../lib/copy';
 import type { ReportRow } from '../../types/reporting';
 
 export function ReportsOverviewPage() {
@@ -26,83 +27,83 @@ export function ReportsOverviewPage() {
 
   const handleExport = () => {
     if (!data || (rows.length === 0 && metrics.length === 0)) {
-      showToast('No overview data to export for this period.');
+      showToast('Tidak ada data ringkasan untuk diekspor pada periode ini.');
       return;
     }
-    exportReportCsv('Reports Overview', month, data);
-    showToast('Reports overview exported as CSV.');
+    exportReportCsv('Ringkasan Laporan', month, data);
+    showToast('Ringkasan laporan berhasil diekspor sebagai CSV.');
   };
 
   return (
-    <AppLayout title="Reports" description="Pusat laporan cashflow, income, expense, budget, debt, dan goal.">
+    <AppLayout title={NAV.laporan} description="Pusat laporan arus kas, pemasukan, pengeluaran, anggaran, utang, dan target tabungan.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <Badge>● Reports Center</Badge>
-            <h2>Semua laporan finansial ada dalam satu tempat, lengkap dengan filter periode dan export.</h2>
-            <p>Reports menggabungkan data transaction, budget, debt, recurring, dan goals agar user bisa membaca performa keuangan secara cepat.</p>
+            <Badge>● Pusat Laporan</Badge>
+            <h2>Semua laporan keuangan kamu ada dalam satu tempat.</h2>
+            <p>Baca performa transaksi, anggaran, utang, dan target tabungan dengan cepat, lengkap dengan filter periode dan ekspor.</p>
           </div>
-          <div className="app-hero-actions"><Button onClick={handleExport} variant="primary" disabled={isLoading}><AppIcon name="export" /> Export Overview</Button><Button to="/alerts"><AppIcon name="warning" /> Alert Center</Button></div>
+          <div className="app-hero-actions"><Button onClick={handleExport} variant="primary" disabled={isLoading}><AppIcon name="export" /> Ekspor Ringkasan</Button><Button to="/alerts"><AppIcon name="warning" /> Pusat Pemberitahuan</Button></div>
         </section>
 
         <section className="report-filter-bar">
           <MonthPicker value={month} onChange={setMonth} />
-          <Card className="filter-card"><span>Scope</span><strong>All modules</strong></Card>
-          <Card className="filter-card"><span>Watchlist rows</span><strong>{rows.length} rows</strong></Card>
-          <Card className="filter-card"><span>Metrics</span><strong>{metrics.length} cards</strong></Card>
+          <Card className="filter-card"><span>Cakupan</span><strong>Semua data</strong></Card>
+          <Card className="filter-card"><span>Baris pantauan</span><strong>{rows.length} baris</strong></Card>
+          <Card className="filter-card"><span>Metrik</span><strong>{metrics.length} kartu</strong></Card>
         </section>
 
         {isLoading ? (
-          <Card className="panel-card"><div className="empty-state"><p>Loading reports overview...</p></div></Card>
+          <Card className="panel-card"><div className="empty-state"><p>Memuat ringkasan laporan...</p></div></Card>
         ) : isError ? (
-          <Card className="panel-card"><div className="empty-state"><p>Failed to load reports overview.</p></div></Card>
+          <Card className="panel-card"><div className="empty-state"><p>Gagal memuat ringkasan laporan.</p></div></Card>
         ) : (
           <>
             <section className="stat-grid">{metrics.map((metric) => <ReportMetricCard key={metric.id} metric={metric} />)}</section>
 
             <section className="entity-card-grid stable-card-grid">
-              <ReportShortcutCard title="Cashflow Report" description="Net movement across all wallets by week and month." icon="chart" to={`/reports/cashflow?month=${month}`} tone="green" />
-              <ReportShortcutCard title="Expense Report" description="Spending distribution by category, wallet, and trend." icon="transactions" to={`/reports/expenses?month=${month}`} tone="orange" />
-              <ReportShortcutCard title="Income Report" description="Income source tracking and recurring income visibility." icon="analytics" to={`/reports/income?month=${month}`} tone="blue" />
-              <ReportShortcutCard title="Budget Center" description="Budget usage, exceeded categories, and remaining caps." icon="budgetReport" to={`/reports/budgets?month=${month}`} tone="purple" />
-              <ReportShortcutCard title="Debt Report" description="Payable, receivable, due risk, and collection health." icon="debt" to={`/reports/debts?month=${month}`} tone="red" />
-              <ReportShortcutCard title="Goal Report" description="Progress, contributions, members, and at-risk goals." icon="goal" to={`/reports/goals?month=${month}`} tone="green" />
+              <ReportShortcutCard title="Laporan Arus Kas" description="Pergerakan bersih semua dompet per minggu dan bulan." icon="chart" to={`/reports/cashflow?month=${month}`} tone="green" />
+              <ReportShortcutCard title="Laporan Pengeluaran" description="Sebaran pengeluaran per kategori, dompet, dan tren." icon="transactions" to={`/reports/expenses?month=${month}`} tone="orange" />
+              <ReportShortcutCard title="Laporan Pemasukan" description="Pantau sumber pemasukan dan pemasukan berulang." icon="analytics" to={`/reports/income?month=${month}`} tone="blue" />
+              <ReportShortcutCard title="Laporan Anggaran" description="Pemakaian anggaran, kategori terlampaui, dan sisa batas." icon="budgetReport" to={`/reports/budgets?month=${month}`} tone="purple" />
+              <ReportShortcutCard title="Laporan Utang" description="Utang, piutang, risiko jatuh tempo, dan penagihan." icon="debt" to={`/reports/debts?month=${month}`} tone="red" />
+              <ReportShortcutCard title="Laporan Target Tabungan" description="Progres, setoran, anggota, dan target yang berisiko." icon="goal" to={`/reports/goals?month=${month}`} tone="green" />
             </section>
 
             <section className="dashboard-grid two-col">
               <Card className="panel-card">
-                <div className="panel-head"><div><h3>Expense Watchlist</h3><p>Kategori dengan perubahan tertinggi bulan ini.</p></div><Button to={`/reports/expenses?month=${month}`} size="small">Open Expense Report</Button></div>
+                <div className="panel-head"><div><h3>Pantauan Pengeluaran</h3><p>Kategori dengan perubahan tertinggi bulan ini.</p></div><Button to={`/reports/expenses?month=${month}`} size="small">Buka Laporan Pengeluaran</Button></div>
                 <DataTable<ReportRow>
                   data={rows.slice(0, 3)}
                   getRowKey={(row) => row.id}
                   columns={[
-                    { key: 'name', header: 'Category', render: (row) => <div className="table-title"><span className={`mini-icon ${row.status === 'critical' ? 'danger' : row.status === 'watch' ? 'warning' : 'safe'}`}><AppIcon name="shopping" /></span><strong>{row.name}</strong><small>{row.wallet}</small></div> },
-                    { key: 'amount', header: 'Amount', align: 'right', render: (row) => <Amount value={row.amount_minor} type="expense" /> },
-                    { key: 'change', header: 'Change', render: (row) => <Badge tone={statusTone(row.status)}>{row.change_percent}%</Badge> },
+                    { key: 'name', header: 'Kategori', render: (row) => <div className="table-title"><span className={`mini-icon ${row.status === 'critical' ? 'danger' : row.status === 'watch' ? 'warning' : 'safe'}`}><AppIcon name="shopping" /></span><strong>{row.name}</strong><small>{row.wallet}</small></div> },
+                    { key: 'amount', header: 'Jumlah (Rp)', align: 'right', render: (row) => <Amount value={row.amount_minor} type="expense" /> },
+                    { key: 'change', header: 'Perubahan', render: (row) => <Badge tone={statusTone(row.status)}>{row.change_percent}%</Badge> },
                   ]}
                 />
               </Card>
 
               <Card className="panel-card">
-                <div className="panel-head"><div><h3>Operational Alerts</h3><p>Notifikasi terbaru dari budget, recurring, export, dan debt.</p></div><Button to="/alerts" size="small">Open Alerts</Button></div>
-                <div className="empty-state"><p>View all alerts in the Alert Center.</p></div>
+                <div className="panel-head"><div><h3>Pemberitahuan Operasional</h3><p>Pemberitahuan terbaru dari anggaran, transaksi berulang, ekspor, dan utang.</p></div><Button to="/alerts" size="small">Buka Pemberitahuan</Button></div>
+                <div className="empty-state"><p>Lihat semua pemberitahuan di Pusat Pemberitahuan.</p></div>
               </Card>
             </section>
 
             <Card className="panel-card">
-              <div className="panel-head"><div><h3>Latest Exports</h3><p>Export yang bisa langsung dibuka atau diunduh dari export center.</p></div><Button to="/exports" size="small">Export Center</Button></div>
-              <div className="empty-state"><p>View all exports in the Export Center.</p></div>
+              <div className="panel-head"><div><h3>Ekspor Terbaru</h3><p>Ekspor yang bisa langsung dibuka atau diunduh dari Pusat Ekspor.</p></div><Button to="/exports" size="small">Pusat Ekspor</Button></div>
+              <div className="empty-state"><p>Lihat semua ekspor di Pusat Ekspor.</p></div>
             </Card>
             <PageMetaStrip
-              title="Reports status"
+              title="Status laporan"
               items={[
-                { label: 'Period', value: monthLabel, icon: 'calendar' },
-                { label: 'Rows in watchlist', value: rows.length, icon: 'list' },
-                { label: 'Sync status', value: 'API synced', icon: 'success' },
+                { label: 'Periode', value: monthLabel, icon: 'calendar' },
+                { label: 'Baris pantauan', value: rows.length, icon: 'list' },
+                { label: 'Status sinkronisasi', value: 'Tersinkron', icon: 'success' },
               ]}
               actions={[
-                { label: 'Export Center', to: '/exports', icon: 'export' },
-                { label: 'Export Overview', onClick: handleExport, icon: 'download', variant: 'primary' },
+                { label: 'Pusat Ekspor', to: '/exports', icon: 'export' },
+                { label: 'Ekspor Ringkasan', onClick: handleExport, icon: 'download', variant: 'primary' },
               ]}
             />
           </>

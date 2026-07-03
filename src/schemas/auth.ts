@@ -2,15 +2,15 @@ import { z } from 'zod'
 
 export const loginSchema = z.object({
   email: z.string().email('Email tidak valid'),
-  password: z.string().min(8, 'Password minimal 8 karakter'),
+  password: z.string().min(8, 'Kata sandi minimal 8 karakter'),
 })
 
 export const registerSchema = z.object({
   email: z.string().email('Email tidak valid'),
-  password: z.string().min(8, 'Password minimal 8 karakter'),
+  password: z.string().min(8, 'Kata sandi minimal 8 karakter'),
   confirmPassword: z.string(),
 }).refine((d) => d.password === d.confirmPassword, {
-  message: 'Konfirmasi password tidak cocok',
+  message: 'Konfirmasi kata sandi tidak cocok',
   path: ['confirmPassword'],
 })
 

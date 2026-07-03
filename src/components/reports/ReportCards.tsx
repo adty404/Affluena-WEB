@@ -6,7 +6,9 @@ import { Amount } from '../finance/Amount';
 import type { ReportMetric, ReportRow, Severity } from '../../types/reporting';
 
 export const statusTone = (status: ReportRow['status']) => status === 'critical' ? 'red' : status === 'watch' ? 'orange' : status === 'growth' ? 'blue' : 'green';
+export const statusLabel = (status: ReportRow['status']) => status === 'critical' ? 'Kritis' : status === 'watch' ? 'Pantau' : status === 'growth' ? 'Naik' : 'Aman';
 export const severityTone = (severity: Severity) => severity === 'danger' ? 'red' : severity === 'warning' ? 'orange' : severity === 'success' ? 'green' : 'blue';
+export const severityLabel = (severity: Severity) => severity === 'danger' ? 'Kritis' : severity === 'warning' ? 'Peringatan' : severity === 'success' ? 'Berhasil' : 'Info';
 export const severityIcon = (severity: Severity): AppIconName => severity === 'danger' || severity === 'warning' ? 'warning' : severity === 'success' ? 'success' : 'chart';
 
 export function ReportMetricCard({ metric }: { metric: ReportMetric }) {
@@ -27,7 +29,7 @@ export function ReportShortcutCard({ title, description, icon, to, tone = 'blue'
         <h3>{title}</h3>
         <p>{description}</p>
       </div>
-      <Button to={to} size="small">Open</Button>
+      <Button to={to} size="small">Buka</Button>
     </Card>
   );
 }
@@ -40,7 +42,7 @@ export function InsightCard({ title, description, severity, actionTo }: { title:
         <h3>{title}</h3>
         <p>{description}</p>
       </div>
-      <Button to={actionTo} size="small">Review</Button>
+      <Button to={actionTo} size="small">Tinjau</Button>
     </Card>
   );
 }
@@ -48,7 +50,7 @@ export function InsightCard({ title, description, severity, actionTo }: { title:
 export function ReportBarChart({ rows }: { rows: ReportRow[] }) {
   const max = Math.max(...rows.map((row) => row.amount_minor), 1);
   return (
-    <div className="report-bars" aria-label="Report bar chart">
+    <div className="report-bars" aria-label="Grafik batang laporan">
       {rows.map((row) => {
         const width = Math.max(12, Math.round((row.amount_minor / max) * 100));
         return (
@@ -64,5 +66,5 @@ export function ReportBarChart({ rows }: { rows: ReportRow[] }) {
 }
 
 export function ReadStatusBadge({ read }: { read: boolean }) {
-  return <Badge tone={read ? 'gray' : 'blue'}>{read ? 'Read' : 'Unread'}</Badge>;
+  return <Badge tone={read ? 'gray' : 'blue'}>{read ? 'Sudah Dibaca' : 'Belum Dibaca'}</Badge>;
 }

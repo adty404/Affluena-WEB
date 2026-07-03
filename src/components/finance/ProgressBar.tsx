@@ -7,7 +7,7 @@ type ProgressBarProps = {
 
 export function ProgressBar({ value, tone = 'green' }: ProgressBarProps) {
   return (
-    <div className={clsx('progress-bar', tone)} aria-label={`Progress ${value}%`}>
+    <div className={clsx('progress-bar', tone)} aria-label={`Progres ${value}%`}>
       <span style={{ width: `${Math.min(100, Math.max(0, value))}%` }} />
     </div>
   );

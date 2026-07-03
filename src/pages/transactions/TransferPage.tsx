@@ -35,11 +35,11 @@ export function TransferPage() {
 
     createMutation.mutate(payload, {
       onSuccess: () => {
-        showToast('Transfer saved successfully.');
+        showToast('Transfer berhasil disimpan.');
         navigate('/transactions');
       },
       onError: (err: any) => {
-        showToast(err.message || 'Failed to save transfer');
+        showToast(err.message || 'Gagal menyimpan transfer');
       }
     });
   };
@@ -55,38 +55,38 @@ export function TransferPage() {
   const destBalance = destWallet?.balance_minor || 0;
 
   return (
-    <AppLayout title="Transfer Wallet" description="Move money between wallets without category.">
+    <AppLayout title="Transfer Dompet" description="Pindahkan saldo antar dompet tanpa kategori.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
             <span className="badge dark">● Transfer</span>
-            <h2>Transfer mengurangi source wallet dan menambah destination wallet.</h2>
-            <p>From wallet dan To wallet tidak boleh sama. Transfer tidak memakai category.</p>
+            <h2>Pindahkan saldo dari dompet asal ke dompet tujuan.</h2>
+            <p>Dompet asal dan dompet tujuan harus berbeda, dan transfer tidak memerlukan kategori.</p>
           </div>
           <div className="app-hero-actions">
-            <Button to="/transactions">Back</Button>
-            <Button variant="primary" onClick={handleSubmit(onSubmit)}>Save Transfer</Button>
+            <Button to="/transactions">Kembali</Button>
+            <Button variant="primary" onClick={handleSubmit(onSubmit)}>Simpan Transfer</Button>
           </div>
         </section>
         <section className="dashboard-grid transaction-entry-grid">
           <Card className="panel-card">
             <div className="panel-head">
-              <div><h3>Transfer Information</h3><p>Wallet source, destination, amount, dan note.</p></div>
+              <div><h3>Informasi Transfer</h3><p>Dompet asal, dompet tujuan, jumlah, dan catatan.</p></div>
             </div>
             <form className="form-stack" onSubmit={handleSubmit(onSubmit)}>
               <div className="form-two">
                 <label>
-                  <span>From Wallet</span>
+                  <span>Dompet Asal</span>
                   <Select {...register('wallet_id')}>
-                    <option value="">Select Source Wallet</option>
+                    <option value="">Pilih Dompet Asal</option>
                     {walletsData?.wallets?.map((wallet) => <option key={wallet.id} value={wallet.id}>{wallet.name}</option>)}
                   </Select>
                   {errors.wallet_id && <span className="error-text">{errors.wallet_id.message}</span>}
                 </label>
                 <label>
-                  <span>To Wallet</span>
+                  <span>Dompet Tujuan</span>
                   <Select {...register('to_wallet_id')}>
-                    <option value="">Select Destination Wallet</option>
+                    <option value="">Pilih Dompet Tujuan</option>
                     {walletsData?.wallets?.map((wallet) => <option key={wallet.id} value={wallet.id}>{wallet.name}</option>)}
                   </Select>
                   {errors.to_wallet_id && <span className="error-text">{errors.to_wallet_id.message}</span>}
@@ -94,43 +94,43 @@ export function TransferPage() {
               </div>
               <div className="form-two">
                 <label>
-                  <span>Amount (Rp)</span>
+                  <span>Jumlah (Rp)</span>
                   <Input type="number" {...register('amount_minor', { valueAsNumber: true })} />
                   {errors.amount_minor && <span className="error-text">{errors.amount_minor.message}</span>}
                 </label>
                 <label>
-                  <span>Date</span>
+                  <span>Tanggal</span>
                   <Input type="datetime-local" {...register('transaction_at')} />
                   {errors.transaction_at && <span className="error-text">{errors.transaction_at.message}</span>}
                 </label>
               </div>
               <label>
-                <span>Note</span>
+                <span>Catatan</span>
                 <Textarea {...register('note')} />
                 {errors.note && <span className="error-text">{errors.note.message}</span>}
               </label>
               <div className="form-row-between">
-                <Button to="/transactions">Cancel</Button>
+                <Button to="/transactions">Batal</Button>
                 <Button type="submit" variant="primary" disabled={createMutation.isPending}>
-                  {createMutation.isPending ? 'Saving...' : 'Save Transfer'}
+                  {createMutation.isPending ? 'Menyimpan...' : 'Simpan Transfer'}
                 </Button>
               </div>
             </form>
           </Card>
           <div className="grid-stack">
-            <BalanceDeltaPreview 
-              title="Source Wallet" 
-              before={sourceBalance} 
-              delta={-watchAmount} 
-              after={sourceBalance - watchAmount} 
-              description="Source wallet berkurang." 
+            <BalanceDeltaPreview
+              title="Dompet Asal"
+              before={sourceBalance}
+              delta={-watchAmount}
+              after={sourceBalance - watchAmount}
+              description="Saldo dompet asal berkurang."
             />
-            <BalanceDeltaPreview 
-              title="Destination Wallet" 
-              before={destBalance} 
-              delta={watchAmount} 
-              after={destBalance + watchAmount} 
-              description="Destination wallet bertambah." 
+            <BalanceDeltaPreview
+              title="Dompet Tujuan"
+              before={destBalance}
+              delta={watchAmount}
+              after={destBalance + watchAmount}
+              description="Saldo dompet tujuan bertambah."
             />
           </div>
         </section>

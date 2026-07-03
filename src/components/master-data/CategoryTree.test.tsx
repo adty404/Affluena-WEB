@@ -58,12 +58,12 @@ describe('CategoryTree', () => {
     expect(levels).toHaveLength(3);
     expect(levels[0]).toMatchObject({ depth: '0' });
     expect(levels[0]?.text).toContain('Food');
-    expect(levels[0]?.text).toContain('Top-level category');
+    expect(levels[0]?.text).toContain('Kategori utama');
     expect(levels[1]).toMatchObject({ depth: '1' });
     expect(levels[1]?.text).toContain('Restaurant');
-    expect(levels[1]?.text).toContain('Subcategory');
+    expect(levels[1]?.text).toContain('Subkategori');
     expect(levels[2]).toMatchObject({ depth: '2' });
     expect(levels[2]?.text).toContain('Sushi');
-    expect(levels[2]?.text).toContain('Sub-subcategory');
+    expect(levels[2]?.text).toContain('Sub-subkategori');
   });
 });

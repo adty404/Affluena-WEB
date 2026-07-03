@@ -15,6 +15,12 @@ import { useWallets } from '../../hooks/useWallets';
 import { useTags } from '../../hooks/useTags';
 import type { Transaction } from '../../types/transaction';
 
+const statusLabel = {
+  safe: 'Aman',
+  warning: 'Peringatan',
+  exceeded: 'Terlampaui',
+} as const;
+
 export function BudgetDetailPage() {
   const { id } = useParams();
   const { data: budget, isLoading: isBudgetLoading, error: budgetError } = useBudget(id);
@@ -41,15 +47,15 @@ export function BudgetDetailPage() {
   );
 
   if (isBudgetLoading) {
-    return <AppLayout title="Budget Detail" description="Loading budget details..."><p>Loading...</p></AppLayout>;
+    return <AppLayout title="Detail Anggaran" description="Memuat detail anggaran..."><p>Memuat...</p></AppLayout>;
   }
 
   if (budgetError || !budget) {
-    return <AppLayout title="Budget Detail" description="Error loading budget details."><p>Error loading budget.</p></AppLayout>;
+    return <AppLayout title="Detail Anggaran" description="Gagal memuat detail anggaran."><p>Gagal memuat anggaran.</p></AppLayout>;
   }
 
   const category = (categoriesData?.categories ?? []).find(c => c.id === budget.category_id);
-  const categoryName = category?.name ?? 'Unknown Category';
+  const categoryName = category?.name ?? 'Kategori tidak dikenal';
 
   const budgetTransactions = (transactionsData?.transactions ?? []).filter(
     (t) => t.type === 'expense' && t.transaction_at.slice(0, 7) === budgetMonth,
@@ -89,55 +95,55 @@ export function BudgetDetailPage() {
   const dailyAllowance = reportItem?.daily_allowance_minor ?? computeDailyAllowance();
 
   return (
-    <AppLayout title="Budget Detail" description="Detail budget, spending trend, included transactions, dan recommendations.">
+    <AppLayout title="Detail Anggaran" description="Detail anggaran, tren pengeluaran, dan transaksi yang dihitung.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <span className="badge dark">● Budget detail</span>
+            <span className="badge dark">● Detail Anggaran</span>
             <h2>{categoryName}</h2>
-            <p>Usage saat ini {usageDisplay}% dari limit {budgetMonth}.</p>
+            <p>Penggunaan saat ini {usageDisplay}% dari batas bulan {budgetMonth}.</p>
           </div>
           <div className="app-hero-actions">
             <Button to={`/budgets/${budget.id}/edit`} variant="primary"><AppIcon name="edit" /> Edit</Button>
-            <Button to="/budgets/alerts"><AppIcon name="budgetAlert" /> Alerts</Button>
-            <Button to="/budgets"><AppIcon name="back" /> Back</Button>
+            <Button to="/budgets/alerts"><AppIcon name="budgetAlert" /> Notifikasi</Button>
+            <Button to="/budgets"><AppIcon name="back" /> Kembali</Button>
           </div>
         </section>
 
         <section className="stat-grid">
-          <Card className="stat-card"><span>Limit</span><strong><Amount value={budget.limit_minor} /></strong><small>{budgetMonth}</small></Card>
-          <Card className="stat-card"><span>Actual</span><strong><Amount value={spent_minor} type="expense" /></strong><small>{usageDisplay}% used</small></Card>
-          <Card className="stat-card"><span>Remaining</span><strong><Amount value={Math.abs(remaining_minor)} type={remaining_minor < 0 ? 'expense' : 'income'} /></strong><small>{remaining_minor < 0 ? 'Over budget' : 'Available'}</small></Card>
-          <Card className="stat-card"><span>Daily Allowance</span><strong><Amount value={dailyAllowance} /></strong><small>Until period end</small></Card>
+          <Card className="stat-card"><span>Batas</span><strong><Amount value={budget.limit_minor} /></strong><small>{budgetMonth}</small></Card>
+          <Card className="stat-card"><span>Aktual</span><strong><Amount value={spent_minor} type="expense" /></strong><small>{usageDisplay}% terpakai</small></Card>
+          <Card className="stat-card"><span>Sisa</span><strong><Amount value={Math.abs(remaining_minor)} type={remaining_minor < 0 ? 'expense' : 'income'} /></strong><small>{remaining_minor < 0 ? 'Melebihi anggaran' : 'Tersedia'}</small></Card>
+          <Card className="stat-card"><span>Jatah Harian</span><strong><Amount value={dailyAllowance} /></strong><small>Sampai akhir bulan</small></Card>
         </section>
 
         <section className="dashboard-grid">
           <Card className="panel-card">
-            <div className="panel-head"><div><h3>Spending Trend</h3><p>Actual spending vs budget pace.</p></div><Badge tone={status === 'safe' ? 'green' : status === 'warning' ? 'orange' : 'red'}>{status}</Badge></div>
-            <div className="budget-chart" aria-label="Budget trend chart">
+            <div className="panel-head"><div><h3>Tren Pengeluaran</h3><p>Pengeluaran aktual vs laju anggaran.</p></div><Badge tone={status === 'safe' ? 'green' : status === 'warning' ? 'orange' : 'red'}>{statusLabel[status]}</Badge></div>
+            <div className="budget-chart" aria-label="Grafik tren anggaran">
               <div className="budget-chart-line pace" />
               <div className="budget-chart-line actual" />
-              <div className="chart-legend"><span><i className="actual-dot" /> Actual</span><span><i className="pace-dot" /> Budget pace</span></div>
+              <div className="chart-legend"><span><i className="actual-dot" /> Aktual</span><span><i className="pace-dot" /> Laju anggaran</span></div>
             </div>
             <ProgressBar value={Math.min(100, usageDisplay)} tone={status === 'safe' ? 'green' : status === 'warning' ? 'orange' : 'red'} />
           </Card>
           <div className="grid-stack">
-            <BudgetInsightCard icon="health" title="Budget health" tone={status === 'safe' ? 'green' : status === 'warning' ? 'orange' : 'red'}>{status === 'safe' ? 'Budget masih aman, lanjutkan spending discipline sampai akhir periode.' : status === 'warning' ? 'Budget mendekati limit, review transaksi mendatang sebelum submit.' : 'Budget sudah terlampaui, pause pengeluaran non-esensial.'}</BudgetInsightCard>
-            <BudgetInsightCard icon="calendar" title="Daily allowance" tone="blue">Sisa alokasi harian sekitar <Amount value={dailyAllowance} /> agar tetap on-track.</BudgetInsightCard>
+            <BudgetInsightCard icon="health" title="Kesehatan anggaran" tone={status === 'safe' ? 'green' : status === 'warning' ? 'orange' : 'red'}>{status === 'safe' ? 'Anggaran masih aman, pertahankan pola belanjamu sampai akhir bulan.' : status === 'warning' ? 'Anggaran mendekati batas, cek lagi rencana pengeluaranmu.' : 'Anggaran sudah terlampaui, tahan dulu pengeluaran yang tidak penting.'}</BudgetInsightCard>
+            <BudgetInsightCard icon="calendar" title="Jatah harian" tone="blue">Sisa alokasi harian sekitar <Amount value={dailyAllowance} /> agar tetap sesuai rencana.</BudgetInsightCard>
           </div>
         </section>
 
         <Card className="panel-card">
-          <div className="panel-head"><div><h3>Transactions Included</h3><p>Transaksi expense kategori {categoryName} yang dihitung ke budget.</p></div><Button to={`/transactions/filter?type=expense&category_id=${budget.category_id}`} size="small"><AppIcon name="filter" /> Filter Tx</Button></div>
+          <div className="panel-head"><div><h3>Transaksi yang Dihitung</h3><p>Pengeluaran kategori {categoryName} yang dihitung ke anggaran ini.</p></div><Button to={`/transactions/filter?type=expense&category_id=${budget.category_id}`} size="small"><AppIcon name="filter" /> Filter Transaksi</Button></div>
           <DataTable<Transaction>
             data={budgetTransactions}
             getRowKey={(transaction) => transaction.id}
             columns={[
-              { key: 'title', header: 'Transaction', render: (transaction) => <div className="table-title"><strong>{transaction.note || categoryName}</strong><small>{transaction.note}</small></div> },
-              { key: 'wallet', header: 'Wallet', render: (transaction) => (walletsData?.wallets ?? []).find((w) => w.id === transaction.wallet_id)?.name ?? '—' },
-              { key: 'date', header: 'Date', render: (transaction) => new Date(transaction.transaction_at).toLocaleDateString() },
-              { key: 'tags', header: 'Tags', render: (transaction) => <div className="tag-row">{transaction.tag_ids?.map((tagId) => <Badge key={tagId} tone="gray">#{(tagsData?.tags ?? []).find((t) => t.id === tagId)?.name ?? tagId}</Badge>)}</div> },
-              { key: 'amount', header: 'Amount', align: 'right', render: (transaction) => <Amount value={transaction.amount_minor} type="expense" /> },
+              { key: 'title', header: 'Transaksi', render: (transaction) => <div className="table-title"><strong>{transaction.note || categoryName}</strong><small>{transaction.note}</small></div> },
+              { key: 'wallet', header: 'Dompet', render: (transaction) => (walletsData?.wallets ?? []).find((w) => w.id === transaction.wallet_id)?.name ?? '—' },
+              { key: 'date', header: 'Tanggal', render: (transaction) => new Date(transaction.transaction_at).toLocaleDateString() },
+              { key: 'tags', header: 'Tag', render: (transaction) => <div className="tag-row">{transaction.tag_ids?.map((tagId) => <Badge key={tagId} tone="gray">#{(tagsData?.tags ?? []).find((t) => t.id === tagId)?.name ?? tagId}</Badge>)}</div> },
+              { key: 'amount', header: 'Jumlah', align: 'right', render: (transaction) => <Amount value={transaction.amount_minor} type="expense" /> },
             ]}
           />
         </Card>

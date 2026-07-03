@@ -51,11 +51,11 @@ export function WalletFormPage() {
   async function onCreate(values: WalletCreateFormValues) {
     try {
       await createMut.mutateAsync(values);
-      showToast('Wallet dibuat.');
+      showToast('Dompet dibuat.');
       navigate('/wallets', { replace: true });
     } catch (err) {
       const apiErr = err as ApiError;
-      showToast(apiErr.error || 'Gagal membuat wallet.');
+      showToast(apiErr.error || 'Gagal membuat dompet.');
     }
   }
 
@@ -63,11 +63,11 @@ export function WalletFormPage() {
     if (!id) return;
     try {
       await updateMut.mutateAsync(values);
-      showToast('Wallet diperbarui.');
+      showToast('Dompet diperbarui.');
       navigate(`/wallets/${id}`, { replace: true });
     } catch (err) {
       const apiErr = err as ApiError;
-      showToast(apiErr.error || 'Gagal memperbarui wallet.');
+      showToast(apiErr.error || 'Gagal memperbarui dompet.');
     }
   }
 
@@ -76,61 +76,61 @@ export function WalletFormPage() {
     try {
       await deleteMut.mutateAsync(id);
       setDeleteOpen(false);
-      showToast('Wallet dihapus.');
+      showToast('Dompet dihapus.');
       navigate('/wallets', { replace: true });
     } catch (err) {
       const apiErr = err as ApiError;
-      showToast(apiErr.error || 'Gagal menghapus wallet.');
+      showToast(apiErr.error || 'Gagal menghapus dompet.');
     }
   }
 
   if (isEdit && isLoading) {
     return (
-      <AppLayout title="Edit Wallet" description="Memuat…">
-        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Memuat wallet</span><strong>…</strong></div></div></Card></div>
+      <AppLayout title="Edit Dompet" description="Memuat…">
+        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Memuat dompet</span><strong>…</strong></div></div></Card></div>
       </AppLayout>
     );
   }
 
   if (isEdit && !existing) {
     return (
-      <AppLayout title="Edit Wallet" description="Wallet tidak ditemukan.">
-        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Error</span><strong>Wallet tidak ditemukan.</strong></div></div><div className="modal-actions"><Button to="/wallets">Back to list</Button></div></Card></div>
+      <AppLayout title="Edit Dompet" description="Dompet tidak ditemukan.">
+        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Error</span><strong>Dompet tidak ditemukan.</strong></div></div><div className="modal-actions"><Button to="/wallets">Kembali ke daftar</Button></div></Card></div>
       </AppLayout>
     );
   }
 
   return (
-    <AppLayout title={isEdit ? 'Edit Wallet' : 'Create Wallet'} description="Buat atau edit wallet. Saldo awal hanya bisa diisi saat membuat.">
+    <AppLayout title={isEdit ? 'Edit Dompet' : 'Buat Dompet'} description="Buat atau edit dompet. Saldo awal hanya bisa diisi saat membuat.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <span className="badge dark">● Wallet Form</span>
-            <h2>{isEdit ? `Edit ${existing?.name ?? ''}` : 'Buat wallet baru.'}</h2>
-            <p>Backend menyimpan saldo dalam minor unit (IDR tanpa desimal).</p>
+            <span className="badge dark">● Dompet</span>
+            <h2>{isEdit ? `Edit ${existing?.name ?? ''}` : 'Buat dompet baru.'}</h2>
+            <p>Atur nama, tipe, dan warna dompet sesuai kebutuhanmu.</p>
           </div>
-          <div className="app-hero-actions"><Button to="/wallets"><AppIcon name="back" /> Back</Button></div>
+          <div className="app-hero-actions"><Button to="/wallets"><AppIcon name="back" /> Kembali</Button></div>
         </section>
 
         <section className="dashboard-grid">
           <Card className="panel-card">
-            <div className="panel-head"><div><h3>Wallet Information</h3><p>Field utama wallets table.</p></div></div>
+            <div className="panel-head"><div><h3>Informasi Dompet</h3><p>Nama, tipe, dan detail dompetmu.</p></div></div>
             {isEdit ? (
               <form className="form-stack" onSubmit={updateForm.handleSubmit(onUpdate)} noValidate>
                 <label>
-                  <span>Wallet name</span>
+                  <span>Nama dompet</span>
                   <Input {...updateForm.register('name')} />
                   {updateForm.formState.errors.name && <span className="form-error">{updateForm.formState.errors.name.message}</span>}
                 </label>
                 <div className="form-two">
                   <label>
-                    <span>Wallet type</span>
+                    <span>Tipe dompet</span>
                     <Select {...updateForm.register('type')}>
                       {walletTypeOptions.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                     </Select>
                   </label>
                   <label>
-                    <span>Currency</span>
+                    <span>Mata Uang</span>
                     <Input {...updateForm.register('currency_code')} maxLength={3} />
                     {updateForm.formState.errors.currency_code && <span className="form-error">{updateForm.formState.errors.currency_code.message}</span>}
                   </label>
@@ -146,48 +146,48 @@ export function WalletFormPage() {
                   </label>
                   <label>
                     <span>Status</span>
-                    <Select disabled><option>Active</option></Select>
+                    <Select disabled><option>Aktif</option></Select>
                   </label>
                 </div>
                 <label>
-                  <span>Description</span>
+                  <span>Deskripsi</span>
                   <Textarea {...updateForm.register('description')} rows={3} />
                   {updateForm.formState.errors.description && <span className="form-error">{updateForm.formState.errors.description.message}</span>}
                 </label>
                 <div className="readiness-list">
                   <div><span>Saldo saat ini</span><strong>{existing ? formatIDR(existing.balance_minor) : '—'}</strong></div>
-                  <div><span>Cara ubah saldo</span><strong>Buat transaksi income/expense/transfer/adjustment</strong></div>
+                  <div><span>Cara ubah saldo</span><strong>Catat transaksi pemasukan, pengeluaran, transfer, atau penyesuaian</strong></div>
                 </div>
                 <div className="form-row-between">
-                  <Button to="/wallets">Cancel</Button>
+                  <Button to="/wallets">Batal</Button>
                   <div className="inline-actions">
-                    <Button type="button" variant="danger" onClick={() => setDeleteOpen(true)}><AppIcon name="delete" /> Delete</Button>
-                    <Button type="submit" variant="primary" disabled={updateForm.formState.isSubmitting || updateMut.isPending}><AppIcon name="save" /> Save Wallet</Button>
+                    <Button type="button" variant="danger" onClick={() => setDeleteOpen(true)}><AppIcon name="delete" /> Hapus</Button>
+                    <Button type="submit" variant="primary" disabled={updateForm.formState.isSubmitting || updateMut.isPending}><AppIcon name="save" /> Simpan Dompet</Button>
                   </div>
                 </div>
               </form>
             ) : (
               <form className="form-stack" onSubmit={createForm.handleSubmit(onCreate)} noValidate>
                 <label>
-                  <span>Wallet name</span>
+                  <span>Nama dompet</span>
                   <Input {...createForm.register('name')} />
                   {createForm.formState.errors.name && <span className="form-error">{createForm.formState.errors.name.message}</span>}
                 </label>
                 <div className="form-two">
                   <label>
-                    <span>Wallet type</span>
+                    <span>Tipe dompet</span>
                     <Select {...createForm.register('type')}>
                       {walletTypeOptions.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                     </Select>
                   </label>
                   <label>
-                    <span>Currency</span>
+                    <span>Mata Uang</span>
                     <Input defaultValue="IDR" {...createForm.register('currency_code')} maxLength={3} />
                     {createForm.formState.errors.currency_code && <span className="form-error">{createForm.formState.errors.currency_code.message}</span>}
                   </label>
                 </div>
                 <label>
-                  <span>Opening balance (Rp)</span>
+                  <span>Saldo Awal (Rp)</span>
                   <Input
                     defaultValue="0"
                     {...createForm.register('balance_minor', {
@@ -195,7 +195,7 @@ export function WalletFormPage() {
                     })}
                   />
                   {createForm.formState.errors.balance_minor && <span className="form-error">{createForm.formState.errors.balance_minor.message}</span>}
-                  <small>Minor unit: {formatIDR(createForm.watch('balance_minor') ?? 0)}</small>
+                  <small>Tercatat sebagai {formatIDR(createForm.watch('balance_minor') ?? 0)}</small>
                 </label>
                 <div className="form-two">
                   <label>
@@ -207,44 +207,44 @@ export function WalletFormPage() {
                     <small>Warna yang sama dipakai di aplikasi mobile.</small>
                   </label>
                   <label>
-                    <span>Sharing mode</span>
-                    <Select disabled><option>Private</option></Select>
+                    <span>Mode berbagi</span>
+                    <Select disabled><option>Pribadi</option></Select>
                   </label>
                 </div>
                 <label>
-                  <span>Description</span>
+                  <span>Deskripsi</span>
                   <Textarea {...createForm.register('description')} rows={3} />
                   {createForm.formState.errors.description && <span className="form-error">{createForm.formState.errors.description.message}</span>}
                 </label>
                 <div className="form-row-between">
-                  <Button to="/wallets">Cancel</Button>
-                  <Button type="submit" variant="primary" disabled={createForm.formState.isSubmitting || createMut.isPending}><AppIcon name="save" /> Save Wallet</Button>
+                  <Button to="/wallets">Batal</Button>
+                  <Button type="submit" variant="primary" disabled={createForm.formState.isSubmitting || createMut.isPending}><AppIcon name="save" /> Simpan Dompet</Button>
                 </div>
               </form>
             )}
           </Card>
           <Card className="panel-card">
-            <div className="panel-head"><div><h3>Guardrails</h3><p>Aturan backend wallet.</p></div></div>
+            <div className="panel-head"><div><h3>Aturan Dompet</h3><p>Hal-hal yang perlu kamu tahu.</p></div></div>
             <div className="readiness-list">
-              <div><span>Tipe goal</span><strong>Ditolak di endpoint umum</strong></div>
-              <div><span>Saldo edit</span><strong>Hanya via transaksi</strong></div>
-              <div><span>Currency</span><strong>3 huruf (IDR/USD/SGD)</strong></div>
-              <div><span>Warna</span><strong>Palet 10 warna (sama dengan mobile) atau default</strong></div>
-              <div><span>Hapus wallet</span><strong>Butuh konfirmasi</strong></div>
+              <div><span>Dompet target</span><strong>Dibuat otomatis lewat Target Tabungan</strong></div>
+              <div><span>Ubah saldo</span><strong>Hanya lewat pencatatan transaksi</strong></div>
+              <div><span>Mata uang</span><strong>Kode 3 huruf (IDR/USD/SGD)</strong></div>
+              <div><span>Warna</span><strong>Pilih dari palet, sama di semua perangkatmu</strong></div>
+              <div><span>Hapus dompet</span><strong>Selalu diminta konfirmasi dulu</strong></div>
             </div>
           </Card>
         </section>
       </div>
 
-      <Modal open={deleteOpen} title="Delete Wallet" description="Konfirmasi sebelum wallet dihapus." onClose={() => setDeleteOpen(false)}>
+      <Modal open={deleteOpen} title="Hapus Dompet" description="Konfirmasi sebelum dompet dihapus." onClose={() => setDeleteOpen(false)}>
         <div className="readiness-list">
-          <div><span>Wallet</span><strong>{existing?.name ?? id}</strong></div>
+          <div><span>Dompet</span><strong>{existing?.name ?? id}</strong></div>
           <div><span>Saldo</span><strong>{existing ? formatIDR(existing.balance_minor) : '—'}</strong></div>
-          <div><span>Rekomendasi</span><strong>Hapus kalau nggak ada transaksi terkait</strong></div>
+          <div><span>Rekomendasi</span><strong>Hapus kalau sudah tidak ada transaksi terkait</strong></div>
         </div>
         <div className="modal-actions">
-          <Button onClick={() => setDeleteOpen(false)}>Cancel</Button>
-          <Button variant="danger" onClick={onDelete} disabled={deleteMut.isPending}>Delete Wallet</Button>
+          <Button onClick={() => setDeleteOpen(false)}>Batal</Button>
+          <Button variant="danger" onClick={onDelete} disabled={deleteMut.isPending}>Hapus Dompet</Button>
         </div>
       </Modal>
     </AppLayout>

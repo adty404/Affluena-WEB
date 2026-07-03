@@ -35,11 +35,11 @@ export function AdjustmentPage() {
 
     createMutation.mutate(payload, {
       onSuccess: () => {
-        showToast('Adjustment saved successfully.');
+        showToast('Penyesuaian berhasil disimpan.');
         navigate('/transactions');
       },
       onError: (err: any) => {
-        showToast(err.message || 'Failed to save adjustment');
+        showToast(err.message || 'Gagal menyimpan penyesuaian');
       }
     });
   };
@@ -51,67 +51,67 @@ export function AdjustmentPage() {
   const currentBalance = selectedWallet?.balance_minor || 0;
 
   return (
-    <AppLayout title="Balance Adjustment" description="Manual correction for wallet balance reconciliation.">
+    <AppLayout title="Penyesuaian Saldo" description="Koreksi manual untuk menyamakan saldo dompet.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <span className="badge dark">● Adjustment</span>
-            <h2>Adjustment untuk koreksi saldo, bukan pengeluaran normal.</h2>
-            <p>Gunakan note/reason yang jelas karena adjustment memengaruhi balance langsung dan butuh audit trail.</p>
+            <span className="badge dark">● Penyesuaian</span>
+            <h2>Penyesuaian untuk mengoreksi saldo, bukan pengeluaran biasa.</h2>
+            <p>Tulis alasan yang jelas karena penyesuaian langsung mengubah saldo dompet kamu.</p>
           </div>
           <div className="app-hero-actions">
-            <Button to="/transactions">Back</Button>
-            <Button variant="primary" onClick={handleSubmit(onSubmit)}>Save Adjustment</Button>
+            <Button to="/transactions">Kembali</Button>
+            <Button variant="primary" onClick={handleSubmit(onSubmit)}>Simpan Penyesuaian</Button>
           </div>
         </section>
         <section className="dashboard-grid transaction-entry-grid">
           <Card className="panel-card">
             <div className="panel-head">
-              <div><h3>Adjustment Information</h3><p>Wallet, delta amount, dan reason.</p></div>
+              <div><h3>Informasi Penyesuaian</h3><p>Dompet, jumlah perubahan, dan alasan.</p></div>
             </div>
             <form className="form-stack" onSubmit={handleSubmit(onSubmit)}>
               <div className="form-two">
                 <label>
-                  <span>Wallet</span>
+                  <span>Dompet</span>
                   <Select {...register('wallet_id')}>
-                    <option value="">Select Wallet</option>
+                    <option value="">Pilih Dompet</option>
                     {(walletsData?.wallets ?? []).map((wallet) => <option key={wallet.id} value={wallet.id}>{wallet.name}</option>)}
                   </Select>
                   {errors.wallet_id && <span className="error-text">{errors.wallet_id.message}</span>}
                 </label>
                 <label>
-                  <span>Amount (Rp)</span>
+                  <span>Jumlah (Rp)</span>
                   <Input type="number" {...register('amount_minor', { valueAsNumber: true })} />
-                  <small>Use negative value to decrease balance</small>
+                  <small>Gunakan nilai negatif untuk mengurangi saldo</small>
                   {errors.amount_minor && <span className="error-text">{errors.amount_minor.message}</span>}
                 </label>
               </div>
               <div className="form-two">
                 <label>
-                  <span>Date</span>
+                  <span>Tanggal</span>
                   <Input type="datetime-local" {...register('transaction_at')} />
                   {errors.transaction_at && <span className="error-text">{errors.transaction_at.message}</span>}
                 </label>
               </div>
               <label>
-                <span>Reason</span>
+                <span>Alasan</span>
                 <Textarea {...register('note')} />
                 {errors.note && <span className="error-text">{errors.note.message}</span>}
               </label>
               <div className="form-row-between">
-                <Button to="/transactions">Cancel</Button>
+                <Button to="/transactions">Batal</Button>
                 <Button type="submit" variant="primary" disabled={createMutation.isPending}>
-                  {createMutation.isPending ? 'Saving...' : 'Save Adjustment'}
+                  {createMutation.isPending ? 'Menyimpan...' : 'Simpan Penyesuaian'}
                 </Button>
               </div>
             </form>
           </Card>
-          <BalanceDeltaPreview 
-            title="Adjustment Preview" 
-            before={currentBalance} 
-            delta={watchAmount} 
-            after={currentBalance + watchAmount} 
-            description="Adjustment bisa positif atau negatif sesuai reconciliation." 
+          <BalanceDeltaPreview
+            title="Pratinjau Penyesuaian"
+            before={currentBalance}
+            delta={watchAmount}
+            after={currentBalance + watchAmount}
+            description="Penyesuaian bisa positif atau negatif sesuai kebutuhan koreksi."
           />
         </section>
       </div>

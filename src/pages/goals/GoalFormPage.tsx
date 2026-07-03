@@ -68,7 +68,7 @@ export function GoalFormPage() {
             icon: data.icon,
           },
         });
-        showToast('Goal updated successfully.');
+        showToast('Target berhasil diperbarui.');
       } else {
         await createGoal.mutateAsync({
           name: data.name,
@@ -77,11 +77,11 @@ export function GoalFormPage() {
           color: data.color,
           icon: data.icon,
         });
-        showToast('Goal created successfully.');
+        showToast('Target berhasil dibuat.');
       }
       navigate('/goals');
     } catch (error) {
-      showToast('Failed to save goal.');
+      showToast('Gagal menyimpan target.');
     }
   };
 
@@ -91,36 +91,36 @@ export function GoalFormPage() {
   const watchStatus = watch('status') || 'active';
 
   if (isEdit && isLoading) {
-    return <AppLayout title="Edit Goal" description="Loading..."><div className="loading-state">Loading...</div></AppLayout>;
+    return <AppLayout title="Edit Target" description="Memuat..."><div className="loading-state">Memuat...</div></AppLayout>;
   }
 
   return (
-    <AppLayout title={isEdit ? 'Edit Goal' : 'New Goal'} description="Create and update financial saving goals with clear target and deadline.">
+    <AppLayout title={isEdit ? 'Edit Target' : 'Target Baru'} description="Buat dan perbarui target tabungan dengan jumlah dan batas waktu yang jelas.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
-          <div><span className="badge dark">● Goal Form</span><h2>{isEdit ? 'Update target goal dan contribution plan.' : 'Buat target keuangan baru yang actionable.'}</h2><p>Form ini memastikan target amount, wallet, deadline, dan visibility jelas sebelum goal dijalankan.</p></div>
-          <div className="app-hero-actions"><Button to="/goals"><AppIcon name="back" /> Back</Button><Button variant="primary" onClick={handleSubmit(onSubmit)} disabled={isSubmitting}><AppIcon name="save" /> Save</Button></div>
+          <div><span className="badge dark">● Target Tabungan</span><h2>{isEdit ? 'Perbarui target dan rencana setoranmu.' : 'Buat target tabungan baru yang realistis.'}</h2><p>Tentukan nama, jumlah target, dan batas waktu supaya rencana menabungmu jelas.</p></div>
+          <div className="app-hero-actions"><Button to="/goals"><AppIcon name="back" /> Kembali</Button><Button variant="primary" onClick={handleSubmit(onSubmit)} disabled={isSubmitting}><AppIcon name="save" /> Simpan</Button></div>
         </section>
 
         <section className="form-detail-grid">
           <Card className="panel-card">
-            <div className="panel-head"><div><h3>Goal Information</h3><p>Lengkapi target, wallet tujuan, deadline, dan visibility.</p></div></div>
+            <div className="panel-head"><div><h3>Informasi Target</h3><p>Lengkapi nama, jumlah target, dan batas waktu.</p></div></div>
             <form className="form-stack" onSubmit={handleSubmit(onSubmit)}>
               <div className="form-two">
                 <label>
-                  <span>Goal Name</span>
-                  <Input {...register('name')} placeholder="Emergency Fund" />
+                  <span>Nama Target</span>
+                  <Input {...register('name')} placeholder="Dana Darurat" />
                   {errors.name && <small className="field-error">{errors.name.message}</small>}
                 </label>
                 <label>
-                  <span>Target Amount</span>
+                  <span>Target (Rp)</span>
                   <Input type="number" {...register('target_amount_minor', { valueAsNumber: true })} />
                   {errors.target_amount_minor && <small className="field-error">{errors.target_amount_minor.message}</small>}
                 </label>
               </div>
               <div className="form-two">
                 <label>
-                  <span>Deadline</span>
+                  <span>Batas Waktu</span>
                   <Input type="datetime-local" {...register('deadline')} />
                   {errors.deadline && <small className="field-error">{errors.deadline.message}</small>}
                 </label>
@@ -128,11 +128,11 @@ export function GoalFormPage() {
                   <label>
                     <span>Status</span>
                     <Select {...register('status')}>
-                      <option value="active">Active</option>
-                      <option value="achieved">Achieved</option>
-                      <option value="cancelled">Cancelled</option>
+                      <option value="active">Aktif</option>
+                      <option value="achieved">Tercapai</option>
+                      <option value="cancelled">Dibatalkan</option>
                     </Select>
-                    <small className="field-help">Achieved marks the goal complete; cancelled stops tracking.</small>
+                    <small className="field-help">Tercapai menandai target selesai; dibatalkan menghentikan pemantauan.</small>
                   </label>
                 )}
               </div>
@@ -144,18 +144,18 @@ export function GoalFormPage() {
                 />
                 <small className="field-help">Warna yang sama dipakai di aplikasi mobile.</small>
               </label>
-              <div className="form-row-between"><Button to="/goals">Cancel</Button><Button type="submit" variant="primary" disabled={isSubmitting}><AppIcon name="save" /> Save Goal</Button></div>
+              <div className="form-row-between"><Button to="/goals">Batal</Button><Button type="submit" variant="primary" disabled={isSubmitting}><AppIcon name="save" /> Simpan Target</Button></div>
             </form>
           </Card>
 
           <Card className="panel-card side-metrics-card goal-preview-card">
-            <div className="panel-head"><div><h3>Goal Preview</h3><p>Progress dan target yang akan tampil ke user.</p></div><Badge tone={goalStatusBadgeTone(watchStatus)}>{goalStatusLabel(watchStatus)}</Badge></div>
+            <div className="panel-head"><div><h3>Pratinjau Target</h3><p>Begini tampilan targetmu nanti.</p></div><Badge tone={goalStatusBadgeTone(watchStatus)}>{goalStatusLabel(watchStatus)}</Badge></div>
             <div className="preview-icon"><AppIcon name="goal" /></div>
-            <h3>{watch('name') || 'New Goal'}</h3>
+            <h3>{watch('name') || 'Target Baru'}</h3>
             <div className="metric-list">
-              <div><span>Current saved</span><strong><Amount value={currentAmount} type="income" /></strong></div>
+              <div><span>Terkumpul</span><strong><Amount value={currentAmount} type="income" /></strong></div>
               <div><span>Target</span><strong><Amount value={watchTarget} /></strong></div>
-              <div><span>Progress</span><strong>{progress}% funded</strong></div>
+              <div><span>Progres</span><strong>{progress}% tercapai</strong></div>
             </div>
             <ProgressBar value={progress} tone={watchStatus === 'cancelled' ? 'orange' : 'green'} />
           </Card>

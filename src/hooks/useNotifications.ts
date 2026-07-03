@@ -19,11 +19,11 @@ export function useUpdateNotificationRule() {
     mutationFn: ({ id, update }: { id: string; update: NotificationRuleUpdate }) =>
       updateNotificationRule(id, update),
     onSuccess: () => {
-      showToast('Notification preferences saved.')
+      showToast('Preferensi notifikasi disimpan.')
       queryClient.invalidateQueries({ queryKey: queryKeys.notifications.rules })
     },
     onError: (error: Error) => {
-      showToast(error.message || 'Failed to update notification preferences.')
+      showToast(error.message || 'Gagal menyimpan preferensi notifikasi.')
     },
   })
 }

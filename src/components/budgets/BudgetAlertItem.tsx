@@ -14,7 +14,7 @@ export function BudgetAlertItem({ alert }: { alert: BudgetAlert }) {
       <div>
         <strong>{alert.title}</strong>
         <p>{alert.message}</p>
-        <span>{alert.notified_at ?? 'Just now'}</span>
+        <span>{alert.notified_at ?? 'Baru saja'}</span>
       </div>
       <Badge tone={severityTone[alert.severity]}>{alert.threshold}%</Badge>
     </article>

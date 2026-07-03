@@ -116,8 +116,8 @@ function PageLoader() {
       <Card className="panel-card" style={{ maxWidth: 400, margin: '0 auto', textAlign: 'center' }}>
         <div className="panel-head">
           <div>
-            <h3>Loading…</h3>
-            <p>Please wait while the page loads.</p>
+            <h3>Memuat…</h3>
+            <p>Tunggu sebentar, halaman sedang disiapkan.</p>
           </div>
         </div>
       </Card>

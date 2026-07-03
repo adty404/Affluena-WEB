@@ -13,6 +13,7 @@ import { useWallets } from '../../hooks/useWallets';
 import { useCategories } from '../../hooks/useCategories';
 import { useRecurringRule, useCreateRecurringRule, useUpdateRecurringRule } from '../../hooks/useRecurring';
 import { recurringRuleSchema, type RecurringRuleInput } from '../../schemas/recurring';
+import { ACTIONS } from '../../lib/copy';
 import { useEffect } from 'react';
 
 export function RecurringFormPage() {
@@ -24,7 +25,7 @@ export function RecurringFormPage() {
   const { data: rule, isLoading: isLoadingRule } = useRecurringRule(id || '');
   const { data: walletsData } = useWallets();
   const { data: categoriesData } = useCategories();
-  
+
   const createMutation = useCreateRecurringRule();
   const updateMutation = useUpdateRecurringRule();
 
@@ -80,129 +81,129 @@ export function RecurringFormPage() {
 
       if (isEdit && id) {
         await updateMutation.mutateAsync({ id, data: formattedData });
-        showToast('Recurring rule updated successfully');
+        showToast('Aturan berulang berhasil diperbarui');
       } else {
         await createMutation.mutateAsync(formattedData);
-        showToast('Recurring rule created successfully');
+        showToast('Aturan berulang berhasil dibuat');
       }
       navigate('/recurring');
     } catch (error) {
-      showToast('Failed to save recurring rule');
+      showToast('Gagal menyimpan aturan berulang');
     }
   };
 
   if (isEdit && isLoadingRule) {
-    return <AppLayout title="Edit Recurring Rule" description="Loading..."><div className="p-8">Loading...</div></AppLayout>;
+    return <AppLayout title="Edit Aturan Berulang" description={ACTIONS.memuat}><div className="p-8">{ACTIONS.memuat}</div></AppLayout>;
   }
 
   return (
-    <AppLayout title={isEdit ? 'Edit Recurring Rule' : 'Add Recurring Rule'} description="Configure frequency, wallet, category, amount, and status.">
+    <AppLayout title={isEdit ? 'Edit Aturan Berulang' : 'Tambah Aturan Berulang'} description="Atur frekuensi, dompet, kategori, jumlah, dan status.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
-          <div><span className="badge dark">● Recurring Rule</span><h2>{isEdit ? 'Update rule dengan status dan next run yang jelas.' : 'Buat transaksi otomatis yang tetap bisa dikontrol manual.'}</h2><p>Rule tidak langsung menyentuh backend. UI ini menyiapkan struktur caldate dan run scheduler.</p></div>
-          <div className="app-hero-actions"><Button to="/recurring">Back</Button><Button variant="primary" onClick={handleSubmit(onSubmit)} disabled={isSubmitting}><AppIcon name="save" /> Save Rule</Button></div>
+          <div><span className="badge dark">● Aturan Berulang</span><h2>{isEdit ? 'Perbarui aturan dengan status dan jadwal berikutnya yang jelas.' : 'Buat transaksi otomatis yang tetap bisa kamu kontrol manual.'}</h2><p>Transaksi akan dibuat otomatis sesuai jadwal, dan kamu tetap bisa menjalankannya manual kapan saja.</p></div>
+          <div className="app-hero-actions"><Button to="/recurring">{ACTIONS.kembali}</Button><Button variant="primary" onClick={handleSubmit(onSubmit)} disabled={isSubmitting}><AppIcon name="save" /> Simpan Aturan</Button></div>
         </section>
-        
+
         <section className="form-detail-grid">
           <Card className="panel-card">
-            <div className="panel-head"><div><h3>Rule Information</h3><p>Semua field utama recurring transaction.</p></div></div>
+            <div className="panel-head"><div><h3>Informasi Aturan</h3><p>Semua data utama transaksi berulang.</p></div></div>
             <form className="form-stack" onSubmit={handleSubmit(onSubmit)}>
               <div className="form-two">
                 <label>
-                  <span>Name</span>
+                  <span>Nama</span>
                   <Input {...register('name')} />
                 </label>
                 <label>
-                  <span>Type</span>
+                  <span>Tipe</span>
                   <Select {...register('type')}>
-                    <option value="income">Income</option>
-                    <option value="expense">Expense</option>
+                    <option value="income">Pemasukan</option>
+                    <option value="expense">Pengeluaran</option>
                     <option value="transfer">Transfer</option>
-                    <option value="adjustment">Adjustment</option>
+                    <option value="adjustment">Penyesuaian</option>
                   </Select>
                 </label>
               </div>
-              
+
               <div className="form-two">
                 <label>
-                  <span>Wallet</span>
+                  <span>Dompet</span>
                   <Select {...register('wallet_id')}>
-                    <option value="">Select Wallet</option>
+                    <option value="">Pilih Dompet</option>
                     {wallets.map((wallet) => <option key={wallet.id} value={wallet.id}>{wallet.name}</option>)}
                   </Select>
                 </label>
                 <label>
-                  <span>Destination Wallet (for Transfer)</span>
+                  <span>Dompet Tujuan (untuk Transfer)</span>
                   <Select {...register('to_wallet_id')} disabled={type !== 'transfer'}>
-                    <option value="">Not used</option>
+                    <option value="">Tidak dipakai</option>
                     {wallets.map((wallet) => <option key={wallet.id} value={wallet.id}>{wallet.name}</option>)}
                   </Select>
                 </label>
               </div>
-              
+
               <div className="form-two">
                 <label>
-                  <span>Category</span>
+                  <span>Kategori</span>
                   <Select {...register('category_id')} disabled={type === 'transfer'}>
-                    <option value="">Select Category</option>
+                    <option value="">Pilih Kategori</option>
                     {categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
                   </Select>
                 </label>
                 <label>
-                  <span>Amount</span>
-                  <Input 
-                    type="number" 
-                    {...register('amount_minor', { valueAsNumber: true })} 
-                    
+                  <span>Jumlah (Rp)</span>
+                  <Input
+                    type="number"
+                    {...register('amount_minor', { valueAsNumber: true })}
+
                   />
                 </label>
               </div>
-              
+
               <div className="form-three">
                 <label>
-                  <span>Frequency</span>
+                  <span>Frekuensi</span>
                   <Select {...register('frequency')}>
-                    <option value="weekly">Weekly</option>
-                    <option value="monthly">Monthly</option>
+                    <option value="weekly">Mingguan</option>
+                    <option value="monthly">Bulanan</option>
                   </Select>
                 </label>
                 <label>
-                  <span>Interval Count</span>
-                  <Input 
-                    type="number" 
-                    {...register('interval_count', { valueAsNumber: true })} 
-                    
+                  <span>Interval Pengulangan</span>
+                  <Input
+                    type="number"
+                    {...register('interval_count', { valueAsNumber: true })}
+
                   />
                 </label>
                 <label>
                   <span>Status</span>
                   <Select {...register('status')}>
-                    <option value="active">Active</option>
-                    <option value="paused">Paused</option>
-                    <option value="cancelled">Cancelled</option>
+                    <option value="active">Aktif</option>
+                    <option value="paused">Dijeda</option>
+                    <option value="cancelled">Dibatalkan</option>
                   </Select>
                 </label>
               </div>
-              
+
               <div className="form-two">
                 <label>
-                  <span>Next Run Date</span>
-                  <Input 
-                    type="datetime-local" 
-                    {...register('next_run_at')} 
-                    
+                  <span>Jadwal Berikutnya</span>
+                  <Input
+                    type="datetime-local"
+                    {...register('next_run_at')}
+
                   />
                 </label>
                 <label>
-                  <span>End Date (Optional)</span>
-                  <Input 
-                    type="datetime-local" 
-                    {...register('end_at')} 
-                    
+                  <span>Tanggal Berakhir (Opsional)</span>
+                  <Input
+                    type="datetime-local"
+                    {...register('end_at')}
+
                   />
                 </label>
               </div>
-              
+
               <label>
                 <span>Warna</span>
                 <ColorPicker
@@ -213,24 +214,24 @@ export function RecurringFormPage() {
               </label>
 
               <label>
-                <span>Note</span>
+                <span>Catatan</span>
                 <Textarea {...register('note')} />
               </label>
 
               <div className="form-row-between">
-                <Button to="/recurring">Cancel</Button>
+                <Button to="/recurring">{ACTIONS.batal}</Button>
                 <Button type="submit" variant="primary" disabled={isSubmitting}>
-                  <AppIcon name="save" /> {isSubmitting ? 'Saving...' : 'Save Rule'}
+                  <AppIcon name="save" /> {isSubmitting ? 'Menyimpan...' : 'Simpan Aturan'}
                 </Button>
               </div>
             </form>
           </Card>
-          
+
           <Card className="panel-card side-metrics-card">
-            <div className="panel-head"><div><h3>Next Run Preview</h3><p>Preview scheduler sebelum disimpan.</p></div></div>
+            <div className="panel-head"><div><h3>Pratinjau Jadwal</h3><p>Gambaran eksekusi sebelum disimpan.</p></div></div>
             <div className="metric-list">
-              <div><span>Estimated amount</span><strong><Amount value={amount || 0} type={type === 'income' ? 'income' : 'expense'} /></strong></div>
-              <div><span>Status behavior</span><strong>Active runs automatically, paused skips safely.</strong></div>
+              <div><span>Perkiraan jumlah</span><strong><Amount value={amount || 0} type={type === 'income' ? 'income' : 'expense'} /></strong></div>
+              <div><span>Perilaku status</span><strong>Aktif berjalan otomatis, dijeda dilewati dengan aman.</strong></div>
             </div>
           </Card>
         </section>

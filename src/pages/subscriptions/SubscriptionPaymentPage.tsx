@@ -29,16 +29,16 @@ export function SubscriptionPaymentPage() {
 
   if (isLoading) {
     return (
-      <AppLayout title="Pay Subscription" description="Loading...">
-        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Loading</span><strong>...</strong></div></div></Card></div>
+      <AppLayout title="Bayar Langganan" description="Memuat...">
+        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Memuat</span><strong>...</strong></div></div></Card></div>
       </AppLayout>
     );
   }
 
   if (!item) {
     return (
-      <AppLayout title="Pay Subscription" description="Not found">
-        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Error</span><strong>Subscription not found</strong></div></div></Card></div>
+      <AppLayout title="Bayar Langganan" description="Tidak ditemukan">
+        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Gagal</span><strong>Langganan tidak ditemukan</strong></div></div></Card></div>
       </AppLayout>
     );
   }
@@ -47,47 +47,47 @@ export function SubscriptionPaymentPage() {
     if (!id) return;
     try {
       await payMut.mutateAsync({ id, data: values });
-      showToast('Subscription payment recorded.');
+      showToast('Pembayaran langganan tercatat.');
       navigate('/subscriptions', { replace: true });
     } catch (err) {
       const apiErr = err as ApiError;
-      showToast(apiErr.error || 'Failed to record payment.');
+      showToast(apiErr.error || 'Gagal mencatat pembayaran.');
     }
   }
 
   return (
-    <AppLayout title="Pay Subscription" description="Record renewal payment and create transaction.">
+    <AppLayout title="Bayar Langganan" description="Catat pembayaran perpanjangan langganan.">
       <div className="dashboard-page grid-stack">
-        <section className="app-hero-card dashboard-hero"><div><span className="badge dark">● Subscription Payment</span><h2>Bayar {item.name} dan update renewal schedule.</h2><p>Payment akan membuat expense transaction dan memindahkan next renewal sesuai cycle.</p></div><div className="app-hero-actions"><Button to="/subscriptions">Back</Button></div></section>
+        <section className="app-hero-card dashboard-hero"><div><span className="badge dark">● Pembayaran Langganan</span><h2>Bayar {item.name} dan perbarui jadwal perpanjangan.</h2><p>Pembayaran tercatat sebagai transaksi dan memajukan tanggal perpanjangan sesuai siklus.</p></div><div className="app-hero-actions"><Button to="/subscriptions">Kembali</Button></div></section>
         <section className="form-detail-grid">
           <Card className="panel-card">
-            <div className="panel-head"><div><h3>Payment Information</h3><p>Wallet, amount, renewal date, dan linked transaction.</p></div></div>
+            <div className="panel-head"><div><h3>Informasi Pembayaran</h3><p>Tanggal pembayaran dan catatan.</p></div></div>
             <form className="form-stack" onSubmit={form.handleSubmit(onSubmit)} noValidate>
               <div className="form-two">
                 <label>
-                  <span>Payment Date</span>
+                  <span>Tanggal Pembayaran</span>
                   <Input type="date" {...form.register('paid_at')} />
                   {form.formState.errors.paid_at && <span className="form-error">{form.formState.errors.paid_at.message}</span>}
                 </label>
               </div>
               <label>
-                <span>Note</span>
-                <Textarea {...form.register('note')} placeholder={`Renewal payment for ${item.name}.`} />
+                <span>Catatan</span>
+                <Textarea {...form.register('note')} placeholder={`Pembayaran perpanjangan ${item.name}.`} />
                 {form.formState.errors.note && <span className="form-error">{form.formState.errors.note.message}</span>}
               </label>
               <div className="form-row-between">
-                <Button to="/subscriptions">Cancel</Button>
-                <Button type="submit" variant="primary" disabled={form.formState.isSubmitting || payMut.isPending}><AppIcon name="pay" /> Pay Subscription</Button>
+                <Button to="/subscriptions">Batal</Button>
+                <Button type="submit" variant="primary" disabled={form.formState.isSubmitting || payMut.isPending}><AppIcon name="pay" /> Bayar Langganan</Button>
               </div>
             </form>
           </Card>
           <Card className="panel-card side-metrics-card">
-            <div className="panel-head"><div><h3>Renewal After Payment</h3><p>Schedule berikutnya setelah submit.</p></div></div>
+            <div className="panel-head"><div><h3>Perpanjangan Setelah Pembayaran</h3><p>Jadwal berikutnya setelah pembayaran ini.</p></div></div>
             <div className="metric-list">
-              <div><span>Amount</span><strong><Amount value={item.amount_minor} type="expense" /></strong></div>
-              <div><span>Current renewal</span><strong>{item.next_due_date}</strong></div>
-              <div><span>Cycle</span><strong>{item.billing_cycle}</strong></div>
-              <div><span>Wallet effect</span><strong>Wallet decreases</strong></div>
+              <div><span>Jumlah</span><strong><Amount value={item.amount_minor} type="expense" /></strong></div>
+              <div><span>Perpanjangan saat ini</span><strong>{item.next_due_date}</strong></div>
+              <div><span>Siklus</span><strong>{item.billing_cycle === 'weekly' ? 'Mingguan' : 'Bulanan'}</strong></div>
+              <div><span>Efek ke dompet</span><strong>Saldo berkurang</strong></div>
             </div>
           </Card>
         </section>
