@@ -1,12 +1,13 @@
 import clsx from 'clsx';
 import { Button } from '../ui/Button';
 import { Badge } from '../ui/Badge';
-import { AppIcon } from '../ui/AppIcon';
 import { Amount } from '../finance/Amount';
 import { ProgressBar } from '../finance/ProgressBar';
 import { itemAccentVars } from '../finance/ColorPicker';
+import { CategoryIcon } from '../master-data/CategoryIcon';
 import type { BudgetSummary } from '../../types/budget';
 import { useCategories } from '../../hooks/useCategories';
+import { formatDateID } from '../../lib/dates';
 
 const statusTone = {
   safe: 'green',
@@ -35,7 +36,6 @@ export function BudgetCard({ budget, featured }: BudgetCardProps) {
   const { data: categoriesData } = useCategories({ type: 'expense' });
   const category = (categoriesData?.categories ?? []).find(c => c.id === budget.category_id);
   const categoryName = category?.name ?? 'Kategori tidak dikenal';
-  const categoryIcon = 'categories';
 
   const usage = budget.usage_percent;
   const remaining = budget.remaining_minor;
@@ -54,10 +54,10 @@ export function BudgetCard({ budget, featured }: BudgetCardProps) {
       style={accentStyle}
     >
       <div className="budget-card-head">
-        <div className={clsx('finance-icon', status, accentStyle && status === 'safe' && 'has-accent')}><AppIcon name={categoryIcon} /></div>
+        <div className={clsx('finance-icon', status, accentStyle && status === 'safe' && 'has-accent')}><CategoryIcon icon={category?.icon} type="expense" /></div>
         <div>
           <strong>{categoryName}</strong>
-          <span>{budget.month}</span>
+          <span>{formatDateID(budget.month)}</span>
         </div>
         <Badge tone={statusTone[status]}>{statusLabel[status]}</Badge>
       </div>
