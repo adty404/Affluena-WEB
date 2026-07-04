@@ -22,8 +22,10 @@ export type ExpenseSlice = {
 
 export type DashboardTransaction = {
   id: string;
+  /** Primary label — the category name (mirrors the transaction list + mobile). */
   title: string;
-  category: string;
+  /** Optional transaction note, shown as secondary text when present. */
+  note: string;
   wallet: string;
   amountMinor: number;
   type: 'income' | 'expense';

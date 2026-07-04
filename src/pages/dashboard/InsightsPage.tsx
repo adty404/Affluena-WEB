@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AppLayout } from '../../layouts/AppLayout';
 import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
@@ -18,10 +19,10 @@ import type { DashboardStat } from '../../types/dashboard';
 
 type TabKey = 'expense' | 'income';
 
-function CategorySliceRow({ slice }: { slice: CategorySlice }) {
+function CategorySliceRow({ slice, onSelect }: { slice: CategorySlice; onSelect?: () => void }) {
   const accent = itemAccentVars(slice.color);
-  return (
-    <div className="insight-cat-row">
+  const content = (
+    <>
       <span className={accent ? 'category-icon has-accent' : `category-icon ${slice.type === 'income' ? 'green' : 'orange'}`} style={accent}>
         <CategoryIcon icon={slice.icon} type={slice.type} />
       </span>
@@ -33,14 +34,36 @@ function CategorySliceRow({ slice }: { slice: CategorySlice }) {
         <ProgressBar value={slice.percentOfTotal} tone={slice.type === 'income' ? 'green' : 'orange'} />
       </div>
       <span className="insight-cat-percent">{slice.percentOfTotal.toFixed(0)}%</span>
-    </div>
+    </>
   );
+
+  if (onSelect) {
+    return (
+      <button type="button" className="insight-cat-row is-link" onClick={onSelect} title={`Lihat transaksi ${slice.name} bulan ini`}>
+        {content}
+      </button>
+    );
+  }
+  return <div className="insight-cat-row">{content}</div>;
 }
 
 export function InsightsPage() {
+  const navigate = useNavigate();
   const [tab, setTab] = useState<TabKey>('expense');
   const { data: transactions, isLoading: isLoadingTx, error } = useMonthTransactions();
   const { data: categoriesData, isLoading: isLoadingCat } = useCategories({ limit: 200 });
+
+  // The period shown is the current month; opening a category filters the
+  // transaction list to that category within the same month window (the API
+  // uses `transaction_at >= from AND < to`, so `to` is the first of next month).
+  const now = new Date();
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const periodFrom = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-01`;
+  const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+  const periodTo = `${nextMonth.getFullYear()}-${pad(nextMonth.getMonth() + 1)}-01`;
+  const openCategory = (categoryId: string) => {
+    navigate(`/transactions?category_id=${categoryId}&from=${periodFrom}&to=${periodTo}`);
+  };
 
   const breakdown = useMemo(
     () => buildCategoryBreakdown(transactions ?? [], categoriesData?.categories ?? []),
@@ -66,8 +89,8 @@ export function InsightsPage() {
         <section className="app-hero-card dashboard-hero">
           <div>
             <Badge className="dark">{NAV.wawasan}</Badge>
-            <h2>Lihat ke mana uangmu mengalir bulan ini.</h2>
-            <p>Transaksi {monthLabel} dikelompokkan per kategori — lengkap dengan porsinya terhadap total.</p>
+            <h2>Ke mana perginya uangmu bulan ini?</h2>
+            <p>Transaksi {monthLabel} dikelompokkan per kategori. Ketuk kategori untuk melihat daftar transaksinya.</p>
           </div>
           <div className="app-hero-actions">
             <Button to="/dashboard/analytics"><AppIcon name="analytics" /> Analitik</Button>
@@ -106,7 +129,11 @@ export function InsightsPage() {
               </div>
               <div className="insight-cat-list">
                 {slices.map((slice) => (
-                  <CategorySliceRow key={slice.categoryId ?? 'uncategorized'} slice={slice} />
+                  <CategorySliceRow
+                    key={slice.categoryId ?? 'uncategorized'}
+                    slice={slice}
+                    onSelect={slice.categoryId ? () => openCategory(slice.categoryId!) : undefined}
+                  />
                 ))}
               </div>
             </>
