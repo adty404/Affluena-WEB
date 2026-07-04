@@ -51,6 +51,39 @@ Expected token groups:
 
 If a new token is needed, add it to `tokens.css`.
 
+## Shared state / layout utility classes (pages.css)
+
+Reuse these instead of ad-hoc inline `style={{padding,color}}` blocks. All use
+existing tokens only — do not introduce new colour values:
+
+- `.loading-state` — muted, padded "Memuat…" text for the loading branch of a
+  data view (the canonical loading affordance; pair with a shared `EmptyState`
+  for the error/empty branches).
+- `.panel-note` / `.panel-note.danger` — muted (or danger) inline note inside a
+  panel/card; replaces repeated inline-styled `<p>` fallbacks.
+- `.warning-note` — amber warning banner (`--warning` on `--warning-soft`) for
+  form-level warnings (e.g. invalid reset token).
+- `.stat-grid.three` — a 3-up modifier for `.stat-grid` (`StatGrid` accepts an
+  optional `className`) when a section has exactly three stats.
+- `.report-meta-chip` — flat read-only scope chip for report pages; deliberately
+  has no card border/shadow so it does not read as an interactive filter next to
+  the `MonthPicker`.
+
+## Shared components of note
+
+- `EmptyState` (`src/components/ui/EmptyState.tsx`) is the single empty / error /
+  not-found affordance. Error branches should pass an
+  `action={<Button variant="primary" onClick={() => refetch()}>Coba lagi</Button>}`.
+- `PasswordInput` (`src/components/ui/PasswordInput.tsx`) wraps `Input` + the
+  show/hide toggle for Login/Register/Reset. The toggle is `type="button"`,
+  sits outside the field `<label>`, and exposes `aria-pressed` + an Indonesian
+  `aria-label`. Do not re-implement the password reveal toggle inline.
+- Date rendering: use `formatDateID` / `formatDateTimeID` (`src/lib/dates.ts`)
+  for all user-facing dates (id-ID, defensive RFC3339 parse, `'-'` fallback) —
+  never a locale-less `toLocaleDateString()` or a raw ISO string.
+- Money always renders through `Amount` / `formatIDR` with the correct
+  income/expense type — never a raw formatted string in a styled `<strong>`.
+
 ## Typography
 
 Maintain existing typography:
