@@ -23,12 +23,17 @@ export function useUpdateAccount() {
 }
 
 export function useChangePassword() {
+  const qc = useQueryClient()
   return useMutation({
     mutationFn: (payload: ChangePasswordRequest) => changePassword(payload),
     onSuccess: (session) => {
       // The password change revoked every other session; persist the fresh
       // token pair so this device stays signed in with the new credentials.
       setTokens(session.tokens)
+      // Those other sessions are now revoked and the user record changed —
+      // refetch so the Sessions page stops showing dead sessions.
+      qc.invalidateQueries({ queryKey: queryKeys.sessions })
+      qc.invalidateQueries({ queryKey: queryKeys.me })
     },
   })
 }

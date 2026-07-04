@@ -1,6 +1,12 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, type QueryClient } from '@tanstack/react-query';
 import { getGoals, getGoal, createGoal, updateGoal, inviteGoalMember, respondGoalMember } from '../api/goals';
 import { queryKeys } from '../lib/queryClient';
+
+/** Goal changes affect the goal + overview reports; invalidate both by prefix. */
+function invalidateGoalReports(client: QueryClient) {
+  client.invalidateQueries({ queryKey: ['reports', 'goal'] });
+  client.invalidateQueries({ queryKey: ['reports', 'overview'] });
+}
 
 export function useGoals() {
   return useQuery({
@@ -23,6 +29,7 @@ export function useCreateGoal() {
     mutationFn: createGoal,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.goals.all });
+      invalidateGoalReports(queryClient);
     },
   });
 }
@@ -34,6 +41,7 @@ export function useUpdateGoal() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.goals.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.goals.detail(variables.id) });
+      invalidateGoalReports(queryClient);
     },
   });
 }
@@ -45,6 +53,7 @@ export function useInviteGoalMember() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.goals.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.goals.detail(variables.id) });
+      invalidateGoalReports(queryClient);
     },
   });
 }
@@ -56,6 +65,7 @@ export function useRespondGoalMember() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.goals.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.goals.detail(variables.id) });
+      invalidateGoalReports(queryClient);
     },
   });
 }

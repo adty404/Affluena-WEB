@@ -38,6 +38,8 @@ export function useUpdateDebt() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: DEBTS_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: [...DEBTS_QUERY_KEY, variables.id] });
+      // Editing due_date/status changes the dashboard's upcoming_debts widget.
+      invalidateFinancialQueries(queryClient);
     },
   });
 }
