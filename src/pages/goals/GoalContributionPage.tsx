@@ -92,7 +92,7 @@ export function GoalContributionPage() {
           <Card className="panel-card">
             <div className="panel-head"><div><h3>Informasi Setoran</h3><p>Pilih dompet sumber, jumlah, tanggal, dan catatan setoran.</p></div></div>
             {!goalWallet ? (
-              <EmptyState icon={<AppIcon name="empty" />} title="Dompet target belum tersedia" description="Setoran belum bisa dicatat karena dompet untuk target ini belum tersedia. Coba lagi nanti atau hubungi dukungan." action={<Button to={`/goals/${goal.id}`}>Kembali ke target</Button>} />
+              <EmptyState icon={<AppIcon name="empty" />} title="Dompet target tidak ditemukan" description="Setoran tidak bisa dicatat karena dompet untuk target ini tidak ditemukan. Coba muat ulang atau hubungi dukungan." action={<Button to={`/goals/${goal.id}`}>Kembali ke target</Button>} />
             ) : (
             <form className="form-stack" onSubmit={onSubmit}>
               <div className="form-two">

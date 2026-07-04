@@ -9,6 +9,7 @@ import { AppIcon } from '../../components/ui/AppIcon';
 import { Amount } from '../../components/finance/Amount';
 import { ProgressBar } from '../../components/finance/ProgressBar';
 import { useToast } from '../../components/ui/Toast';
+import { formatDateID } from '../../lib/dates';
 import { useGoal, useUpdateGoal } from '../../hooks/useGoals';
 import { useMe } from '../../hooks/useMe';
 import {
@@ -84,7 +85,7 @@ export function GoalDetailPage() {
             <div className="metric-list compact-metrics">
               <div><span>Progres</span><strong>{progress}% tercapai</strong></div>
               <div><span>Sisa</span><strong><Amount value={remaining} type="expense" /></strong></div>
-              <div><span>Batas Waktu</span><strong>{goal.deadline ? new Date(goal.deadline).toLocaleDateString() : '-'}</strong></div>
+              <div><span>Batas Waktu</span><strong>{formatDateID(goal.deadline)}</strong></div>
             </div>
             <div className="form-row-between goal-status-actions">
               {goal.status === 'active' && (
