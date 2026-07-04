@@ -50,8 +50,8 @@ export function DashboardPage() {
 
   const recentTransactions: DashboardTransaction[] = (txData?.transactions ?? []).map(tx => ({
     id: tx.id,
-    title: tx.note || 'Transaksi',
-    category: categoryLabel(categoryNameById, tx.category_id, tx.type),
+    title: categoryLabel(categoryNameById, tx.category_id, tx.type),
+    note: tx.note,
     wallet: walletPairLabel(walletNameById, tx.wallet_id, tx.to_wallet_id),
     amountMinor: tx.amount_minor,
     type: tx.type as 'income' | 'expense',

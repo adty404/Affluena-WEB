@@ -2050,7 +2050,10 @@ input.form-control {
 .insight-cat-total span { color: var(--muted); font-weight: 850; font-size: 13px; }
 .insight-cat-total strong { margin-right: auto; font-size: 18px; letter-spacing: -.03em; }
 .insight-cat-list { display: grid; gap: 12px; }
-.insight-cat-row { display: grid; grid-template-columns: 42px minmax(0,1fr) auto; align-items: center; gap: 12px; padding: 12px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface-soft); }
+.insight-cat-row { display: grid; grid-template-columns: 42px minmax(0,1fr) auto; align-items: center; gap: 12px; padding: 12px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface-soft); width: 100%; text-align: left; font: inherit; color: inherit; }
+.insight-cat-row.is-link { cursor: pointer; transition: border-color .15s ease, background .15s ease; }
+.insight-cat-row.is-link:hover { border-color: var(--primary); background: var(--surface); }
+.insight-cat-row.is-link:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
 .insight-cat-main { display: grid; gap: 8px; min-width: 0; }
 .insight-cat-title { display: flex; justify-content: space-between; gap: 12px; }
 .insight-cat-title strong { letter-spacing: -.02em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

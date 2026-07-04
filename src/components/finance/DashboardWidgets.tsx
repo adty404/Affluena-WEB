@@ -191,7 +191,7 @@ export function RecentTransactions({ items }: { items: DashboardTransaction[] })
               </div>
               <div>
                 <strong>{item.title}</strong>
-                <span>{item.category} · {item.wallet} · {item.date}</span>
+                <span>{item.note ? `${item.note} · ` : ''}{item.wallet} · {item.date}</span>
               </div>
               <Amount value={item.amountMinor} type={item.type} />
             </div>
