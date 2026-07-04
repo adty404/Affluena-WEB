@@ -47,7 +47,7 @@ export function CategoryListPage() {
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <span className="badge dark">● {NAV.kategori}</span>
+            <span className="badge dark">{NAV.kategori}</span>
             <h2>Susun kategori pemasukan dan pengeluaran sesuai kebiasaanmu.</h2>
             <p>Kategori membuat transaksi, anggaran, dan laporanmu tetap rapi — bisa bertingkat sampai tiga level.</p>
           </div>
@@ -56,9 +56,7 @@ export function CategoryListPage() {
 
         {error ? (
           <Card className="panel-card">
-            <div className="readiness-list">
-              <div><span>Error</span><strong>{(error as { error?: string }).error ?? 'Gagal memuat kategori'}</strong></div>
-            </div>
+            <EmptyState icon={<AppIcon name="empty" />} title="Gagal memuat kategori" description={(error as { error?: string }).error ?? 'Periksa koneksi lalu coba lagi.'} />
           </Card>
         ) : null}
 
@@ -69,7 +67,7 @@ export function CategoryListPage() {
         </section>
 
         {isLoading ? (
-          <Card className="panel-card"><div className="readiness-list"><div><span>Memuat kategori</span><strong>…</strong></div></div></Card>
+          <div className="loading-state">Memuat kategori...</div>
         ) : categories.length === 0 ? (
           <Card className="panel-card">
             <EmptyState

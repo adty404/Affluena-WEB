@@ -3,14 +3,17 @@ import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { DataTable } from '../../components/ui/DataTable';
+import { EmptyState } from '../../components/ui/EmptyState';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { Amount } from '../../components/finance/Amount';
 import { PageMetaStrip } from '../../components/layout/PageMetaStrip';
 import { useToast } from '../../components/ui/Toast';
 import { useBudgetReport } from '../../hooks/useBudgets';
+import { useCategories } from '../../hooks/useCategories';
 import { useReportMonth } from '../../hooks/useReportMonth';
 import { MonthPicker } from '../../components/reports/MonthPicker';
 import { ReportBarChart, ReportMetricCard, statusLabel, statusTone } from '../../components/reports/ReportCards';
+import { createNameById } from '../../lib/financeLabels';
 import { exportReportCsv, formatMonthLabel } from '../../lib/reporting';
 import { shortRef } from '../../lib/auditLabels';
 import { NAV } from '../../lib/copy';
@@ -19,8 +22,11 @@ import type { ReportRow, ReportMetric } from '../../types/reporting';
 export function BudgetReportCenterPage() {
   const [month, setMonth] = useReportMonth();
   const { data, isLoading, isError } = useBudgetReport(month);
+  const { data: categoriesData } = useCategories({ limit: 200 });
   const { showToast } = useToast();
   const monthLabel = formatMonthLabel(month);
+  const categoryNameById = createNameById(categoriesData?.categories ?? []);
+  const categoryName = (id: string) => categoryNameById.get(id) ?? `Kategori ${shortRef(id)}`;
 
   const rows: ReportRow[] = data?.report.map(item => ({
     id: item.id,
@@ -53,7 +59,7 @@ export function BudgetReportCenterPage() {
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <Badge>● Anggaran · {monthLabel}</Badge>
+            <Badge>Anggaran · {monthLabel}</Badge>
             <h2>Lihat kategori anggaran mana yang aman, hampir habis, atau terlampaui.</h2>
             <p>Pemakaian setiap anggaran dihitung langsung dari transaksi pengeluaran kamu.</p>
           </div>
@@ -62,17 +68,17 @@ export function BudgetReportCenterPage() {
 
         <section className="report-filter-bar">
           <MonthPicker value={month} onChange={setMonth} />
-          <Card className="filter-card"><span>Dompet</span><strong>Semua dompet</strong></Card>
-          <Card className="filter-card"><span>Kategori</span><strong>Kategori anggaran</strong></Card>
-          <Card className="filter-card"><span>Baris</span><strong>{rows.length} baris</strong></Card>
+          <div className="report-meta-chip"><span>Dompet</span><strong>Semua dompet</strong></div>
+          <div className="report-meta-chip"><span>Kategori</span><strong>Kategori anggaran</strong></div>
+          <div className="report-meta-chip"><span>Baris</span><strong>{rows.length} baris</strong></div>
         </section>
 
         {isLoading ? (
-          <Card className="panel-card"><div className="empty-state"><p>Memuat laporan...</p></div></Card>
+          <div className="loading-state">Memuat laporan...</div>
         ) : isError ? (
-          <Card className="panel-card"><div className="empty-state"><p>Gagal memuat laporan.</p></div></Card>
+          <Card className="panel-card"><EmptyState icon={<AppIcon name="empty" />} title="Gagal memuat laporan" description="Periksa koneksi lalu coba lagi." /></Card>
         ) : rows.length === 0 && metrics.length === 0 ? (
-          <Card className="panel-card"><div className="empty-state"><p>Tidak ada data anggaran untuk {monthLabel}.</p></div></Card>
+          <Card className="panel-card"><EmptyState icon={<AppIcon name="chart" />} title="Belum ada data laporan" description={`Belum ada data anggaran untuk ${monthLabel}.`} action={<Button to="/budgets/new" variant="primary"><AppIcon name="add" /> Buat Anggaran</Button>} /></Card>
         ) : (
           <>
             <section className="stat-grid">{metrics.slice(0, 4).map((metric) => <ReportMetricCard key={metric.id} metric={metric} />)}</section>
@@ -85,7 +91,7 @@ export function BudgetReportCenterPage() {
               <Card className="panel-card">
                 <div className="panel-head"><div><h3>Wawasan Laporan</h3><p>Ringkasan penting dari laporan ini.</p></div></div>
                 <div className="metric-list compact-metrics">
-                  <div className="metric-cell"><span>Tertinggi</span><strong>{rows[0] ? `Kategori ${shortRef(rows[0].name)}` : '-'}</strong><small><Amount value={rows[0]?.amount_minor ?? 0} /></small></div>
+                  <div className="metric-cell"><span>Tertinggi</span><strong>{rows[0] ? categoryName(rows[0].name) : '-'}</strong><small><Amount value={rows[0]?.amount_minor ?? 0} /></small></div>
                   <div className="metric-cell"><span>Perlu Ditinjau</span><strong>{rows.filter((row) => row.status === 'critical' || row.status === 'watch').length} baris</strong><small>Status pantau dan kritis</small></div>
                   <div className="metric-cell"><span>Baris</span><strong>{rows.length}</strong><small>Periode berjalan</small></div>
                   <div className="metric-cell"><span>Periode</span><strong>{monthLabel}</strong><small>Bulan laporan</small></div>
@@ -99,7 +105,7 @@ export function BudgetReportCenterPage() {
                 data={rows}
                 getRowKey={(row) => row.id}
                 columns={[
-                  { key: 'name', header: 'Nama', render: (row) => <div className="table-title"><span className={`mini-icon ${row.status === 'critical' ? 'danger' : row.status === 'watch' ? 'warning' : row.status === 'growth' ? 'info' : 'safe'}`}><AppIcon name="budgetReport" /></span><strong>Kategori {shortRef(row.name)}</strong><small>{row.category}</small></div> },
+                  { key: 'name', header: 'Nama', render: (row) => <div className="table-title"><span className={`mini-icon ${row.status === 'critical' ? 'danger' : row.status === 'watch' ? 'warning' : row.status === 'growth' ? 'info' : 'safe'}`}><AppIcon name="budgetReport" /></span><strong>{categoryName(row.name)}</strong><small>{row.category}</small></div> },
                   { key: 'wallet', header: 'Dompet', render: (row) => row.wallet },
                   { key: 'amount', header: 'Terpakai (Rp)', align: 'right', render: (row) => <Amount value={row.amount_minor} type="expense" /> },
                   { key: 'previous', header: 'Batas (Rp)', align: 'right', render: (row) => <Amount value={row.previous_amount_minor} /> },
