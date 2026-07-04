@@ -4,15 +4,18 @@ import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { DataTable } from '../../components/ui/DataTable';
+import { EmptyState } from '../../components/ui/EmptyState';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { Amount } from '../../components/finance/Amount';
 import { ProgressBar } from '../../components/finance/ProgressBar';
 import { itemAccentVars } from '../../components/finance/ColorPicker';
+import { CategoryIcon } from '../../components/master-data/CategoryIcon';
 import { BudgetCard } from '../../components/budgets/BudgetCard';
 import { BudgetAlertItem } from '../../components/budgets/BudgetAlertItem';
 import type { BudgetSummary } from '../../types/budget';
 import { useBudgets, useBudgetAlerts } from '../../hooks/useBudgets';
 import { useCategories } from '../../hooks/useCategories';
+import { formatDateID } from '../../lib/dates';
 import { NAV } from '../../lib/copy';
 
 const statusTone = {
@@ -48,7 +51,7 @@ export function BudgetListPage() {
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero budget-hero">
           <div>
-            <span className="badge dark">● Anggaran</span>
+            <Badge className="dark">Anggaran</Badge>
             <h2>Kendalikan pengeluaran bulanan per kategori dengan notifikasi otomatis.</h2>
             <p>Affluena menghitung pengeluaran aktual dari transaksimu dan memberi tahu saat anggaran mendekati atau melewati batas.</p>
           </div>
@@ -66,12 +69,16 @@ export function BudgetListPage() {
           <Card className="stat-card"><span>Perlu Perhatian</span><strong>{warningCount + exceededCount}</strong><small>Peringatan atau terlampaui</small></Card>
         </section>
 
-        {isLoading ? (
-          <p>Memuat anggaran...</p>
-        ) : error ? (
-          <p>Gagal memuat anggaran.</p>
+        {error ? (
+          <Card className="panel-card">
+            <EmptyState icon={<AppIcon name="empty" />} title="Gagal memuat anggaran" description="Periksa koneksi lalu coba lagi." />
+          </Card>
+        ) : isLoading ? (
+          <div className="loading-state">Memuat anggaran...</div>
         ) : budgets.length === 0 ? (
-          <Card className="panel-card"><p>Belum ada anggaran. Buat satu untuk mulai.</p></Card>
+          <Card className="panel-card">
+            <EmptyState icon={<AppIcon name="budget" />} title="Belum ada anggaran" description="Buat anggaran per kategori untuk mengendalikan batas belanja bulananmu." action={<Button to="/budgets/new" variant="primary"><AppIcon name="add" /> Buat Anggaran</Button>} />
+          </Card>
         ) : (
           <>
             <section className="budget-card-grid">
@@ -94,22 +101,21 @@ export function BudgetListPage() {
                       render: (budget) => {
                         const category = (categoriesData?.categories ?? []).find(c => c.id === budget.category_id);
                         const categoryName = category?.name ?? 'Kategori tidak dikenal';
-                        const categoryIcon = 'categories';
                         let status: 'safe' | 'warning' | 'exceeded' = 'safe';
                         if (budget.usage_percent >= 100) status = 'exceeded';
                         else if (budget.usage_percent >= 80) status = 'warning';
                         // Appearance tint only when the budget is safe; the
                         // warning/exceeded status colors always win.
-                        const accent = status === 'safe' ? itemAccentVars(budget.color) : undefined;
+                        const accent = status === 'safe' ? itemAccentVars(budget.color ?? category?.color) : undefined;
 
                         return (
                           <div className="table-title">
-                            <span className={clsx('mini-icon', status, accent && 'has-accent')} style={accent}><AppIcon name={categoryIcon} /></span>
+                            <span className={clsx('mini-icon', status, accent && 'has-accent')} style={accent}><CategoryIcon icon={category?.icon} type="expense" /></span>
                             <strong>{categoryName}</strong>
-                            <small>{budget.month}</small>
+                            <small>{formatDateID(budget.month)}</small>
                           </div>
                         );
-                      } 
+                      }
                     },
                     { key: 'limit', header: 'Batas', align: 'right', render: (budget) => <Amount value={budget.limit_minor} /> },
                     { key: 'actual', header: 'Aktual', align: 'right', render: (budget) => <Amount value={budget.spent_minor} type="expense" /> },
@@ -148,11 +154,11 @@ export function BudgetListPage() {
                 <div className="panel-head"><div><h3>Notifikasi Terbaru</h3><p>Pemberitahuan saat anggaran mendekati atau melewati batas.</p></div><Button to="/budgets/alerts" size="small">Buka</Button></div>
                 <div className="budget-alert-list">
                   {alertsLoading ? (
-                    <p>Memuat notifikasi...</p>
+                    <p className="panel-note">Memuat notifikasi...</p>
                   ) : alerts.length > 0 ? (
                     alerts.slice(0, 3).map((alert) => <BudgetAlertItem key={alert.id} alert={alert} />)
                   ) : (
-                    <p>Tidak ada notifikasi aktif.</p>
+                    <p className="panel-note">Tidak ada notifikasi aktif.</p>
                   )}
                 </div>
               </Card>

@@ -3,26 +3,34 @@ import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { DataTable } from '../../components/ui/DataTable';
+import { EmptyState } from '../../components/ui/EmptyState';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { Amount } from '../../components/finance/Amount';
 import { PageMetaStrip } from '../../components/layout/PageMetaStrip';
 import { useToast } from '../../components/ui/Toast';
 import { useReportsOverview } from '../../hooks/useReports';
 import { useReportMonth } from '../../hooks/useReportMonth';
+import { useAlerts } from '../../hooks/useAlerts';
+import { useExportJobs } from '../../hooks/useExportJobs';
 import { MonthPicker } from '../../components/reports/MonthPicker';
 import { ReportMetricCard, ReportShortcutCard, statusTone } from '../../components/reports/ReportCards';
 import { exportReportCsv, formatMonthLabel } from '../../lib/reporting';
+import { relativeTime } from '../../lib/auditLabels';
 import { NAV } from '../../lib/copy';
 import type { ReportRow } from '../../types/reporting';
 
 export function ReportsOverviewPage() {
   const [month, setMonth] = useReportMonth();
   const { data, isLoading, isError } = useReportsOverview(month);
+  const { data: alertsData } = useAlerts();
+  const { data: exportsData } = useExportJobs();
 
   const { showToast } = useToast();
 
   const metrics = data?.metrics ?? [];
   const rows = data?.rows ?? [];
+  const recentAlerts = (alertsData?.alerts ?? []).slice(0, 3);
+  const recentExports = (exportsData?.jobs ?? []).slice(0, 3);
   const monthLabel = formatMonthLabel(month);
 
   const handleExport = () => {
@@ -39,7 +47,7 @@ export function ReportsOverviewPage() {
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <Badge>● Pusat Laporan</Badge>
+            <Badge>Pusat Laporan</Badge>
             <h2>Semua laporan keuangan kamu ada dalam satu tempat.</h2>
             <p>Baca performa transaksi, anggaran, utang, dan target tabungan dengan cepat, lengkap dengan filter periode dan ekspor.</p>
           </div>
@@ -48,15 +56,15 @@ export function ReportsOverviewPage() {
 
         <section className="report-filter-bar">
           <MonthPicker value={month} onChange={setMonth} />
-          <Card className="filter-card"><span>Cakupan</span><strong>Semua data</strong></Card>
-          <Card className="filter-card"><span>Baris pantauan</span><strong>{rows.length} baris</strong></Card>
-          <Card className="filter-card"><span>Metrik</span><strong>{metrics.length} kartu</strong></Card>
+          <div className="report-meta-chip"><span>Cakupan</span><strong>Semua data</strong></div>
+          <div className="report-meta-chip"><span>Baris pantauan</span><strong>{rows.length} baris</strong></div>
+          <div className="report-meta-chip"><span>Metrik</span><strong>{metrics.length} kartu</strong></div>
         </section>
 
         {isLoading ? (
-          <Card className="panel-card"><div className="empty-state"><p>Memuat ringkasan laporan...</p></div></Card>
+          <div className="loading-state">Memuat ringkasan laporan...</div>
         ) : isError ? (
-          <Card className="panel-card"><div className="empty-state"><p>Gagal memuat ringkasan laporan.</p></div></Card>
+          <Card className="panel-card"><EmptyState icon={<AppIcon name="empty" />} title="Gagal memuat ringkasan laporan" description="Periksa koneksi lalu coba lagi." /></Card>
         ) : (
           <>
             <section className="stat-grid">{metrics.map((metric) => <ReportMetricCard key={metric.id} metric={metric} />)}</section>
@@ -86,13 +94,29 @@ export function ReportsOverviewPage() {
 
               <Card className="panel-card">
                 <div className="panel-head"><div><h3>Pemberitahuan Operasional</h3><p>Pemberitahuan terbaru dari anggaran, transaksi berulang, ekspor, dan utang.</p></div><Button to="/alerts" size="small">Buka Pemberitahuan</Button></div>
-                <div className="empty-state"><p>Lihat semua pemberitahuan di Pusat Pemberitahuan.</p></div>
+                {recentAlerts.length === 0 ? (
+                  <EmptyState icon={<AppIcon name="warning" />} title="Belum ada pemberitahuan" description="Pemberitahuan operasional akan muncul di sini." />
+                ) : (
+                  <div className="metric-list">
+                    {recentAlerts.map((alert) => (
+                      <div key={alert.id}><span>{alert.module}</span><strong>{alert.title}</strong></div>
+                    ))}
+                  </div>
+                )}
               </Card>
             </section>
 
             <Card className="panel-card">
               <div className="panel-head"><div><h3>Ekspor Terbaru</h3><p>Ekspor yang bisa langsung dibuka atau diunduh dari Pusat Ekspor.</p></div><Button to="/exports" size="small">Pusat Ekspor</Button></div>
-              <div className="empty-state"><p>Lihat semua ekspor di Pusat Ekspor.</p></div>
+              {recentExports.length === 0 ? (
+                <EmptyState icon={<AppIcon name="download" />} title="Belum ada ekspor" description="Ekspor yang kamu buat akan muncul di sini." />
+              ) : (
+                <div className="metric-list">
+                  {recentExports.map((job) => (
+                    <div key={job.id}><span>{job.format.toUpperCase()} · {relativeTime(job.created_at)}</span><strong>{job.row_count} baris · {job.status === 'completed' ? 'Selesai' : 'Gagal'}</strong></div>
+                  ))}
+                </div>
+              )}
             </Card>
             <PageMetaStrip
               title="Status laporan"

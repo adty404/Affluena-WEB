@@ -131,7 +131,7 @@ export function TransactionFormPage() {
                       </Select>
                     )}
                   />
-                  {errors.type && <span className="error-text">{errors.type.message}</span>}
+                  {errors.type && <span className="form-error">{errors.type.message}</span>}
                 </label>
                 <label>
                   <span>Dompet</span>
@@ -145,7 +145,7 @@ export function TransactionFormPage() {
                       </Select>
                     )}
                   />
-                  {errors.wallet_id && <span className="error-text">{errors.wallet_id.message}</span>}
+                  {errors.wallet_id && <span className="form-error">{errors.wallet_id.message}</span>}
                 </label>
               </div>
               <div className="form-two">
@@ -161,19 +161,19 @@ export function TransactionFormPage() {
                       </Select>
                     )}
                   />
-                  {errors.category_id && <span className="error-text">{errors.category_id.message}</span>}
+                  {errors.category_id && <span className="form-error">{errors.category_id.message}</span>}
                 </label>
                 <label>
                   <span>Jumlah (Rp)</span>
                   <Input type="number" {...register('amount_minor', { valueAsNumber: true })} />
-                  {errors.amount_minor && <span className="error-text">{errors.amount_minor.message}</span>}
+                  {errors.amount_minor && <span className="form-error">{errors.amount_minor.message}</span>}
                 </label>
               </div>
               <div className="form-two">
                 <label>
                   <span>Tanggal</span>
                   <Input type="datetime-local" {...register('transaction_at')} />
-                  {errors.transaction_at && <span className="error-text">{errors.transaction_at.message}</span>}
+                  {errors.transaction_at && <span className="form-error">{errors.transaction_at.message}</span>}
                 </label>
                 <label>
                   <span>Tag</span>
@@ -192,13 +192,13 @@ export function TransactionFormPage() {
                       </Select>
                     )}
                   />
-                  {errors.tag_ids && <span className="error-text">{errors.tag_ids.message}</span>}
+                  {errors.tag_ids && <span className="form-error">{errors.tag_ids.message}</span>}
                 </label>
               </div>
               <label>
                 <span>Catatan</span>
                 <Textarea {...register('note')} />
-                {errors.note && <span className="error-text">{errors.note.message}</span>}
+                {errors.note && <span className="form-error">{errors.note.message}</span>}
               </label>
               <div className="form-row-between">
                 <Button to="/transactions">Batal</Button>

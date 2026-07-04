@@ -3,6 +3,7 @@ import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { DataTable } from '../../components/ui/DataTable';
+import { EmptyState } from '../../components/ui/EmptyState';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { Amount } from '../../components/finance/Amount';
 import { PageMetaStrip } from '../../components/layout/PageMetaStrip';
@@ -37,7 +38,7 @@ export function IncomeReportPage() {
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <Badge>● Pemasukan · {monthLabel}</Badge>
+            <Badge>Pemasukan · {monthLabel}</Badge>
             <h2>Semua sumber pemasukan terlihat, termasuk pemasukan berulang dan penagihan piutang.</h2>
             <p>Bantu kamu membedakan gaji, freelance, bunga, dan penagihan piutang.</p>
           </div>
@@ -46,17 +47,17 @@ export function IncomeReportPage() {
 
         <section className="report-filter-bar">
           <MonthPicker value={month} onChange={setMonth} />
-          <Card className="filter-card"><span>Dompet</span><strong>Semua dompet</strong></Card>
-          <Card className="filter-card"><span>Kategori</span><strong>Hanya pemasukan</strong></Card>
-          <Card className="filter-card"><span>Baris</span><strong>{rows.length} baris</strong></Card>
+          <div className="report-meta-chip"><span>Dompet</span><strong>Semua dompet</strong></div>
+          <div className="report-meta-chip"><span>Kategori</span><strong>Hanya pemasukan</strong></div>
+          <div className="report-meta-chip"><span>Baris</span><strong>{rows.length} baris</strong></div>
         </section>
 
         {isLoading ? (
-          <Card className="panel-card"><div className="empty-state"><p>Memuat laporan...</p></div></Card>
+          <div className="loading-state">Memuat laporan...</div>
         ) : isError ? (
-          <Card className="panel-card"><div className="empty-state"><p>Gagal memuat laporan.</p></div></Card>
+          <Card className="panel-card"><EmptyState icon={<AppIcon name="empty" />} title="Gagal memuat laporan" description="Periksa koneksi lalu coba lagi." /></Card>
         ) : rows.length === 0 && metrics.length === 0 ? (
-          <Card className="panel-card"><div className="empty-state"><p>Tidak ada data pemasukan untuk {monthLabel}.</p></div></Card>
+          <Card className="panel-card"><EmptyState icon={<AppIcon name="chart" />} title="Belum ada data laporan" description={`Belum ada data pemasukan untuk ${monthLabel}.`} /></Card>
         ) : (
           <>
             <section className="stat-grid">{metrics.slice(0, 4).map((metric) => <ReportMetricCard key={metric.id} metric={metric} />)}</section>

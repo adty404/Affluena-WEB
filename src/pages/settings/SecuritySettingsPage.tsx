@@ -52,7 +52,7 @@ export function SecuritySettingsPage() {
   return (
     <AppLayout title="Pengaturan Keamanan" description="Kata sandi, notifikasi masuk, dan proteksi sesi.">
       <div className="dashboard-page grid-stack">
-        <SettingsHero badge="● Keamanan" title="Proteksi akun Affluena." description="Ubah kata sandi dan kelola sesi aktif.">
+        <SettingsHero badge="Keamanan" title="Proteksi akun Affluena." description="Ubah kata sandi dan kelola sesi aktif.">
           <Button to="/settings/sessions"><AppIcon name="history" /> Sesi</Button>
           <Button variant="primary" onClick={() => setPasswordOpen(true)}><AppIcon name="edit" /> Ubah Kata Sandi</Button>
         </SettingsHero>
@@ -62,8 +62,7 @@ export function SecuritySettingsPage() {
             <div className="settings-list">
               <SettingRow title="Kebijakan kata sandi" description="Minimal 8 karakter." aside={<Badge>Kuat</Badge>} />
               <SettingRow title="Masa berlaku sesi" description="Sesi masuk berlaku 30 hari." aside={<Badge tone="blue">30 hari</Badge>} />
-              <SettingRow title="2FA" description="Verifikasi dua langkah belum tersedia." aside={<Badge tone="orange">Belum tersedia</Badge>} />
-              <SettingRow title="Notifikasi masuk" description="Email pemberitahuan saat ada yang masuk ke akun belum tersedia." aside={<Badge tone="orange">Belum tersedia</Badge>} />
+              <SettingRow title="Ganti sesi saat ganti sandi" description="Mengganti kata sandi mencabut sesi lain otomatis." aside={<Badge tone="blue">Aktif</Badge>} />
             </div>
           </SettingsCard>
 

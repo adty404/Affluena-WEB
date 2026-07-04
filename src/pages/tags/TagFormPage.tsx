@@ -5,8 +5,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
+import { Badge } from '../../components/ui/Badge';
 import { Modal } from '../../components/ui/Modal';
-import { Input, Textarea } from '../../components/ui/Input';
+import { EmptyState } from '../../components/ui/EmptyState';
+import { Input } from '../../components/ui/Input';
 import { TagPill } from '../../components/master-data/TagPill';
 import { useToast } from '../../components/ui/Toast';
 import { AppIcon } from '../../components/ui/AppIcon';
@@ -75,7 +77,7 @@ export function TagFormPage() {
   if (isEdit && isLoading) {
     return (
       <AppLayout title="Edit Tag" description="Memuat…">
-        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Memuat tag</span><strong>…</strong></div></div></Card></div>
+        <div className="dashboard-page grid-stack"><div className="loading-state">Memuat...</div></div>
       </AppLayout>
     );
   }
@@ -83,7 +85,7 @@ export function TagFormPage() {
   if (isEdit && !existing) {
     return (
       <AppLayout title="Edit Tag" description="Tag tidak ditemukan.">
-        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Error</span><strong>Tag tidak ditemukan.</strong></div></div><div className="modal-actions"><Button to="/tags">Kembali ke daftar</Button></div></Card></div>
+        <div className="dashboard-page grid-stack"><Card className="panel-card"><EmptyState icon={<AppIcon name="empty" />} title="Tag tidak ditemukan" description="Tag mungkin sudah dihapus." action={<Button to="/tags">Kembali ke daftar</Button>} /></Card></div>
       </AppLayout>
     );
   }
@@ -93,7 +95,7 @@ export function TagFormPage() {
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <span className="badge dark">● Tag</span>
+            <Badge className="dark">Tag</Badge>
             <h2>{isEdit ? `Edit #${existing?.name ?? ''}` : 'Buat tag baru.'}</h2>
             <p>Nama tag harus unik dan akan tampil sebagai label di transaksimu.</p>
           </div>
@@ -108,11 +110,8 @@ export function TagFormPage() {
                 <label>
                   <span>Nama tag</span>
                   <Input {...updateForm.register('name')} />
+                  <small className="field-help">Nama tag harus unik dan tampil sebagai label di transaksimu.</small>
                   {updateForm.formState.errors.name && <span className="form-error">{updateForm.formState.errors.name.message}</span>}
-                </label>
-                <label>
-                  <span>Deskripsi</span>
-                  <Textarea rows={3} defaultValue="Tag untuk memudahkan filter transaksi dan laporan lintas kategori." />
                 </label>
                 <div className="form-row-between">
                   <Button to="/tags">Batal</Button>
@@ -127,11 +126,8 @@ export function TagFormPage() {
                 <label>
                   <span>Nama tag</span>
                   <Input {...createForm.register('name')} />
+                  <small className="field-help">Nama tag harus unik dan tampil sebagai label di transaksimu.</small>
                   {createForm.formState.errors.name && <span className="form-error">{createForm.formState.errors.name.message}</span>}
-                </label>
-                <label>
-                  <span>Deskripsi</span>
-                  <Textarea rows={3} defaultValue="Tag untuk memudahkan filter transaksi dan laporan lintas kategori." />
                 </label>
                 <div className="form-row-between">
                   <Button to="/tags">Batal</Button>
@@ -145,10 +141,6 @@ export function TagFormPage() {
             <div className="tag-preview">
               <TagPill tag={{ name: existing?.name ?? 'contoh' }} active />
               <p>Seperti inilah tag tampil saat mencatat transaksi — bisa dipasang beberapa sekaligus untuk filter dan laporan.</p>
-            </div>
-            <div className="readiness-list">
-              <div><span>Nama tag</span><strong>Harus unik</strong></div>
-              <div><span>Filter & laporan</span><strong>Didukung</strong></div>
             </div>
           </Card>
         </section>

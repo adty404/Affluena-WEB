@@ -7,13 +7,14 @@ import { DataTable } from '../../components/ui/DataTable';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { Amount } from '../../components/finance/Amount';
 import { ProgressBar } from '../../components/finance/ProgressBar';
+import { EmptyState } from '../../components/ui/EmptyState';
 import { BudgetInsightCard } from '../../components/budgets/BudgetInsightCard';
 import { useBudget, useBudgets, useBudgetReport } from '../../hooks/useBudgets';
 import { useCategories } from '../../hooks/useCategories';
 import { useTransactions } from '../../hooks/useTransactions';
 import { useWallets } from '../../hooks/useWallets';
 import { useTags } from '../../hooks/useTags';
-import { toYearMonth } from '../../lib/dates';
+import { formatDateID, toYearMonth } from '../../lib/dates';
 import type { Transaction } from '../../types/transaction';
 
 const statusLabel = {
@@ -57,15 +58,16 @@ export function BudgetDetailPage() {
   );
 
   if (isBudgetLoading) {
-    return <AppLayout title="Detail Anggaran" description="Memuat detail anggaran..."><p>Memuat...</p></AppLayout>;
+    return <AppLayout title="Detail Anggaran" description="Memuat detail anggaran..."><div className="loading-state">Memuat...</div></AppLayout>;
   }
 
   if (budgetError || !budget) {
-    return <AppLayout title="Detail Anggaran" description="Gagal memuat detail anggaran."><p>Gagal memuat anggaran.</p></AppLayout>;
+    return <AppLayout title="Detail Anggaran" description="Gagal memuat detail anggaran."><Card className="panel-card"><EmptyState icon={<AppIcon name="empty" />} title="Gagal memuat anggaran" description="Periksa koneksi lalu coba lagi." action={<Button to="/budgets"><AppIcon name="back" /> Kembali</Button>} /></Card></AppLayout>;
   }
 
   const category = (categoriesData?.categories ?? []).find(c => c.id === budget.category_id);
   const categoryName = category?.name ?? 'Kategori tidak dikenal';
+  const monthLabel = new Date(budget.month).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
 
   const budgetTransactions = (transactionsData?.transactions ?? []).filter(
     // Bucket by LOCAL month so this matches the server-computed spent total at
@@ -111,9 +113,9 @@ export function BudgetDetailPage() {
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <span className="badge dark">● Detail Anggaran</span>
+            <Badge className="dark">Detail Anggaran</Badge>
             <h2>{categoryName}</h2>
-            <p>Penggunaan saat ini {usageDisplay}% dari batas bulan {budgetMonth}.</p>
+            <p>Penggunaan saat ini {usageDisplay}% dari batas bulan {monthLabel}.</p>
           </div>
           <div className="app-hero-actions">
             <Button to={`/budgets/${budget.id}/edit`} variant="primary"><AppIcon name="edit" /> Edit</Button>
@@ -123,7 +125,7 @@ export function BudgetDetailPage() {
         </section>
 
         <section className="stat-grid">
-          <Card className="stat-card"><span>Batas</span><strong><Amount value={budget.limit_minor} /></strong><small>{budgetMonth}</small></Card>
+          <Card className="stat-card"><span>Batas</span><strong><Amount value={budget.limit_minor} /></strong><small>{monthLabel}</small></Card>
           <Card className="stat-card"><span>Aktual</span><strong><Amount value={spent_minor} type="expense" /></strong><small>{usageDisplay}% terpakai</small></Card>
           <Card className="stat-card"><span>Sisa</span><strong><Amount value={Math.abs(remaining_minor)} type={remaining_minor < 0 ? 'expense' : 'income'} /></strong><small>{remaining_minor < 0 ? 'Melebihi anggaran' : 'Tersedia'}</small></Card>
           <Card className="stat-card"><span>Jatah Harian</span><strong><Amount value={dailyAllowance} /></strong><small>Sampai akhir bulan</small></Card>
@@ -132,9 +134,11 @@ export function BudgetDetailPage() {
         <section className="dashboard-grid">
           <Card className="panel-card">
             <div className="panel-head"><div><h3>Tren Pengeluaran</h3><p>Pengeluaran aktual vs laju anggaran.</p></div><Badge tone={status === 'safe' ? 'green' : status === 'warning' ? 'orange' : 'red'}>{statusLabel[status]}</Badge></div>
-            <div className="budget-chart" aria-label="Grafik tren anggaran">
+            <div className="budget-chart" aria-label={`Ilustrasi tren: pemakaian ${usageDisplay}% dari batas`}>
               <div className="budget-chart-line pace" />
-              <div className="budget-chart-line actual" />
+              {/* Actual line slope reflects real usage: flatter when safe,
+                  steeper as usage climbs (capped for readability). */}
+              <div className="budget-chart-line actual" style={{ transform: `rotate(-${Math.min(24, Math.round(usage_percent * 0.2))}deg)` }} />
               <div className="chart-legend"><span><i className="actual-dot" /> Aktual</span><span><i className="pace-dot" /> Laju anggaran</span></div>
             </div>
             <ProgressBar value={Math.min(100, usageDisplay)} tone={status === 'safe' ? 'green' : status === 'warning' ? 'orange' : 'red'} />
@@ -151,9 +155,9 @@ export function BudgetDetailPage() {
             data={budgetTransactions}
             getRowKey={(transaction) => transaction.id}
             columns={[
-              { key: 'title', header: 'Transaksi', render: (transaction) => <div className="table-title"><strong>{transaction.note || categoryName}</strong><small>{transaction.note}</small></div> },
+              { key: 'title', header: 'Transaksi', render: (transaction) => { const walletName = (walletsData?.wallets ?? []).find((w) => w.id === transaction.wallet_id)?.name; return <div className="table-title"><strong>{transaction.note || categoryName}</strong>{walletName ? <small>{walletName}</small> : null}</div>; } },
               { key: 'wallet', header: 'Dompet', render: (transaction) => (walletsData?.wallets ?? []).find((w) => w.id === transaction.wallet_id)?.name ?? '—' },
-              { key: 'date', header: 'Tanggal', render: (transaction) => new Date(transaction.transaction_at).toLocaleDateString() },
+              { key: 'date', header: 'Tanggal', render: (transaction) => formatDateID(transaction.transaction_at) },
               { key: 'tags', header: 'Tag', render: (transaction) => <div className="tag-row">{transaction.tag_ids?.map((tagId) => <Badge key={tagId} tone="gray">#{(tagsData?.tags ?? []).find((t) => t.id === tagId)?.name ?? tagId}</Badge>)}</div> },
               { key: 'amount', header: 'Jumlah', align: 'right', render: (transaction) => <Amount value={transaction.amount_minor} type="expense" /> },
             ]}

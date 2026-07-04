@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { toLocalDatetimeInput, toYearMonth, toYYYYMMDD } from './dates'
+import { formatDateID, formatDateTimeID, toLocalDatetimeInput, toYearMonth, toYYYYMMDD } from './dates'
 
 describe('toLocalDatetimeInput', () => {
   it('formats a Date as a local YYYY-MM-DDTHH:mm value (no timezone shift)', () => {
@@ -42,5 +42,37 @@ describe('toYearMonth (local)', () => {
 describe('toYYYYMMDD', () => {
   it('formats an ISO date', () => {
     expect(toYYYYMMDD(new Date('2026-06-15T00:00:00Z'))).toBe('2026-06-15')
+  })
+})
+
+describe('formatDateID', () => {
+  it('formats an RFC3339 timestamp as an Indonesian date', () => {
+    // id-ID short month for June is "Jun".
+    expect(formatDateID('2026-06-01T00:00:00Z')).toContain('2026')
+    expect(formatDateID('2026-06-01T12:00:00Z')).toMatch(/Jun/)
+  })
+
+  it('accepts a Date instance', () => {
+    expect(formatDateID(new Date(2026, 5, 15))).toMatch(/Jun/)
+  })
+
+  it('falls back to "-" for empty, null, or invalid values', () => {
+    expect(formatDateID('')).toBe('-')
+    expect(formatDateID(null)).toBe('-')
+    expect(formatDateID(undefined)).toBe('-')
+    expect(formatDateID('not-a-real-date')).toBe('-')
+  })
+})
+
+describe('formatDateTimeID', () => {
+  it('includes a time component', () => {
+    const out = formatDateTimeID('2026-06-01T20:10:00Z')
+    expect(out).toMatch(/2026/)
+    expect(out).toMatch(/\d{2}[.:]\d{2}/)
+  })
+
+  it('falls back to "-" for invalid values', () => {
+    expect(formatDateTimeID('nope')).toBe('-')
+    expect(formatDateTimeID(null)).toBe('-')
   })
 })

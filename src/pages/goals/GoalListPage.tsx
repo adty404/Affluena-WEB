@@ -12,6 +12,7 @@ import { itemAccentVars } from '../../components/finance/ColorPicker';
 import { useGoals } from '../../hooks/useGoals';
 import { goalStatusBadgeTone, goalStatusLabel, goalProgressTone } from '../../lib/goalStatus';
 import { formatIDR } from '../../lib/money';
+import { formatDateID } from '../../lib/dates';
 import { NAV } from '../../lib/copy';
 import type { Goal } from '../../types/goal';
 
@@ -32,7 +33,7 @@ export function GoalListPage() {
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <span className="badge dark">● Target Tabungan</span>
+            <span className="badge dark">Target Tabungan</span>
             <h2>Rencanakan target tabungan dengan progres yang jelas, sendiri atau bareng anggota.</h2>
             <p>Tetapkan jumlah target, setor rutin, dan pantau progres bersama anggota yang kamu undang.</p>
           </div>
@@ -66,14 +67,13 @@ export function GoalListPage() {
                   <FinanceOverviewCard
                     key={goal.id}
                     title={goal.name}
-                    subtitle={goal.deadline ? `batas waktu ${new Date(goal.deadline).toLocaleDateString()}` : 'tanpa batas waktu'}
+                    subtitle={goal.deadline ? `batas waktu ${formatDateID(goal.deadline)}` : 'tanpa batas waktu'}
                     icon="goal"
                     iconTone={goal.status === 'cancelled' ? 'warning' : 'safe'}
                     badge={goalStatusLabel(goal.status)}
                     badgeTone={goalStatusBadgeTone(goal.status)}
                     amount={goal.collected_amount_minor}
                     amountType="income"
-                    description=""
                     progress={progress}
                     progressTone={goalProgressTone(goal.status)}
                     accentColor={goal.color}
@@ -94,7 +94,7 @@ export function GoalListPage() {
                   { key: 'name', header: 'Nama', render: (goal) => { const accent = itemAccentVars(goal.color); return <div className="table-title"><span className={clsx('mini-icon', accent ? 'has-accent' : 'safe')} style={accent}><AppIcon name="goal" /></span><strong>{goal.name}</strong></div>; } },
                   { key: 'target', header: 'Target', align: 'right', render: (goal) => <Amount value={goal.target_amount_minor} /> },
                   { key: 'saved', header: 'Terkumpul', align: 'right', render: (goal) => <Amount value={goal.collected_amount_minor} type="income" /> },
-                  { key: 'deadline', header: 'Batas Waktu', render: (goal) => goal.deadline ? new Date(goal.deadline).toLocaleDateString() : '-' },
+                  { key: 'deadline', header: 'Batas Waktu', render: (goal) => formatDateID(goal.deadline) },
                   { key: 'visibility', header: 'Visibilitas', render: (goal) => <Badge tone={(goal.members?.length ?? 0) > 1 ? 'purple' : 'gray'}>{(goal.members?.length ?? 0) > 1 ? 'bersama' : 'pribadi'}</Badge> },
                   { key: 'status', header: 'Status', render: (goal) => <Badge tone={goalStatusBadgeTone(goal.status)}>{goalStatusLabel(goal.status)}</Badge> },
                   { key: 'action', header: 'Aksi', render: (goal) => <div className="inline-actions"><Button to={`/goals/${goal.id}`} size="small">Lihat</Button><Button to={`/goals/${goal.id}/contribute`} size="small">Setor</Button></div> },

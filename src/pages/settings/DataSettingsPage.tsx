@@ -1,8 +1,9 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
-import { Input, Select } from '../../components/ui/Input';
+import { Select } from '../../components/ui/Input';
 import { Modal } from '../../components/ui/Modal';
 import { useToast } from '../../components/ui/Toast';
 import { AppIcon } from '../../components/ui/AppIcon';
@@ -22,8 +23,8 @@ function rangeToDates(range: string): { from?: string; to?: string } {
 
 export function DataSettingsPage() {
   const { showToast } = useToast();
+  const navigate = useNavigate();
   const [deleteOpen, setDeleteOpen] = useState(false);
-  const [confirmText, setConfirmText] = useState('');
   const [dateRange, setDateRange] = useState('all-time');
   const exportMut = useExportCSV();
 
@@ -50,9 +51,9 @@ export function DataSettingsPage() {
   return (
     <AppLayout title="Data & Siklus Akun" description="Ekspor data pribadi, retensi data, dan hapus akun.">
       <div className="dashboard-page grid-stack">
-        <SettingsHero badge="● Data" title="Alat data untuk ekspor dan siklus hidup akun." description="Kamu bisa membuat ekspor data pribadi dan menghapus akun dengan konfirmasi yang aman.">
+        <SettingsHero badge="Data" title="Alat data untuk ekspor dan siklus hidup akun." description="Kamu bisa membuat ekspor data pribadi dan mengajukan penutupan akun lewat dukungan.">
           <Button to="/exports/new"><AppIcon name="export" /> Buat Ekspor</Button>
-          <Button variant="danger" onClick={() => setDeleteOpen(true)}><AppIcon name="delete" /> Hapus Akun</Button>
+          <Button variant="danger" onClick={() => setDeleteOpen(true)}><AppIcon name="delete" /> Tutup Akun</Button>
         </SettingsHero>
 
         <section className="dashboard-grid">
@@ -79,12 +80,13 @@ export function DataSettingsPage() {
           </SettingsCard>
         </section>
 
-        <Modal open={deleteOpen} title="Hapus Akun" description={'Ketik "DELETE" untuk mengaktifkan tombol hapus akun.'} onClose={() => setDeleteOpen(false)}>
-          <div className="notice-card danger-note"><strong>Penting:</strong> akun akan masuk masa tunggu penghapusan 7 hari. Semua sesi masuk dicabut dan Berbagi Dompet dihentikan.</div>
-          <form className="form-stack" onSubmit={(event) => { event.preventDefault(); setDeleteOpen(false); setConfirmText(''); showToast('Permintaan hapus akun tercatat. Tim Affluena akan memproses penutupan akun.'); }}>
-            <label><span>Konfirmasi</span><Input value={confirmText} onChange={(event) => setConfirmText(event.target.value)} placeholder="DELETE" /></label>
-            <div className="modal-actions"><Button onClick={() => setDeleteOpen(false)}>Batal</Button><Button type="submit" variant="danger" disabled={confirmText !== 'DELETE'}><AppIcon name="delete" /> Konfirmasi Hapus</Button></div>
-          </form>
+        <Modal open={deleteOpen} title="Tutup Akun" description="Penutupan akun diproses lewat dukungan agar datamu aman." onClose={() => setDeleteOpen(false)}>
+          <div className="notice-card danger-note"><strong>Penting:</strong> saat akun ditutup, semua sesi masuk dicabut dan Berbagi Dompet dihentikan. Ekspor dulu datamu jika masih dibutuhkan.</div>
+          <p className="field-help">Ajukan penutupan lewat halaman Bantuan. Tim dukungan akan mengonfirmasi identitas sebelum menutup akun.</p>
+          <div className="modal-actions">
+            <Button onClick={() => setDeleteOpen(false)}>Batal</Button>
+            <Button variant="danger" onClick={() => { setDeleteOpen(false); navigate('/settings/help'); }}><AppIcon name="list" /> Hubungi Dukungan</Button>
+          </div>
         </Modal>
       </div>
     </AppLayout>

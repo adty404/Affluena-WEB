@@ -58,7 +58,7 @@ export function GoalMembersPage() {
     <AppLayout title="Anggota Target" description="Kelola anggota dan akses setoran untuk target tabungan bersama.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
-          <div><span className="badge dark">● Anggota Target</span><h2>Kelola anggota untuk {goal.name}.</h2><p>Peran anggota membantu mengatur siapa yang bisa menyetor, melihat progres, atau mengelola target.</p></div>
+          <div><span className="badge dark">Anggota Target</span><h2>Kelola anggota untuk {goal.name}.</h2><p>Peran anggota membantu mengatur siapa yang bisa menyetor, melihat progres, atau mengelola target.</p></div>
           <div className="app-hero-actions"><Button to={`/goals/${goal.id}`}><AppIcon name="back" /> Kembali</Button></div>
         </section>
 
@@ -70,7 +70,7 @@ export function GoalMembersPage() {
                 <label>
                   <span>Email</span>
                   <Input {...register('email')} placeholder="rina@example.com" />
-                  {errors.email && <small className="field-error">{errors.email.message}</small>}
+                  {errors.email && <small className="form-error">{errors.email.message}</small>}
                 </label>
               </div>
               <div className="form-row-between"><Button to={`/goals/${goal.id}`}>Batal</Button><Button type="submit" variant="primary" disabled={isSubmitting || inviteMember.isPending}><AppIcon name="profile" /> {inviteMember.isPending ? 'Mengundang...' : 'Undang Anggota'}</Button></div>
@@ -93,7 +93,7 @@ export function GoalMembersPage() {
             data={goal.members || []}
             getRowKey={(member) => member.user_id}
             columns={[
-              { key: 'name', header: 'Anggota', render: (member) => <div className="table-title"><span className="mini-icon safe"><AppIcon name="profile" /></span><strong>{goalMemberLabel(member, currentUserId)}</strong><small>{member.user_id}</small></div> },
+              { key: 'name', header: 'Anggota', render: (member) => <div className="table-title"><span className="mini-icon safe"><AppIcon name="profile" /></span><strong>{goalMemberLabel(member, currentUserId)}</strong></div> },
               { key: 'status', header: 'Status', render: (member) => <Badge tone={goalMemberStatusTone(member.status)}>{goalMemberStatusLabel(member.status)}</Badge> },
               { key: 'action', header: 'Aksi', render: (member) => (
                 <div className="inline-actions">

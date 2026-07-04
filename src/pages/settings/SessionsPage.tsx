@@ -1,6 +1,9 @@
+import { useState } from 'react';
 import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
+import { Modal } from '../../components/ui/Modal';
+import { EmptyState } from '../../components/ui/EmptyState';
 import { useToast } from '../../components/ui/Toast';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { SettingsCard, SettingsHero } from './SettingsShared';
@@ -14,11 +17,13 @@ export function SessionsPage() {
   const { data, isLoading } = useSessions();
   const revokeMut = useRevokeSession();
   const sessions = data?.sessions ?? [];
+  const [revokeTarget, setRevokeTarget] = useState<string | null>(null);
 
   async function onRevoke(sessionId: string) {
     try {
       await revokeMut.mutateAsync(sessionId);
       showToast('Sesi dicabut.');
+      setRevokeTarget(null);
     } catch (err) {
       const apiErr = err as ApiError;
       showToast(apiErr.error || 'Gagal mencabut sesi.');
@@ -28,7 +33,7 @@ export function SessionsPage() {
   return (
     <AppLayout title="Sesi Aktif" description="Kelola sesi masuk yang aktif.">
       <div className="dashboard-page grid-stack">
-        <SettingsHero badge="● Sesi" title="Sesi masuk aktif." description="Setiap sesi mewakili perangkat yang pernah masuk ke akun kamu. Cabut untuk keluar paksa.">
+        <SettingsHero badge="Sesi" title="Sesi masuk aktif." description="Setiap sesi mewakili perangkat yang pernah masuk ke akun kamu. Cabut untuk keluar paksa.">
           <Button to="/settings/security"><AppIcon name="warning" /> Keamanan</Button>
         </SettingsHero>
 
@@ -41,9 +46,9 @@ export function SessionsPage() {
         <section className="dashboard-grid">
           <SettingsCard icon="history" title="Token Refresh" description="Daftar sesi masuk yang diterbitkan untuk akun ini.">
             {isLoading ? (
-              <div className="settings-list"><div><span>Memuat…</span></div></div>
+              <div className="loading-state">Memuat...</div>
             ) : sessions.length === 0 ? (
-              <div className="settings-list"><div><span>Belum ada sesi.</span></div></div>
+              <EmptyState icon={<AppIcon name="history" />} title="Belum ada sesi" description="Sesi masuk yang pernah dibuat akan muncul di sini." />
             ) : (
               <div className="settings-list">
                 {sessions.map((session) => {
@@ -62,7 +67,7 @@ export function SessionsPage() {
                         {isRevoked ? 'Dicabut' : isExpired ? 'Kedaluwarsa' : 'Aktif'}
                       </Badge>
                       {!isRevoked && !isExpired ? (
-                        <Button size="small" onClick={() => onRevoke(session.id)} disabled={revokeMut.isPending}>
+                        <Button size="small" variant="danger" onClick={() => setRevokeTarget(session.id)} disabled={revokeMut.isPending}>
                           <AppIcon name="close" /> Cabut
                         </Button>
                       ) : null}
@@ -83,6 +88,18 @@ export function SessionsPage() {
           </SettingsCard>
         </section>
       </div>
+
+      <Modal
+        open={revokeTarget !== null}
+        title="Cabut sesi ini?"
+        description="Perangkat itu langsung keluar dari akun dan harus masuk lagi."
+        onClose={() => (revokeMut.isPending ? null : setRevokeTarget(null))}
+      >
+        <div className="modal-actions">
+          <Button onClick={() => setRevokeTarget(null)} disabled={revokeMut.isPending}>Batal</Button>
+          <Button variant="danger" onClick={() => revokeTarget && onRevoke(revokeTarget)} disabled={revokeMut.isPending}>{revokeMut.isPending ? 'Mencabut…' : 'Cabut Sesi'}</Button>
+        </div>
+      </Modal>
     </AppLayout>
   );
 }

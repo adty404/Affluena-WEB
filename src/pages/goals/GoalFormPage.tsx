@@ -111,19 +111,19 @@ export function GoalFormPage() {
                 <label>
                   <span>Nama Target</span>
                   <Input {...register('name')} placeholder="Dana Darurat" />
-                  {errors.name && <small className="field-error">{errors.name.message}</small>}
+                  {errors.name && <small className="form-error">{errors.name.message}</small>}
                 </label>
                 <label>
                   <span>Target (Rp)</span>
                   <Input type="number" {...register('target_amount_minor', { valueAsNumber: true })} />
-                  {errors.target_amount_minor && <small className="field-error">{errors.target_amount_minor.message}</small>}
+                  {errors.target_amount_minor && <small className="form-error">{errors.target_amount_minor.message}</small>}
                 </label>
               </div>
               <div className="form-two">
                 <label>
                   <span>Batas Waktu</span>
                   <Input type="datetime-local" {...register('deadline')} />
-                  {errors.deadline && <small className="field-error">{errors.deadline.message}</small>}
+                  {errors.deadline && <small className="form-error">{errors.deadline.message}</small>}
                 </label>
                 {isEdit && (
                   <label>

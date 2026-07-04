@@ -9,6 +9,7 @@ import { AppIcon } from '../../components/ui/AppIcon';
 import { Amount } from '../../components/finance/Amount';
 import { ProgressBar } from '../../components/finance/ProgressBar';
 import { useToast } from '../../components/ui/Toast';
+import { formatDateID } from '../../lib/dates';
 import { useGoal, useUpdateGoal } from '../../hooks/useGoals';
 import { useMe } from '../../hooks/useMe';
 import {
@@ -66,7 +67,7 @@ export function GoalDetailPage() {
     <AppLayout title="Detail Target" description="Progres target, anggota, dan aksi lanjutan.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
-          <div><span className="badge dark">● Detail Target</span><h2>{goal.name}</h2></div>
+          <div><span className="badge dark">Detail Target</span><h2>{goal.name}</h2></div>
           <div className="app-hero-actions">
             <Button to="/goals"><AppIcon name="back" /> Kembali</Button>
             <Button to={`/goals/${goal.id}/edit`}><AppIcon name="edit" /> Edit</Button>
@@ -84,7 +85,7 @@ export function GoalDetailPage() {
             <div className="metric-list compact-metrics">
               <div><span>Progres</span><strong>{progress}% tercapai</strong></div>
               <div><span>Sisa</span><strong><Amount value={remaining} type="expense" /></strong></div>
-              <div><span>Batas Waktu</span><strong>{goal.deadline ? new Date(goal.deadline).toLocaleDateString() : '-'}</strong></div>
+              <div><span>Batas Waktu</span><strong>{formatDateID(goal.deadline)}</strong></div>
             </div>
             <div className="form-row-between goal-status-actions">
               {goal.status === 'active' && (
@@ -116,7 +117,7 @@ export function GoalDetailPage() {
             <div className="readiness-list">
               {goal.members?.map((member) => (
                 <div key={member.user_id}>
-                  <span>{goalMemberLabel(member, currentUserId)}<small>{member.user_id}</small></span>
+                  <span>{goalMemberLabel(member, currentUserId)}</span>
                   <Badge tone={goalMemberStatusTone(member.status)}>{goalMemberStatusLabel(member.status)}</Badge>
                 </div>
               ))}

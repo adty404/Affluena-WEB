@@ -19,7 +19,7 @@ export function LandingPage() {
         <section className="hero">
           <div className="container hero-grid">
             <div className="hero-copy">
-              <Badge>● Pusat kendali keuangan pribadi</Badge>
+              <Badge>Pusat kendali keuangan pribadi</Badge>
               <h1>Kelola uang, anggaran, dan target finansial dalam satu tempat.</h1>
               <p>
                 Affluena menyatukan dompet, transaksi, kategori, anggaran, utang-piutang, cicilan,
@@ -39,8 +39,8 @@ export function LandingPage() {
             </div>
 
             <div className="hero-visual" aria-label="Pratinjau Beranda">
-              <div className="floating-pill one">↗ Arus kas +15,2%</div>
-              <div className="floating-pill two">✓ Anggaran Makan aman</div>
+              <div className="floating-pill one"><AppIcon name="trend" /> Arus kas +15,2%</div>
+              <div className="floating-pill two"><AppIcon name="success" /> Anggaran Makan aman</div>
               <div className="dashboard-preview">
                 <div className="preview-top">
                   <div className="preview-user">

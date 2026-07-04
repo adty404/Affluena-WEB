@@ -2,7 +2,9 @@ import clsx from 'clsx';
 import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
+import { Badge } from '../../components/ui/Badge';
 import { DataTable } from '../../components/ui/DataTable';
+import { EmptyState } from '../../components/ui/EmptyState';
 import { AppIcon, type AppIconName } from '../../components/ui/AppIcon';
 import { WalletCard } from '../../components/master-data/WalletCard';
 import { Amount } from '../../components/finance/Amount';
@@ -60,18 +62,16 @@ export function WalletListPage() {
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <span className="badge dark">● {NAV.dompet}</span>
+            <Badge className="dark">{NAV.dompet}</Badge>
             <h2>Kelola semua dompetmu — tunai, bank, e-wallet, dan dompet bersama — dalam satu tempat.</h2>
             <p>Saldo dan pergerakan tiap dompet selalu terlihat jelas, termasuk dompet yang dibagikan.</p>
           </div>
-          <div className="app-hero-actions"><Button to="/wallets/new" variant="primary">+ Buat Dompet</Button></div>
+          <div className="app-hero-actions"><Button to="/wallets/new" variant="primary"><AppIcon name="add" /> Buat Dompet</Button></div>
         </section>
 
         {error ? (
           <Card className="panel-card">
-            <div className="readiness-list">
-              <div><span>Error</span><strong>{(error as { error?: string }).error ?? 'Gagal memuat dompet'}</strong></div>
-            </div>
+            <EmptyState icon={<AppIcon name="empty" />} title="Gagal memuat dompet" description={(error as { error?: string }).error ?? 'Periksa koneksi lalu coba lagi.'} />
           </Card>
         ) : null}
 
@@ -81,19 +81,18 @@ export function WalletListPage() {
           <Card className="stat-card purple"><span>Dompet Bersama</span><strong>{isLoading ? '…' : sharedCount}</strong><small>Dibagikan denganmu</small></Card>
         </section>
 
-        {isLoading ? (
-          <Card className="panel-card"><div className="readiness-list"><div><span>Memuat</span><strong>…</strong></div></div></Card>
+        {error ? null : isLoading ? (
+          <div className="loading-state">Memuat dompet...</div>
         ) : wallets.length === 0 ? (
           <Card className="panel-card">
-            <div className="panel-head"><div><h3>Belum ada dompet</h3><p>Buat dompet pertamamu untuk mulai mencatat transaksi.</p></div></div>
-            <div className="modal-actions"><Button to="/wallets/new" variant="primary">+ Buat Dompet</Button></div>
+            <EmptyState icon={<AppIcon name="wallet" />} title="Belum ada dompet" description="Buat dompet pertamamu untuk mulai mencatat transaksi." action={<Button to="/wallets/new" variant="primary"><AppIcon name="add" /> Buat Dompet</Button>} />
           </Card>
         ) : (
           <>
             <section className="master-grid cards-4">{wallets.map((wallet) => <WalletCard key={wallet.id} wallet={wallet} />)}</section>
 
             <Card className="panel-card">
-              <div className="panel-head"><div><h3>Daftar Dompet</h3><p>{data?.pagination.total ?? wallets.length} dompet terdaftar.</p></div><Button to="/wallets/new" size="small" variant="primary">+ Dompet</Button></div>
+              <div className="panel-head"><div><h3>Daftar Dompet</h3><p>{data?.pagination.total ?? wallets.length} dompet terdaftar.</p></div><Button to="/wallets/new" size="small" variant="primary"><AppIcon name="add" /> Dompet</Button></div>
               <DataTable columns={columns} data={wallets} getRowKey={(wallet) => wallet.id} />
             </Card>
           </>

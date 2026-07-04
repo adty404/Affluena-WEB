@@ -82,7 +82,7 @@ export function TransferPage() {
                     <option value="">Pilih Dompet Asal</option>
                     {walletsData?.wallets?.map((wallet) => <option key={wallet.id} value={wallet.id}>{wallet.name}</option>)}
                   </Select>
-                  {errors.wallet_id && <span className="error-text">{errors.wallet_id.message}</span>}
+                  {errors.wallet_id && <span className="form-error">{errors.wallet_id.message}</span>}
                 </label>
                 <label>
                   <span>Dompet Tujuan</span>
@@ -90,25 +90,25 @@ export function TransferPage() {
                     <option value="">Pilih Dompet Tujuan</option>
                     {walletsData?.wallets?.map((wallet) => <option key={wallet.id} value={wallet.id}>{wallet.name}</option>)}
                   </Select>
-                  {errors.to_wallet_id && <span className="error-text">{errors.to_wallet_id.message}</span>}
+                  {errors.to_wallet_id && <span className="form-error">{errors.to_wallet_id.message}</span>}
                 </label>
               </div>
               <div className="form-two">
                 <label>
                   <span>Jumlah (Rp)</span>
                   <Input type="number" {...register('amount_minor', { valueAsNumber: true })} />
-                  {errors.amount_minor && <span className="error-text">{errors.amount_minor.message}</span>}
+                  {errors.amount_minor && <span className="form-error">{errors.amount_minor.message}</span>}
                 </label>
                 <label>
                   <span>Tanggal</span>
                   <Input type="datetime-local" {...register('transaction_at')} />
-                  {errors.transaction_at && <span className="error-text">{errors.transaction_at.message}</span>}
+                  {errors.transaction_at && <span className="form-error">{errors.transaction_at.message}</span>}
                 </label>
               </div>
               <label>
                 <span>Catatan</span>
                 <Textarea {...register('note')} />
-                {errors.note && <span className="error-text">{errors.note.message}</span>}
+                {errors.note && <span className="form-error">{errors.note.message}</span>}
               </label>
               <div className="form-row-between">
                 <Button to="/transactions">Batal</Button>

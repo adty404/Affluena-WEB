@@ -3,6 +3,7 @@ import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
+import { EmptyState } from '../../components/ui/EmptyState';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { PageMetaStrip } from '../../components/layout/PageMetaStrip';
 import { useToast } from '../../components/ui/Toast';
@@ -13,14 +14,14 @@ import type { ApiError } from '../../api/types';
 
 export function ExportDetailPage() {
   const { id } = useParams();
-  const { data: job, isLoading, isError } = useExportJob(id || '');
+  const { data: job, isLoading, isError, refetch } = useExportJob(id || '');
   const { showToast } = useToast();
 
   if (isLoading) {
     return (
       <AppLayout title="Detail Ekspor" description="Hasil ekspor, informasi berkas, dan akses unduhan.">
         <div className="dashboard-page grid-stack">
-          <div className="empty-state"><p>Memuat detail ekspor...</p></div>
+          <div className="loading-state">Memuat detail ekspor...</div>
         </div>
       </AppLayout>
     );
@@ -30,7 +31,9 @@ export function ExportDetailPage() {
     return (
       <AppLayout title="Detail Ekspor" description="Hasil ekspor, informasi berkas, dan akses unduhan.">
         <div className="dashboard-page grid-stack">
-          <div className="empty-state"><p>Ekspor tidak ditemukan atau gagal dimuat.</p></div>
+          <Card className="panel-card">
+            <EmptyState icon={<AppIcon name="empty" />} title="Ekspor tidak ditemukan" description="Berkas ekspor ini gagal dimuat atau sudah tidak tersedia." action={<Button variant="primary" onClick={() => refetch()}><AppIcon name="recurring" /> Coba lagi</Button>} />
+          </Card>
         </div>
       </AppLayout>
     );
@@ -64,7 +67,7 @@ export function ExportDetailPage() {
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <Badge>● {job.format.toUpperCase()}</Badge>
+            <Badge>{job.format.toUpperCase()}</Badge>
             <h2>{name}</h2>
             <p>Transaksi · {period} · dibuat pada {new Date(job.created_at).toLocaleString('id-ID')}</p>
           </div>

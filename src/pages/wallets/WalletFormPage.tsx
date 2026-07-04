@@ -5,7 +5,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
+import { Badge } from '../../components/ui/Badge';
 import { Modal } from '../../components/ui/Modal';
+import { EmptyState } from '../../components/ui/EmptyState';
 import { Input, Select, Textarea } from '../../components/ui/Input';
 import { useToast } from '../../components/ui/Toast';
 import { AppIcon } from '../../components/ui/AppIcon';
@@ -88,7 +90,7 @@ export function WalletFormPage() {
   if (isEdit && isLoading) {
     return (
       <AppLayout title="Edit Dompet" description="Memuat…">
-        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Memuat dompet</span><strong>…</strong></div></div></Card></div>
+        <div className="dashboard-page grid-stack"><div className="loading-state">Memuat...</div></div>
       </AppLayout>
     );
   }
@@ -96,7 +98,7 @@ export function WalletFormPage() {
   if (isEdit && !existing) {
     return (
       <AppLayout title="Edit Dompet" description="Dompet tidak ditemukan.">
-        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Error</span><strong>Dompet tidak ditemukan.</strong></div></div><div className="modal-actions"><Button to="/wallets">Kembali ke daftar</Button></div></Card></div>
+        <div className="dashboard-page grid-stack"><Card className="panel-card"><EmptyState icon={<AppIcon name="empty" />} title="Dompet tidak ditemukan" description="Dompet mungkin sudah dihapus." action={<Button to="/wallets">Kembali ke daftar</Button>} /></Card></div>
       </AppLayout>
     );
   }
@@ -125,7 +127,7 @@ export function WalletFormPage() {
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <span className="badge dark">● Dompet</span>
+            <Badge className="dark">Dompet</Badge>
             <h2>{isEdit ? `Edit ${existing?.name ?? ''}` : 'Buat dompet baru.'}</h2>
             <p>Atur nama, tipe, dan warna dompet sesuai kebutuhanmu.</p>
           </div>
@@ -155,20 +157,14 @@ export function WalletFormPage() {
                     {updateForm.formState.errors.currency_code && <span className="form-error">{updateForm.formState.errors.currency_code.message}</span>}
                   </label>
                 </div>
-                <div className="form-two">
-                  <label>
-                    <span>Warna</span>
-                    <ColorPicker
-                      value={updateForm.watch('color')}
-                      onChange={(hex) => updateForm.setValue('color', hex, { shouldDirty: true })}
-                    />
-                    <small>Warna yang sama dipakai di aplikasi mobile.</small>
-                  </label>
-                  <label>
-                    <span>Status</span>
-                    <Select disabled><option>Aktif</option></Select>
-                  </label>
-                </div>
+                <label>
+                  <span>Warna</span>
+                  <ColorPicker
+                    value={updateForm.watch('color')}
+                    onChange={(hex) => updateForm.setValue('color', hex, { shouldDirty: true })}
+                  />
+                  <small>Warna yang sama dipakai di aplikasi mobile.</small>
+                </label>
                 <label>
                   <span>Deskripsi</span>
                   <Textarea {...updateForm.register('description')} rows={3} />
@@ -182,7 +178,7 @@ export function WalletFormPage() {
                   <Button to="/wallets">Batal</Button>
                   <div className="inline-actions">
                     <Button type="button" variant="danger" onClick={() => setDeleteOpen(true)}><AppIcon name="delete" /> Hapus</Button>
-                    <Button type="submit" variant="primary" disabled={updateForm.formState.isSubmitting || updateMut.isPending}><AppIcon name="save" /> Simpan Dompet</Button>
+                    <Button type="submit" variant="primary" disabled={updateForm.formState.isSubmitting || updateMut.isPending}>{updateMut.isPending ? 'Menyimpan…' : <><AppIcon name="save" /> Simpan Dompet</>}</Button>
                   </div>
                 </div>
               </form>
@@ -217,20 +213,14 @@ export function WalletFormPage() {
                   {createForm.formState.errors.balance_minor && <span className="form-error">{createForm.formState.errors.balance_minor.message}</span>}
                   <small>Tercatat sebagai {formatIDR(createForm.watch('balance_minor') ?? 0)}</small>
                 </label>
-                <div className="form-two">
-                  <label>
-                    <span>Warna</span>
-                    <ColorPicker
-                      value={createForm.watch('color')}
-                      onChange={(hex) => createForm.setValue('color', hex, { shouldDirty: true })}
-                    />
-                    <small>Warna yang sama dipakai di aplikasi mobile.</small>
-                  </label>
-                  <label>
-                    <span>Mode berbagi</span>
-                    <Select disabled><option>Pribadi</option></Select>
-                  </label>
-                </div>
+                <label>
+                  <span>Warna</span>
+                  <ColorPicker
+                    value={createForm.watch('color')}
+                    onChange={(hex) => createForm.setValue('color', hex, { shouldDirty: true })}
+                  />
+                  <small>Warna yang sama dipakai di aplikasi mobile. Dompet dibuat sebagai pribadi — atur akses lewat halaman Anggota setelah dompet dibuat.</small>
+                </label>
                 <label>
                   <span>Deskripsi</span>
                   <Textarea {...createForm.register('description')} rows={3} />
@@ -238,7 +228,7 @@ export function WalletFormPage() {
                 </label>
                 <div className="form-row-between">
                   <Button to="/wallets">Batal</Button>
-                  <Button type="submit" variant="primary" disabled={createForm.formState.isSubmitting || createMut.isPending}><AppIcon name="save" /> Simpan Dompet</Button>
+                  <Button type="submit" variant="primary" disabled={createForm.formState.isSubmitting || createMut.isPending}>{createMut.isPending ? 'Menyimpan…' : <><AppIcon name="save" /> Simpan Dompet</>}</Button>
                 </div>
               </form>
             )}

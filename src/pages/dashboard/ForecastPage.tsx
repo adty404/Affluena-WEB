@@ -80,7 +80,7 @@ export function ForecastPage() {
       <div className="grid stack-lg">
         <section className="app-hero-card">
           <div>
-            <Badge tone="purple">● {NAV.prakiraan}</Badge>
+            <Badge tone="purple">{NAV.prakiraan}</Badge>
             <h2>Prediksi kondisi akhir bulan sebelum pengeluaran terjadi.</h2>
             <p>Dihitung dari transaksi, anggaran, dan jadwal berulang kamu supaya risiko terlihat lebih awal.</p>
           </div>
@@ -117,7 +117,7 @@ export function ForecastPage() {
                 ))}
               </div>
             ) : (
-              <p style={{ padding: '1rem', color: 'var(--muted)' }}>Belum ada risiko yang perlu diwaspadai bulan ini.</p>
+              <p className="panel-note">Belum ada risiko yang perlu diwaspadai bulan ini.</p>
             )}
           </Card>
         </section>

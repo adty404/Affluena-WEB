@@ -2,6 +2,8 @@ import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
 import { AppIcon } from '../../components/ui/AppIcon';
+import { useSessions } from '../../hooks/useAuthSettings';
+import { useNotificationRules } from '../../hooks/useNotifications';
 import { NAV } from '../../lib/copy';
 import { SettingsCard, SettingsHero, SettingMetric } from './SettingsShared';
 
@@ -21,19 +23,27 @@ const settingsLinks = [
 ];
 
 export function SettingsOverviewPage() {
+  const { data: sessionsData, isLoading: sessionsLoading } = useSessions();
+  const { data: rulesData, isLoading: rulesLoading } = useNotificationRules();
+
+  const sessions = sessionsData?.sessions ?? [];
+  const activeSessions = sessions.filter((s) => !s.revoked_at).length;
+  const rules = rulesData?.rules ?? [];
+  const enabledRules = rules.filter((r) => r.enabled).length;
+
   return (
     <AppLayout title={NAV.pengaturan} description="Akun, keamanan, notifikasi, privasi, dan preferensi aplikasi.">
       <div className="dashboard-page grid-stack">
-        <SettingsHero badge={`● ${NAV.pengaturan}`} title="Pusat pengaturan untuk pengalaman Affluena kamu." description="Kelola profil, keamanan, sesi aktif, preferensi notifikasi, privasi data, dan bantuan dari satu tempat.">
+        <SettingsHero badge={NAV.pengaturan} title="Pusat pengaturan untuk pengalaman Affluena kamu." description="Kelola profil, keamanan, sesi aktif, preferensi notifikasi, privasi data, dan bantuan dari satu tempat.">
           <Button to="/settings/security"><AppIcon name="warning" /> {NAV.keamanan}</Button>
           <Button to="/settings/profile" variant="primary"><AppIcon name="profile" /> Edit Profil</Button>
         </SettingsHero>
 
         <section className="settings-metric-grid">
-          <SettingMetric label="Kelengkapan profil" value="100%" />
-          <SettingMetric label="Tingkat keamanan" value="Kuat" tone="blue" />
-          <SettingMetric label="Sesi aktif" value="3" tone="purple" />
-          <SettingMetric label="Notifikasi aktif" value="4/5" tone="orange" />
+          <SettingMetric label="Sesi aktif" value={sessionsLoading ? '…' : String(activeSessions)} tone="purple" />
+          <SettingMetric label="Total sesi" value={sessionsLoading ? '…' : String(sessions.length)} tone="blue" />
+          <SettingMetric label="Sesi dicabut" value={sessionsLoading ? '…' : String(sessions.filter((s) => s.revoked_at).length)} />
+          <SettingMetric label="Notifikasi aktif" value={rulesLoading ? '…' : `${enabledRules}/${rules.length}`} tone="orange" />
         </section>
 
         <section className="settings-card-grid">

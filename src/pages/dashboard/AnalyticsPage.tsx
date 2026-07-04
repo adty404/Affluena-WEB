@@ -3,7 +3,6 @@ import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { CashflowChart, ExpenseDistribution, ForecastCards, StatGrid } from '../../components/finance/DashboardWidgets';
-import { useToast } from '../../components/ui/Toast';
 import { useDashboardSummary, useCashflowTrend, useExpenseDistribution, useForecast } from '../../hooks/useDashboard';
 import { NAV } from '../../lib/copy';
 import { formatIDR as formatCurrency } from '../../lib/money';
@@ -12,8 +11,6 @@ import type { DashboardStat, ExpenseSlice, ForecastItem } from '../../types/dash
 type InsightRow = { tone?: 'orange' | 'purple'; label: string; title: string; note: string };
 
 export function AnalyticsPage() {
-  const { showToast } = useToast();
-  
   const { data: summary } = useDashboardSummary();
   const { data: trendData } = useCashflowTrend(6);
   const { data: expenseData } = useExpenseDistribution();
@@ -91,13 +88,12 @@ export function AnalyticsPage() {
       <div className="grid stack-lg">
         <section className="app-hero-card">
           <div>
-            <Badge tone="blue">● {NAV.analitik}</Badge>
+            <Badge tone="blue">{NAV.analitik}</Badge>
             <h2>Pahami kebiasaan finansial kamu dari pola pemasukan dan pengeluaran.</h2>
             <p>Baca tren keuanganmu lebih dulu sebelum menentukan anggaran atau prakiraan.</p>
           </div>
           <div className="app-hero-actions">
-            <Button variant="primary" onClick={() => showToast('Periode analitik diubah ke bulan ini.')}>Bulan Ini</Button>
-            <Button to="/dashboard/forecast">Buka Prakiraan</Button>
+            <Button to="/dashboard/forecast" variant="primary">Buka Prakiraan</Button>
           </div>
         </section>
 
@@ -119,7 +115,7 @@ export function AnalyticsPage() {
                   ))}
                 </div>
               ) : (
-                <p style={{ padding: '1rem', color: 'var(--muted)' }}>Belum ada cukup data untuk merangkum wawasan bulan ini.</p>
+                <p className="panel-note">Belum ada cukup data untuk merangkum wawasan bulan ini.</p>
               )}
             </Card>
           </div>

@@ -11,6 +11,7 @@ import { Amount } from '../../components/finance/Amount';
 import { FinanceOverviewCard } from '../../components/finance/FinanceOverviewCard';
 import { useToast } from '../../components/ui/Toast';
 import { useDebts, useDeleteDebt } from '../../hooks/useDebts';
+import { formatDateID } from '../../lib/dates';
 import { NAV } from '../../lib/copy';
 import type { Debt } from '../../types/debt';
 
@@ -56,7 +57,7 @@ export function DebtListPage() {
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <span className="badge dark">● Utang & Piutang</span>
+            <Badge className="dark">Utang & Piutang</Badge>
             <h2>Lacak utang dan piutang tanpa kehilangan riwayat pembayaran.</h2>
             <p>Saldo dompet kamu ikut terbarui setiap kali utang dibayar atau piutang diterima.</p>
           </div>
@@ -74,66 +75,64 @@ export function DebtListPage() {
           <Card className="stat-card purple"><span>Segera Jatuh Tempo</span><strong>{dueSoon}</strong><small>7 hari ke depan</small></Card>
         </section>
 
-        <section className="entity-card-grid stable-card-grid">
-          {debts.map((debt) => {
-            const pct = debt.principal_amount_minor > 0 ? Math.round((debt.paid_amount_minor / debt.principal_amount_minor) * 100) : 0;
-            const isPayable = debt.type === 'payable';
-            return (
-              <FinanceOverviewCard
-                key={debt.id}
-                title={debt.counterparty_name}
-                subtitle={`Jatuh tempo ${debt.due_date || '-'}`}
-                icon={isPayable ? 'payable' : 'receivable'}
-                iconTone={isPayable ? 'danger' : 'safe'}
-                badge={typeLabel(debt.type)}
-                badgeTone={isPayable ? 'red' : 'green'}
-                amount={debt.remaining_amount_minor}
-                amountType={isPayable ? 'expense' : 'income'}
-                description={debt.note}
-                progress={pct}
-                progressTone={isPayable ? 'orange' : 'green'}
-                metaLeft={`${pct}% terbayar`}
-                metaRight={label(debt.status)}
-                actions={<><Button to={`/debts/${debt.id}`} size="small">Detail</Button><Button to={`/debts/${debt.id}/pay`} size="small" variant="primary"><AppIcon name="pay" /> Bayar</Button><Button size="small" variant="danger" onClick={() => setTarget(debt)}><AppIcon name="delete" /> Hapus</Button></>}
-              />
-            );
-          })}
-        </section>
-
-        {isLoading && (
-          <Card className="panel-card">
-            <div className="readiness-list"><div><span>Memuat</span><strong>Memuat utang...</strong></div></div>
-          </Card>
-        )}
-        {!isLoading && !error && debts.length === 0 && (
-          <Card className="panel-card">
-            <EmptyState icon={<AppIcon name="empty" />} title="Belum ada utang atau piutang" description="Catat utang atau piutang untuk melacak sisa pembayaran dan riwayat penagihan." action={<Button to="/debts/new/payable" variant="primary"><AppIcon name="payable" /> Tambah Utang</Button>} />
-          </Card>
-        )}
-        {error && (
+        {error ? (
           <Card className="panel-card">
             <EmptyState icon={<AppIcon name="empty" />} title="Gagal memuat utang" description="Periksa koneksi lalu coba lagi." />
           </Card>
-        )}
+        ) : isLoading ? (
+          <div className="loading-state">Memuat utang...</div>
+        ) : debts.length === 0 ? (
+          <Card className="panel-card">
+            <EmptyState icon={<AppIcon name="empty" />} title="Belum ada utang atau piutang" description="Catat utang atau piutang untuk melacak sisa pembayaran dan riwayat penagihan." action={<Button to="/debts/new/payable" variant="primary"><AppIcon name="payable" /> Tambah Utang</Button>} />
+          </Card>
+        ) : (
+          <>
+            <section className="entity-card-grid stable-card-grid">
+              {debts.map((debt) => {
+                const pct = debt.principal_amount_minor > 0 ? Math.round((debt.paid_amount_minor / debt.principal_amount_minor) * 100) : 0;
+                const isPayable = debt.type === 'payable';
+                return (
+                  <FinanceOverviewCard
+                    key={debt.id}
+                    title={debt.counterparty_name}
+                    subtitle={`Jatuh tempo ${formatDateID(debt.due_date)}`}
+                    icon={isPayable ? 'payable' : 'receivable'}
+                    iconTone={isPayable ? 'danger' : 'safe'}
+                    badge={typeLabel(debt.type)}
+                    badgeTone={isPayable ? 'red' : 'green'}
+                    amount={debt.remaining_amount_minor}
+                    amountType={isPayable ? 'expense' : 'income'}
+                    description={debt.note}
+                    progress={pct}
+                    progressTone={isPayable ? 'orange' : 'green'}
+                    metaLeft={`${pct}% terbayar`}
+                    metaRight={label(debt.status)}
+                    actions={<><Button to={`/debts/${debt.id}`} size="small">Detail</Button><Button to={`/debts/${debt.id}/pay`} size="small" variant="primary"><AppIcon name="pay" /> Bayar</Button><Button size="small" variant="danger" onClick={() => setTarget(debt)} aria-label={`Hapus utang ${debt.counterparty_name}`}><AppIcon name="delete" /> Hapus</Button></>}
+                  />
+                );
+              })}
+            </section>
 
-        <Card className="panel-card">
-          <div className="panel-head">
-            <div><h3>Daftar Utang & Piutang</h3><p>Semua utang dan piutang beserta aksinya.</p></div>
-            <div className="panel-actions"><Button to="/debts/new/payable" size="small"><AppIcon name="payable" /> Utang</Button><Button to="/debts/new/receivable" size="small" variant="primary"><AppIcon name="receivable" /> Piutang</Button></div>
-          </div>
-          <DataTable<Debt>
-            data={debts}
-            getRowKey={(debt) => debt.id}
-            columns={[
-              { key: 'title', header: 'Nama', render: (debt) => <div className="table-title"><span className={`mini-icon ${debt.type === 'payable' ? 'danger' : 'safe'}`}><AppIcon name={debt.type === 'payable' ? 'payable' : 'receivable'} /></span><strong>{debt.counterparty_name}</strong></div> },
-              { key: 'type', header: 'Tipe', render: (debt) => <Badge tone={debt.type === 'payable' ? 'red' : 'green'}>{typeLabel(debt.type)}</Badge> },
-              { key: 'remaining', header: 'Sisa', align: 'right', render: (debt) => <Amount value={debt.remaining_amount_minor} type={debt.type === 'payable' ? 'expense' : 'income'} /> },
-              { key: 'due', header: 'Jatuh Tempo', render: (debt) => debt.due_date || '-' },
-              { key: 'status', header: 'Status', render: (debt) => <Badge tone={tone(debt.status)}>{label(debt.status)}</Badge> },
-              { key: 'action', header: 'Aksi', render: (debt) => <div className="inline-actions"><Button to={`/debts/${debt.id}`} size="small">Lihat</Button><Button to={`/debts/${debt.id}/pay`} size="small">Bayar</Button><Button size="small" variant="danger" onClick={() => setTarget(debt)}><AppIcon name="delete" /></Button></div> },
-            ]}
-          />
-        </Card>
+            <Card className="panel-card">
+              <div className="panel-head">
+                <div><h3>Daftar Utang & Piutang</h3><p>Semua utang dan piutang beserta aksinya.</p></div>
+                <div className="panel-actions"><Button to="/debts/new/payable" size="small"><AppIcon name="payable" /> Utang</Button><Button to="/debts/new/receivable" size="small" variant="primary"><AppIcon name="receivable" /> Piutang</Button></div>
+              </div>
+              <DataTable<Debt>
+                data={debts}
+                getRowKey={(debt) => debt.id}
+                columns={[
+                  { key: 'title', header: 'Nama', render: (debt) => <div className="table-title"><span className={`mini-icon ${debt.type === 'payable' ? 'danger' : 'safe'}`}><AppIcon name={debt.type === 'payable' ? 'payable' : 'receivable'} /></span><strong>{debt.counterparty_name}</strong></div> },
+                  { key: 'type', header: 'Tipe', render: (debt) => <Badge tone={debt.type === 'payable' ? 'red' : 'green'}>{typeLabel(debt.type)}</Badge> },
+                  { key: 'remaining', header: 'Sisa', align: 'right', render: (debt) => <Amount value={debt.remaining_amount_minor} type={debt.type === 'payable' ? 'expense' : 'income'} /> },
+                  { key: 'due', header: 'Jatuh Tempo', render: (debt) => formatDateID(debt.due_date) },
+                  { key: 'status', header: 'Status', render: (debt) => <Badge tone={tone(debt.status)}>{label(debt.status)}</Badge> },
+                  { key: 'action', header: 'Aksi', render: (debt) => <div className="inline-actions"><Button to={`/debts/${debt.id}`} size="small">Lihat</Button><Button to={`/debts/${debt.id}/pay`} size="small">Bayar</Button><Button size="small" variant="danger" onClick={() => setTarget(debt)} aria-label={`Hapus utang ${debt.counterparty_name}`}><AppIcon name="delete" /></Button></div> },
+                ]}
+              />
+            </Card>
+          </>
+        )}
       </div>
 
       <Modal

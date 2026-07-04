@@ -4,12 +4,15 @@ import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
 import { AppIcon } from '../../components/ui/AppIcon';
+import { Card } from '../../components/ui/Card';
+import { EmptyState } from '../../components/ui/EmptyState';
 import { RecentTransactions, StatGrid, WalletPortfolio } from '../../components/finance/DashboardWidgets';
 import { useDashboardSummary } from '../../hooks/useDashboard';
 import { useCategories } from '../../hooks/useCategories';
 import { useTransactions } from '../../hooks/useTransactions';
 import { useWallets } from '../../hooks/useWallets';
 import { categoryLabel, createNameById, walletPairLabel } from '../../lib/financeLabels';
+import { formatDateID } from '../../lib/dates';
 import { NAV } from '../../lib/copy';
 import { formatIDR } from '../../lib/money';
 import type { DashboardStat, DashboardTransaction } from '../../types/dashboard';
@@ -25,7 +28,7 @@ const mobileDashboardActions = [
 export function DashboardPage() {
   const [quickOpen, setQuickOpen] = useState(false);
   
-  const { data: summary } = useDashboardSummary();
+  const { data: summary, error: summaryError, refetch: refetchSummary } = useDashboardSummary();
   const { data: txData } = useTransactions({ limit: 5 });
   const { data: walletsData } = useWallets();
   const { data: categoriesData } = useCategories();
@@ -50,9 +53,9 @@ export function DashboardPage() {
     title: tx.note || 'Transaksi',
     category: categoryLabel(categoryNameById, tx.category_id, tx.type),
     wallet: walletPairLabel(walletNameById, tx.wallet_id, tx.to_wallet_id),
-    amount: formatIDR(tx.amount_minor),
+    amountMinor: tx.amount_minor,
     type: tx.type as 'income' | 'expense',
-    date: new Date(tx.transaction_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }),
+    date: formatDateID(tx.transaction_at),
   })) || [];
 
   const walletList = walletsData?.wallets ?? [];
@@ -64,7 +67,9 @@ export function DashboardPage() {
   }));
   const netWorthValue = summary ? formatIDR(summary.net_worth_minor) : '...';
   const cashflowValue = summary ? formatIDR(summary.monthly_cashflow_minor) : '...';
-  const cashflowTone = summary && summary.monthly_cashflow_minor < 0 ? 'expense' : 'income';
+  // Keep the balance-card cashflow tone neutral until data resolves so the
+  // green "positive" styling doesn't flash on the '...' placeholder.
+  const cashflowTone = !summary ? 'neutral' : summary.monthly_cashflow_minor < 0 ? 'expense' : 'income';
 
   return (
     <AppLayout title="Beranda" description="Ringkasan keuangan pribadi: arus kas, pengeluaran, dan pemberitahuan bulan ini.">
@@ -91,7 +96,7 @@ export function DashboardPage() {
 
         <section className="app-hero-card dashboard-hero dashboard-desktop-hero">
           <div>
-            <Badge>● {NAV.beranda}</Badge>
+            <Badge>{NAV.beranda}</Badge>
             <h2>Pantau uang masuk, uang keluar, dan kesehatan anggaran kamu di satu tempat.</h2>
             <p>Semua angka penting dan pintasan utama siap membantumu mengambil keputusan.</p>
           </div>
@@ -102,7 +107,18 @@ export function DashboardPage() {
         </section>
 
         <div className="dashboard-desktop-stats">
-          <StatGrid stats={stats} />
+          {summaryError ? (
+            <Card className="panel-card">
+              <EmptyState
+                icon={<AppIcon name="empty" />}
+                title="Gagal memuat ringkasan"
+                description="Periksa koneksi lalu coba lagi."
+                action={<Button variant="primary" onClick={() => refetchSummary()}><AppIcon name="recurring" /> Coba lagi</Button>}
+              />
+            </Card>
+          ) : (
+            <StatGrid stats={stats} />
+          )}
         </div>
 
         <section className="dashboard-grid">

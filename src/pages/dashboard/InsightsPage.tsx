@@ -6,6 +6,7 @@ import { Card } from '../../components/ui/Card';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { ProgressBar } from '../../components/finance/ProgressBar';
+import { StatGrid } from '../../components/finance/DashboardWidgets';
 import { itemAccentVars } from '../../components/finance/ColorPicker';
 import { CategoryIcon } from '../../components/master-data/CategoryIcon';
 import { useMonthTransactions } from '../../hooks/useMonthTransactions';
@@ -13,6 +14,7 @@ import { useCategories } from '../../hooks/useCategories';
 import { buildCategoryBreakdown, type CategorySlice } from '../../lib/categoryBreakdown';
 import { NAV } from '../../lib/copy';
 import { formatIDR } from '../../lib/money';
+import type { DashboardStat } from '../../types/dashboard';
 
 type TabKey = 'expense' | 'income';
 
@@ -51,12 +53,19 @@ export function InsightsPage() {
   const slices = tab === 'expense' ? breakdown.expenseByCategory : breakdown.incomeByCategory;
   const total = tab === 'expense' ? breakdown.expenseTotalMinor : breakdown.incomeTotalMinor;
 
+  const netMinor = breakdown.incomeTotalMinor - breakdown.expenseTotalMinor;
+  const summaryStats: DashboardStat[] = [
+    { label: 'Pemasukan Bulan Ini', value: isLoading ? '…' : formatIDR(breakdown.incomeTotalMinor), note: 'Total uang masuk', tone: 'green' },
+    { label: 'Pengeluaran Bulan Ini', value: isLoading ? '…' : formatIDR(breakdown.expenseTotalMinor), note: 'Total uang keluar', tone: 'orange' },
+    { label: 'Selisih', value: isLoading ? '…' : formatIDR(netMinor), note: 'Pemasukan − pengeluaran', tone: isLoading ? undefined : netMinor < 0 ? 'red' : 'green' },
+  ];
+
   return (
     <AppLayout title={NAV.wawasan} description="Sebaran pemasukan dan pengeluaran per kategori bulan ini.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <span className="badge dark">● {NAV.wawasan}</span>
+            <Badge className="dark">{NAV.wawasan}</Badge>
             <h2>Lihat ke mana uangmu mengalir bulan ini.</h2>
             <p>Transaksi {monthLabel} dikelompokkan per kategori — lengkap dengan porsinya terhadap total.</p>
           </div>
@@ -66,11 +75,7 @@ export function InsightsPage() {
           </div>
         </section>
 
-        <section className="stat-grid">
-          <Card className="stat-card green"><span>Pemasukan Bulan Ini</span><strong>{isLoading ? '…' : formatIDR(breakdown.incomeTotalMinor)}</strong><small>Total uang masuk</small></Card>
-          <Card className="stat-card orange"><span>Pengeluaran Bulan Ini</span><strong>{isLoading ? '…' : formatIDR(breakdown.expenseTotalMinor)}</strong><small>Total uang keluar</small></Card>
-          <Card className="stat-card"><span>Selisih</span><strong>{isLoading ? '…' : formatIDR(breakdown.incomeTotalMinor - breakdown.expenseTotalMinor)}</strong><small>Pemasukan − pengeluaran</small></Card>
-        </section>
+        <StatGrid stats={summaryStats} className="three" />
 
         <Card className="panel-card">
           <div className="panel-head">
@@ -82,9 +87,9 @@ export function InsightsPage() {
           </div>
 
           {error ? (
-            <p style={{ padding: '1rem', color: 'var(--danger)' }}>Gagal memuat transaksi. Periksa koneksi lalu coba lagi.</p>
+            <p className="panel-note danger">Gagal memuat transaksi. Periksa koneksi lalu coba lagi.</p>
           ) : isLoading ? (
-            <p style={{ padding: '1rem', color: 'var(--muted)' }}>Memuat...</p>
+            <p className="panel-note">Memuat...</p>
           ) : slices.length === 0 ? (
             <EmptyState
               icon={<AppIcon name="chart" />}

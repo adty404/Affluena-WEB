@@ -8,7 +8,8 @@
 .hero-proof span { display: inline-flex; align-items: center; gap: 7px; }
 .hero-proof i { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); box-shadow: 0 0 0 4px rgba(23,24,26,.08); }
 .hero-visual { position: relative; min-height: 560px; display: grid; place-items: center; }
-.floating-pill { position: absolute; z-index: 2; padding: 10px 14px; border-radius: 999px; background: white; border: 1px solid var(--line); box-shadow: var(--shadow-soft); font-size: 13px; font-weight: 850; }
+.floating-pill { position: absolute; z-index: 2; display: inline-flex; align-items: center; gap: 6px; padding: 10px 14px; border-radius: 999px; background: white; border: 1px solid var(--line); box-shadow: var(--shadow-soft); font-size: 13px; font-weight: 850; }
+.floating-pill .app-icon { width: 15px; height: 15px; }
 .floating-pill.one { top: 48px; right: 18px; color: var(--success); }
 .floating-pill.two { bottom: 52px; left: 8px; color: var(--success); }
 .dashboard-preview { width: min(100%, 500px); border-radius: 32px; padding: 18px; background: rgba(255,255,255,.86); border: 1px solid rgba(229,229,227,.92); box-shadow: var(--shadow); backdrop-filter: blur(20px); }
@@ -200,6 +201,14 @@
 .skeleton-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 .skeleton-row span { min-height: 70px; border-radius: 16px; background: var(--line); }
 @keyframes shimmer { from { background-position: 0 0; } to { background-position: -200% 0; } }
+/* Shared loading + inline panel-note utilities (existing tokens only) */
+.loading-state { padding: 20px; color: var(--muted); font-weight: 850; }
+.panel-note { padding: 1rem; margin: 0; color: var(--muted); line-height: 1.55; }
+.panel-note.danger { color: var(--danger); }
+.warning-note { padding: 14px; border: 1px solid rgba(184,123,46,.28); border-radius: 16px; background: var(--warning-soft); color: var(--warning); font-weight: 800; line-height: 1.5; }
+.stat-grid.three { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 1100px) { .stat-grid.three { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 760px) { .stat-grid.three { grid-template-columns: 1fr; } }
 .badge.red { color: var(--danger); border-color: rgba(194,85,63,.18); background: rgba(249,236,232,.95); }
 @media (max-width: 1100px) { .dashboard-grid { grid-template-columns: 1fr; } .card-grid.two { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 760px) { .transaction-row { grid-template-columns: 42px 1fr; } .transaction-row .amount { grid-column: 2; text-align: left; } .card-grid.two { grid-template-columns: 1fr; } .cashflow-chart svg { height: 220px; } .expense-list > div, .forecast-step > div { align-items: flex-start; flex-direction: column; } .skeleton-row { grid-template-columns: 1fr; } }
@@ -283,7 +292,7 @@
 .tag-preview p { color: var(--muted); line-height: 1.65; margin: 0; }
 .badge.dark { background: rgba(255,255,255,.14); color: rgba(255,255,255,.88); border-color: rgba(255,255,255,.16); }
 @media (max-width: 1180px) { .cards-4 { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 760px) { .cards-4, .category-tree { grid-template-columns: 1fr; } .category-tree-section-head, .wallet-card-top, .member-row { grid-template-columns: 42px 1fr; } .category-tree-section-head .badge, .wallet-card-top .badge, .member-row .badge { grid-column: 2; } .category-node-row { grid-template-columns: 24px 42px minmax(0,1fr) auto; } .category-node-row .badge { grid-column: 3 / -1; justify-self: start; } .category-node-actions { grid-column: 3 / -1; } .category-node-children { margin-left: 16px; padding-left: 14px; } .category-node-children > .category-node::before { left: -14px; width: 12px; } .wallet-mini-grid { grid-template-columns: 1fr; } }
+@media (max-width: 760px) { .cards-4, .category-tree { grid-template-columns: 1fr; } .category-tree-section-head, .wallet-card-top, .member-row { grid-template-columns: 42px 1fr; } .category-tree-section-head .badge, .wallet-card-top .badge, .member-row .badge { grid-column: 2; } .member-row .inline-actions { grid-column: 1 / -1; justify-self: start; margin-top: 8px; } .category-node-row { grid-template-columns: 24px 42px minmax(0,1fr) auto; } .category-node-row .badge { grid-column: 3 / -1; justify-self: start; } .category-node-actions { grid-column: 3 / -1; } .category-node-children { margin-left: 16px; padding-left: 14px; } .category-node-children > .category-node::before { left: -14px; width: 12px; } .wallet-mini-grid { grid-template-columns: 1fr; } }
 
 
 /* Transactions */
@@ -1145,6 +1154,32 @@ input.form-control {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
   gap: 12px;
+}
+/* Read-only scope chips — deliberately flat (no card border/shadow) so they
+   don't read as interactive filters next to the MonthPicker. */
+.report-meta-chip {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--surface-soft);
+}
+.report-meta-chip span {
+  min-width: 0;
+  color: var(--muted-2);
+  font-size: 11px;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.report-meta-chip strong {
+  min-width: 0;
+  color: var(--ink);
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .filter-card {
   padding: 16px;

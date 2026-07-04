@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
+import { EmptyState } from '../../components/ui/EmptyState';
 import { Modal } from '../../components/ui/Modal';
 import { Input, Select, Textarea } from '../../components/ui/Input';
 import { useToast } from '../../components/ui/Toast';
@@ -123,7 +124,7 @@ export function CategoryFormPage() {
   if (isEdit && isLoading) {
     return (
       <AppLayout title="Edit Kategori" description="Memuat…">
-        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Memuat kategori</span><strong>…</strong></div></div></Card></div>
+        <div className="dashboard-page grid-stack"><div className="loading-state">Memuat...</div></div>
       </AppLayout>
     );
   }
@@ -131,7 +132,7 @@ export function CategoryFormPage() {
   if (isEdit && !existing) {
     return (
       <AppLayout title="Edit Kategori" description="Kategori tidak ditemukan.">
-        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Error</span><strong>Kategori tidak ditemukan.</strong></div></div><div className="modal-actions"><Button to="/categories">Kembali ke daftar</Button></div></Card></div>
+        <div className="dashboard-page grid-stack"><Card className="panel-card"><EmptyState icon={<AppIcon name="empty" />} title="Kategori tidak ditemukan" description="Kategori mungkin sudah dihapus." action={<Button to="/categories">Kembali ke daftar</Button>} /></Card></div>
       </AppLayout>
     );
   }
@@ -182,7 +183,7 @@ export function CategoryFormPage() {
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <span className="badge dark">● Kategori</span>
+            <span className="badge dark">Kategori</span>
             <h2>{isEdit ? `Edit ${existing?.name ?? ''}` : prefillParentName ? `Subkategori baru di bawah ${prefillParentName}` : 'Buat kategori baru.'}</h2>
             <p>Subkategori selalu mengikuti tipe kategori induknya, dan susunannya bisa sampai tiga level.</p>
           </div>
@@ -211,10 +212,6 @@ export function CategoryFormPage() {
                     {renderParentSelect(updateForm.register('parent_id'))}
                   </label>
                 </div>
-                <label>
-                  <span>Catatan</span>
-                  <Textarea rows={3} placeholder="Catatan opsional, mis. kegunaan kategori ini." />
-                </label>
                 {renderAppearanceFields((name, value) => updateForm.setValue(name, value, { shouldDirty: true }))}
                 <div className="form-row-between">
                   <Button to="/categories">Batal</Button>
@@ -243,10 +240,6 @@ export function CategoryFormPage() {
                     {renderParentSelect(createForm.register('parent_id'))}
                   </label>
                 </div>
-                <label>
-                  <span>Catatan</span>
-                  <Textarea rows={3} placeholder="Catatan opsional, mis. kegunaan kategori ini." />
-                </label>
                 {renderAppearanceFields((name, value) => createForm.setValue(name, value, { shouldDirty: true }))}
                 <div className="form-row-between">
                   <Button to="/categories">Batal</Button>

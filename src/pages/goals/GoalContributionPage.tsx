@@ -6,6 +6,7 @@ import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { Input, Select, Textarea } from '../../components/ui/Input';
 import { AppIcon } from '../../components/ui/AppIcon';
+import { EmptyState } from '../../components/ui/EmptyState';
 import { Amount } from '../../components/finance/Amount';
 import { useToast } from '../../components/ui/Toast';
 import { useGoal } from '../../hooks/useGoals';
@@ -83,17 +84,17 @@ export function GoalContributionPage() {
     <AppLayout title="Setoran Target" description="Catat setoran dan lihat dampaknya ke saldo dompet dan progres target.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
-          <div><span className="badge dark">● Setoran Target</span><h2>Tambahkan setoran ke {goal.name}.</h2><p>Setoran akan mengurangi saldo dompet sumber dan menambah dana terkumpul target.</p></div>
+          <div><span className="badge dark">Setoran Target</span><h2>Tambahkan setoran ke {goal.name}.</h2><p>Setoran akan mengurangi saldo dompet sumber dan menambah dana terkumpul target.</p></div>
           <div className="app-hero-actions"><Button to={`/goals/${goal.id}`}><AppIcon name="back" /> Kembali</Button></div>
         </section>
 
         <section className="form-detail-grid">
           <Card className="panel-card">
             <div className="panel-head"><div><h3>Informasi Setoran</h3><p>Pilih dompet sumber, jumlah, tanggal, dan catatan setoran.</p></div></div>
+            {!goalWallet ? (
+              <EmptyState icon={<AppIcon name="empty" />} title="Dompet target tidak ditemukan" description="Setoran tidak bisa dicatat karena dompet untuk target ini tidak ditemukan. Coba muat ulang atau hubungi dukungan." action={<Button to={`/goals/${goal.id}`}>Kembali ke target</Button>} />
+            ) : (
             <form className="form-stack" onSubmit={onSubmit}>
-              {!goalWallet && (
-                <span className="error-text">Dompet target tabungan belum tersedia, setoran tidak dapat dicatat.</span>
-              )}
               <div className="form-two">
                 <label>
                   <span>Target Tabungan</span>
@@ -123,9 +124,10 @@ export function GoalContributionPage() {
               </label>
               <div className="form-row-between">
                 <Button to={`/goals/${goal.id}`}>Batal</Button>
-                <Button type="submit" variant="primary" disabled={createTransaction.isPending || !goalWallet}><AppIcon name="save" /> Simpan Setoran</Button>
+                <Button type="submit" variant="primary" disabled={createTransaction.isPending}><AppIcon name="save" /> Simpan Setoran</Button>
               </div>
             </form>
+            )}
           </Card>
 
           <Card className="panel-card side-metrics-card">

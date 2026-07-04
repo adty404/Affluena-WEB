@@ -3,6 +3,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
+import { Badge } from '../../components/ui/Badge';
+import { AppIcon } from '../../components/ui/AppIcon';
 import { Input, Select } from '../../components/ui/Input';
 import { useWallets } from '../../hooks/useWallets';
 import { useCategories } from '../../hooks/useCategories';
@@ -70,13 +72,12 @@ export function TransactionFilterPage() {
       <div className="dashboard-page grid-stack filter-workspace">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <span className="badge dark">● Filter lanjutan</span>
+            <Badge className="dark">Filter lanjutan</Badge>
             <h2>Cari transaksi berdasarkan periode, tipe, dompet, kategori, dan tag.</h2>
             <p>Filter langsung diterapkan ke daftar transaksi kamu.</p>
           </div>
           <div className="app-hero-actions">
-            <Button to="/transactions">Kembali</Button>
-            <Button variant="primary" onClick={handleApply}>Terapkan Filter</Button>
+            <Button to="/transactions"><AppIcon name="back" /> Kembali</Button>
           </div>
         </section>
         <Card className="panel-card filter-criteria-card">

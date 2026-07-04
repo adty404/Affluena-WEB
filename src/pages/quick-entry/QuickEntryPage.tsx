@@ -23,8 +23,8 @@ export function QuickEntryPage() {
   const { showToast } = useToast();
   const [target, setTarget] = useState<QuickEntryTemplate | null>(null);
 
-  if (isLoading) return <AppLayout title={NAV.catatCepat} description="Memuat..."><div className="p-8">Memuat...</div></AppLayout>;
-  if (error) return <AppLayout title={NAV.catatCepat} description="Memuat..."><div className="p-8 text-red-500">Gagal memuat template catat cepat</div></AppLayout>;
+  if (isLoading) return <AppLayout title={NAV.catatCepat} description="Memuat..."><div className="loading-state">Memuat...</div></AppLayout>;
+  if (error) return <AppLayout title={NAV.catatCepat} description="Gagal memuat"><Card className="panel-card"><EmptyState icon={<AppIcon name="empty" />} title="Gagal memuat catat cepat" description="Periksa koneksi lalu coba lagi." /></Card></AppLayout>;
 
   const templates = data?.templates || [];
   const walletNameById = createNameById(walletsData?.wallets ?? []);
@@ -80,9 +80,9 @@ export function QuickEntryPage() {
                   <small><span>Kategori</span><strong>{categoryLabel(categoryNameById, item.category_id, item.type)}</strong></small>
                 </div>
                 <div className="qe-action">
-                  <Button 
-                    variant="primary" 
-                    className="w-full" 
+                  <Button
+                    variant="primary"
+                    full
                     onClick={() => handleExecute(item.id)}
                     disabled={executeMutation.isPending}
                   >

@@ -5,6 +5,7 @@ import { Amount } from '../finance/Amount';
 import { CategoryIcon } from '../master-data/CategoryIcon';
 import { itemAccentVars } from '../finance/ColorPicker';
 import { transactionTypeLabels } from '../../data/mockTransactions';
+import { formatDateID } from '../../lib/dates';
 import type { Transaction } from '../../types/transaction';
 import { useWallets } from '../../hooks/useWallets';
 import { useCategories } from '../../hooks/useCategories';
@@ -46,7 +47,7 @@ export function TransactionItem({ transaction }: { transaction: Transaction }) {
         <span>
           {wallet?.name || 'Dompet Tidak Dikenal'}
           {toWallet ? ` → ${toWallet.name}` : ''}
-          {' · '}{new Date(transaction.transaction_at).toLocaleDateString()}
+          {' · '}{formatDateID(transaction.transaction_at)}
         </span>
         <div className="tag-row">
           {tags.map((tag) => <span key={tag.id}>#{tag.name}</span>)}

@@ -8,6 +8,8 @@ import { DataTable } from '../../components/ui/DataTable';
 import { useToast } from '../../components/ui/Toast';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { Amount } from '../../components/finance/Amount';
+import { itemAccentVars } from '../../components/finance/ColorPicker';
+import { CategoryIcon } from '../../components/master-data/CategoryIcon';
 import { BudgetInsightCard } from '../../components/budgets/BudgetInsightCard';
 import type { BudgetReportItem } from '../../types/budget';
 import { useCategories } from '../../hooks/useCategories';
@@ -44,12 +46,23 @@ export function BudgetReportPage() {
     forecast_minor: 0,
   };
 
+  const categoryName = (categoryId: string) =>
+    (categoriesData?.categories ?? []).find((c) => c.id === categoryId)?.name ?? 'Kategori tidak dikenal';
+
+  // Insight cards derived from the real report rows (no hardcoded categories):
+  // the worst over-budget row, the closest-to-limit warning row, and — when
+  // nothing needs attention — a neutral "aman" summary.
+  const sortedByUsage = [...report].sort((a, b) => b.usage_percent - a.usage_percent);
+  const overBudget = sortedByUsage.find((r) => r.usage_percent >= 100);
+  const nearLimit = sortedByUsage.find((r) => r.usage_percent >= 80 && r.usage_percent < 100);
+  const safeCount = report.filter((r) => r.usage_percent < 80).length;
+
   return (
     <AppLayout title={NAV.laporanAnggaran} description="Perbandingan anggaran dan pengeluaran aktual per kategori.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <span className="badge dark">● Laporan Anggaran</span>
+            <Badge className="dark">Laporan Anggaran</Badge>
             <h2>Bandingkan anggaran dan pengeluaran aktual untuk ambil keputusan.</h2>
             <p>Laporan ini memperlihatkan kategori mana yang aman, mendekati batas, atau melebihi anggaran.</p>
           </div>
@@ -72,31 +85,46 @@ export function BudgetReportPage() {
             <div className="panel-head"><div><h3>Grafik Anggaran vs Aktual</h3><p>Perbandingan visual untuk tiap kategori.</p></div><Badge tone="blue">Bulan Ini</Badge></div>
             <div className="budget-bars" aria-label="Grafik anggaran versus aktual">
               {isLoading ? (
-                <p>Memuat grafik...</p>
+                <p className="panel-note">Memuat grafik...</p>
               ) : report.length > 0 ? (
                 report.map((item) => {
                   const actualPercent = Math.min(120, item.usage_percent);
-                  const category = (categoriesData?.categories ?? []).find(c => c.id === item.category_id);
-                  const categoryName = category?.name ?? 'Kategori tidak dikenal';
                   const status = item.usage_percent >= 100 ? 'exceeded' : item.usage_percent >= 80 ? 'warning' : 'safe';
                   return (
                     <div className="budget-bar-row" key={item.id}>
-                      <span>{categoryName}</span>
+                      <span>{categoryName(item.category_id)}</span>
                       <div className="budget-bar-track"><i className="limit" style={{ width: '100%' }} /><i className={`actual ${status}`} style={{ width: `${Math.min(100, actualPercent)}%` }} /></div>
                       <strong>{actualPercent}%</strong>
                     </div>
                   );
                 })
               ) : (
-                <p>Belum ada data anggaran.</p>
+                <p className="panel-note">Belum ada data anggaran.</p>
               )}
             </div>
           </Card>
 
           <div className="grid-stack">
-            <BudgetInsightCard icon="warning" title="Belanja perlu perhatian" tone="red">Kategori belanja sudah melebihi anggaran, tahan dulu pengeluaran yang tidak penting.</BudgetInsightCard>
-            <BudgetInsightCard icon="transport" title="Transportasi mendekati batas" tone="orange">Transportasi mendekati batas; atur jatah harian sampai akhir bulan.</BudgetInsightCard>
-            <BudgetInsightCard icon="health" title="Makanan masih terkendali" tone="green">Makanan masih aman, tapi tetap perlu dipantau.</BudgetInsightCard>
+            {overBudget ? (
+              <BudgetInsightCard icon="warning" title={`${categoryName(overBudget.category_id)} melebihi anggaran`} tone="red">
+                {categoryName(overBudget.category_id)} sudah terpakai {Math.round(overBudget.usage_percent)}% dari anggaran — tahan dulu pengeluaran yang tidak penting.
+              </BudgetInsightCard>
+            ) : null}
+            {nearLimit ? (
+              <BudgetInsightCard icon="warning" title={`${categoryName(nearLimit.category_id)} mendekati batas`} tone="orange">
+                {categoryName(nearLimit.category_id)} sudah {Math.round(nearLimit.usage_percent)}% dari anggaran — atur jatah harian sampai akhir bulan.
+              </BudgetInsightCard>
+            ) : null}
+            {safeCount > 0 ? (
+              <BudgetInsightCard icon="budget" title="Sebagian anggaran masih aman" tone="green">
+                {safeCount} kategori masih di bawah 80% anggaran. Pertahankan polanya.
+              </BudgetInsightCard>
+            ) : null}
+            {report.length === 0 ? (
+              <BudgetInsightCard icon="budget" title="Belum ada data anggaran" tone="green">
+                Buat anggaran per kategori untuk mulai melihat wawasan di sini.
+              </BudgetInsightCard>
+            ) : null}
           </div>
         </section>
 
@@ -111,17 +139,18 @@ export function BudgetReportPage() {
                 header: 'Kategori',
                 render: (item) => {
                   const category = (categoriesData?.categories ?? []).find(c => c.id === item.category_id);
-                  const categoryName = category?.name ?? 'Kategori tidak dikenal';
-                  const categoryIcon = 'categories';
                   const status = item.usage_percent >= 100 ? 'exceeded' : item.usage_percent >= 80 ? 'warning' : 'safe';
+                  const accent = itemAccentVars(category?.color);
                   return (
                     <div className="table-title">
-                      <span className={`mini-icon ${status}`}><AppIcon name={categoryIcon} /></span>
-                      <strong>{categoryName}</strong>
+                      <span className={accent ? 'mini-icon has-accent' : `mini-icon ${status}`} style={accent}>
+                        <CategoryIcon icon={category?.icon} type="expense" />
+                      </span>
+                      <strong>{categoryName(item.category_id)}</strong>
                       <small>{item.recommendation}</small>
                     </div>
                   );
-                } 
+                }
               },
               { key: 'budget', header: 'Anggaran', align: 'right', render: (item) => <Amount value={item.limit_minor} /> },
               { key: 'actual', header: 'Aktual', align: 'right', render: (item) => <Amount value={item.spent_minor} type="expense" /> },

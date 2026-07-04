@@ -3,6 +3,7 @@ import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { DataTable } from '../../components/ui/DataTable';
+import { EmptyState } from '../../components/ui/EmptyState';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { PageMetaStrip } from '../../components/layout/PageMetaStrip';
 import { useToast } from '../../components/ui/Toast';
@@ -23,7 +24,7 @@ function jobPeriod(job: ExportJob): string {
 }
 
 export function ExportCenterPage() {
-  const { data, isLoading, isError } = useExportJobs();
+  const { data, isLoading, isError, refetch } = useExportJobs();
   const { showToast } = useToast();
   const jobs = data?.jobs ?? [];
 
@@ -52,7 +53,7 @@ export function ExportCenterPage() {
     <AppLayout title={NAV.pusatEkspor} description="Buat, unduh, dan tinjau berkas ekspor CSV.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
-          <div><Badge>● Ekspor</Badge><h2>Ekspor data keuangan kamu dengan riwayat yang jelas.</h2><p>Setiap berkas ekspor tercatat rapi lengkap dengan status, jumlah baris, dan periode.</p></div>
+          <div><Badge>Ekspor</Badge><h2>Ekspor data keuangan kamu dengan riwayat yang jelas.</h2><p>Setiap berkas ekspor tercatat rapi lengkap dengan status, jumlah baris, dan periode.</p></div>
           <div className="app-hero-actions"><Button to="/exports/new" variant="primary"><AppIcon name="export" /> Ekspor Baru</Button><Button to="/reports">Laporan</Button></div>
         </section>
         <section className="stat-grid">
@@ -64,11 +65,11 @@ export function ExportCenterPage() {
         <Card className="panel-card">
           <div className="panel-head"><div><h3>Riwayat Ekspor</h3><p>Semua ekspor punya status, jumlah baris, ukuran, dan detail.</p></div><Button to="/exports/new" size="small" variant="primary"><AppIcon name="add" /> Buat Ekspor</Button></div>
           {isLoading ? (
-            <div className="empty-state"><p>Memuat ekspor...</p></div>
+            <div className="loading-state">Memuat ekspor...</div>
           ) : isError ? (
-            <div className="empty-state"><p>Gagal memuat ekspor.</p></div>
+            <EmptyState icon={<AppIcon name="empty" />} title="Gagal memuat ekspor" description="Periksa koneksi lalu coba lagi." action={<Button variant="primary" onClick={() => refetch()}><AppIcon name="recurring" /> Coba lagi</Button>} />
           ) : jobs.length === 0 ? (
-            <div className="empty-state"><p>Belum ada ekspor.</p></div>
+            <EmptyState icon={<AppIcon name="download" />} title="Belum ada ekspor" description="Berkas ekspor yang kamu buat akan muncul di sini." />
           ) : (
             <DataTable<ExportJob>
               data={jobs}

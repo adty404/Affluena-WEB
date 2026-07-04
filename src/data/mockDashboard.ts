@@ -25,10 +25,10 @@ export const expenseSlices: ExpenseSlice[] = [
 ];
 
 export const recentTransactions: DashboardTransaction[] = [
-  { id: 'tx-001', title: 'Gaji Juni', category: 'Gaji', wallet: 'Bank BCA', amount: '+Rp 12.500.000', type: 'income', date: '14 Jun 2026' },
-  { id: 'tx-002', title: 'Belanja Bulanan', category: 'Makan & Minum', wallet: 'Dompet Tunai', amount: '-Rp 350.000', type: 'expense', date: '13 Jun 2026' },
-  { id: 'tx-003', title: 'Naik LRT', category: 'Transportasi', wallet: 'OVO', amount: '-Rp 40.000', type: 'expense', date: '13 Jun 2026' },
-  { id: 'tx-004', title: 'Bayaran Freelance', category: 'Penghasilan Tambahan', wallet: 'Bank BCA', amount: '+Rp 1.700.000', type: 'income', date: '12 Jun 2026' },
+  { id: 'tx-001', title: 'Gaji Juni', category: 'Gaji', wallet: 'Bank BCA', amountMinor: 12_500_000, type: 'income', date: '14 Jun 2026' },
+  { id: 'tx-002', title: 'Belanja Bulanan', category: 'Makan & Minum', wallet: 'Dompet Tunai', amountMinor: 350_000, type: 'expense', date: '13 Jun 2026' },
+  { id: 'tx-003', title: 'Naik LRT', category: 'Transportasi', wallet: 'OVO', amountMinor: 40_000, type: 'expense', date: '13 Jun 2026' },
+  { id: 'tx-004', title: 'Bayaran Freelance', category: 'Penghasilan Tambahan', wallet: 'Bank BCA', amountMinor: 1_700_000, type: 'income', date: '12 Jun 2026' },
 ];
 
 export const forecastItems: ForecastItem[] = [

@@ -3,6 +3,7 @@ import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
+import { EmptyState } from '../../components/ui/EmptyState';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { severityLabel, severityTone } from '../../components/reports/ReportCards';
 import { actorLabel, formatTimestamp, humanizeAction, humanizeEntity, relativeTime, shortRef } from '../../lib/auditLabels';
@@ -17,13 +18,13 @@ function getSeverity(entityType: string): 'info' | 'success' | 'warning' | 'dang
 
 export function ActivityDetailPage() {
   const { id } = useParams();
-  const { data: event, isLoading, isError } = useActivity(id ?? '');
+  const { data: event, isLoading, isError, refetch } = useActivity(id ?? '');
 
   if (isLoading) {
     return (
       <AppLayout title="Detail Aktivitas" description="Detail lengkap satu aktivitas di akun kamu.">
         <div className="dashboard-page grid-stack">
-          <div className="empty-state"><p>Memuat aktivitas...</p></div>
+          <div className="loading-state">Memuat aktivitas...</div>
         </div>
       </AppLayout>
     );
@@ -33,7 +34,9 @@ export function ActivityDetailPage() {
     return (
       <AppLayout title="Detail Aktivitas" description="Detail lengkap satu aktivitas di akun kamu.">
         <div className="dashboard-page grid-stack">
-          <div className="empty-state"><p>Aktivitas tidak ditemukan atau gagal dimuat.</p><Button to="/activities">Kembali ke Riwayat Aktivitas</Button></div>
+          <Card className="panel-card">
+            <EmptyState icon={<AppIcon name="empty" />} title="Aktivitas tidak ditemukan" description="Aktivitas ini gagal dimuat atau sudah tidak tersedia." action={<Button variant="primary" onClick={() => refetch()}><AppIcon name="recurring" /> Coba lagi</Button>} />
+          </Card>
         </div>
       </AppLayout>
     );
@@ -47,7 +50,7 @@ export function ActivityDetailPage() {
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <Badge>● {humanizeEntity(event.entity_type)}</Badge>
+            <Badge>{humanizeEntity(event.entity_type)}</Badge>
             <h2>{title}</h2>
             <p>{event.description || 'Tidak ada deskripsi.'}</p>
           </div>

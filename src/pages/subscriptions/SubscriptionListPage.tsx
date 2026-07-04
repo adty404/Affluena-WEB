@@ -13,6 +13,9 @@ import { FinanceOverviewCard } from '../../components/finance/FinanceOverviewCar
 import { itemAccentVars } from '../../components/finance/ColorPicker';
 import { useToast } from '../../components/ui/Toast';
 import { useSubscriptions, useDeleteSubscription } from '../../hooks/useTrackers';
+import { useWallets } from '../../hooks/useWallets';
+import { createNameById, walletLabel } from '../../lib/financeLabels';
+import { formatDateID } from '../../lib/dates';
 import { NAV } from '../../lib/copy';
 import type { Subscription } from '../../types/tracker';
 
@@ -22,12 +25,24 @@ const cycleLabel = (cycle: Subscription['billing_cycle']) => cycle === 'weekly' 
 
 export function SubscriptionListPage() {
   const { data, isLoading, error } = useSubscriptions();
+  const { data: walletsData } = useWallets();
   const deleteMut = useDeleteSubscription();
   const { showToast } = useToast();
   const [target, setTarget] = useState<Subscription | null>(null);
   const subscriptions = data?.subscriptions ?? [];
+  const walletNameById = createNameById(walletsData?.wallets ?? []);
 
   const monthlyBurn = subscriptions.reduce((sum, item) => sum + (item.billing_cycle === 'weekly' ? item.amount_minor * 4 : item.amount_minor), 0);
+  // "Segera jatuh tempo" = active subscriptions whose next_due_date falls within the next 7 days.
+  const now = new Date();
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const in7Days = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 7);
+  const dueSoon = subscriptions.filter((item) => {
+    if (item.status !== 'active' || !item.next_due_date) return false;
+    const due = new Date(item.next_due_date);
+    if (Number.isNaN(due.getTime())) return false;
+    return due >= startOfToday && due <= in7Days;
+  }).length;
 
   const confirmDelete = () => {
     if (!target) return;
@@ -44,66 +59,66 @@ export function SubscriptionListPage() {
     <AppLayout title={NAV.langganan} description="Pantau tanggal perpanjangan, pengeluaran bulanan, dan pembayaran langganan.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
-          <div><span className="badge dark">● {NAV.langganan}</span><h2>Lacak langganan digital, tanggal perpanjangan, dan pengeluaran bulanannya.</h2><p>Setiap pembayaran langganan tercatat sebagai transaksi agar arus kas tetap akurat.</p></div>
+          <div><Badge className="dark">{NAV.langganan}</Badge><h2>Lacak langganan digital, tanggal perpanjangan, dan pengeluaran bulanannya.</h2><p>Setiap pembayaran langganan tercatat sebagai transaksi agar arus kas tetap akurat.</p></div>
           <div className="app-hero-actions"><Button to="/tracker"><AppIcon name="tracker" /> {NAV.pemantauUtang}</Button><Button to="/subscriptions/new" variant="primary"><AppIcon name="add" /> Tambah Langganan</Button></div>
         </section>
 
         <section className="stat-grid">
           <Card className="stat-card"><span>Langganan Aktif</span><strong>{subscriptions.length}</strong><small>Layanan terpantau</small></Card>
           <Card className="stat-card orange"><span>Pengeluaran Bulanan</span><strong><Amount value={monthlyBurn} type="expense" /></strong><small>Setara per bulan</small></Card>
-          <Card className="stat-card blue"><span>Setahun</span><strong><Amount value={monthlyBurn * 12} /></strong><small>Proyeksi</small></Card>
-          <Card className="stat-card purple"><span>Segera Jatuh Tempo</span><strong>0</strong><small>Perpanjangan</small></Card>
+          <Card className="stat-card orange"><span>Proyeksi Setahun</span><strong><Amount value={monthlyBurn * 12} type="expense" /></strong><small>Perkiraan 12 bulan</small></Card>
+          <Card className="stat-card purple"><span>Segera Jatuh Tempo</span><strong>{dueSoon}</strong><small>7 hari ke depan</small></Card>
         </section>
 
-        <section className="entity-card-grid stable-card-grid">
-          {subscriptions.map((item) => (
-            <FinanceOverviewCard
-              key={item.id}
-              title={item.name}
-              subtitle={`Dompet ${item.wallet_id} · ${cycleLabel(item.billing_cycle)}`}
-              icon="subscription"
-              iconTone="info"
-              badge={statusLabel(item.status)}
-              badgeTone={statusTone(item.status)}
-              amount={item.amount_minor}
-              amountType="expense"
-              accentColor={item.color}
-              description={`Dibayar dari ${item.wallet_id}. Perpanjangan berikutnya ${item.next_due_date}.`}
-              metaLeft={item.account_detail}
-              metaRight={cycleLabel(item.billing_cycle)}
-              actions={<><Button to={`/subscriptions/${item.id}/pay`} size="small" variant="primary"><AppIcon name="pay" /> Bayar</Button><Button size="small" variant="danger" onClick={() => setTarget(item)}><AppIcon name="delete" /> Hapus</Button></>}
-            />
-          ))}
-        </section>
-
-        {isLoading && (
-          <Card className="panel-card"><div className="readiness-list"><div><span>Memuat</span><strong>Memuat langganan...</strong></div></div></Card>
-        )}
-        {!isLoading && !error && subscriptions.length === 0 && (
+        {error ? (
+          <Card className="panel-card"><EmptyState icon={<AppIcon name="empty" />} title="Gagal memuat langganan" description="Periksa koneksi lalu coba lagi." /></Card>
+        ) : isLoading ? (
+          <div className="loading-state">Memuat langganan...</div>
+        ) : subscriptions.length === 0 ? (
           <Card className="panel-card">
             <EmptyState icon={<AppIcon name="subscription" />} title="Belum ada langganan" description="Tambahkan langganan untuk melacak tanggal perpanjangan dan pengeluaran bulanannya." action={<Button to="/subscriptions/new" variant="primary"><AppIcon name="add" /> Tambah Langganan</Button>} />
           </Card>
-        )}
-        {error && (
-          <Card className="panel-card"><EmptyState icon={<AppIcon name="empty" />} title="Gagal memuat langganan" description="Periksa koneksi lalu coba lagi." /></Card>
-        )}
+        ) : (
+          <>
+            <section className="entity-card-grid stable-card-grid">
+              {subscriptions.map((item) => (
+                <FinanceOverviewCard
+                  key={item.id}
+                  title={item.name}
+                  subtitle={`${walletLabel(walletNameById, item.wallet_id)} · ${cycleLabel(item.billing_cycle)}`}
+                  icon="subscription"
+                  iconTone="info"
+                  badge={statusLabel(item.status)}
+                  badgeTone={statusTone(item.status)}
+                  amount={item.amount_minor}
+                  amountType="expense"
+                  accentColor={item.color}
+                  description={`Dibayar dari ${walletLabel(walletNameById, item.wallet_id)}. Perpanjangan berikutnya ${formatDateID(item.next_due_date)}.`}
+                  metaLeft={item.account_detail}
+                  metaRight={cycleLabel(item.billing_cycle)}
+                  actions={<><Button to={`/subscriptions/${item.id}/pay`} size="small" variant="primary"><AppIcon name="pay" /> Bayar</Button><Button size="small" variant="danger" onClick={() => setTarget(item)} aria-label={`Hapus langganan ${item.name}`}><AppIcon name="delete" /> Hapus</Button></>}
+                />
+              ))}
+            </section>
 
-        <Card className="panel-card">
-          <div className="panel-head"><div><h3>Daftar Langganan</h3><p>Jadwal perpanjangan dan aksi pembayaran.</p></div><Button to="/subscriptions/new" size="small" variant="primary"><AppIcon name="add" /> Tambah</Button></div>
-          <DataTable<Subscription>
-            data={subscriptions}
-            getRowKey={(item) => item.id}
-            columns={[
-              { key: 'name', header: 'Nama', render: (item) => { const accent = itemAccentVars(item.color); return <div className="table-title"><span className={clsx('mini-icon', accent ? 'has-accent' : 'info')} style={accent}><AppIcon name="subscription" /></span><strong>{item.name}</strong></div>; } },
-              { key: 'wallet', header: 'Dompet', render: (item) => item.wallet_id },
-              { key: 'cycle', header: 'Siklus', render: (item) => cycleLabel(item.billing_cycle) },
-              { key: 'amount', header: 'Jumlah', align: 'right', render: (item) => <Amount value={item.amount_minor} type="expense" /> },
-              { key: 'renewal', header: 'Perpanjangan Berikutnya', render: (item) => item.next_due_date },
-              { key: 'status', header: 'Status', render: (item) => <Badge tone={statusTone(item.status)}>{statusLabel(item.status)}</Badge> },
-              { key: 'action', header: 'Aksi', render: (item) => <div className="inline-actions"><Button to={`/subscriptions/${item.id}/pay`} size="small">Bayar</Button><Button size="small" variant="danger" onClick={() => setTarget(item)}><AppIcon name="delete" /></Button></div> },
-            ]}
-          />
-        </Card>
+            <Card className="panel-card">
+              <div className="panel-head"><div><h3>Daftar Langganan</h3><p>Jadwal perpanjangan dan aksi pembayaran.</p></div><Button to="/subscriptions/new" size="small" variant="primary"><AppIcon name="add" /> Tambah</Button></div>
+              <DataTable<Subscription>
+                data={subscriptions}
+                getRowKey={(item) => item.id}
+                columns={[
+                  { key: 'name', header: 'Nama', render: (item) => { const accent = itemAccentVars(item.color); return <div className="table-title"><span className={clsx('mini-icon', accent ? 'has-accent' : 'info')} style={accent}><AppIcon name="subscription" /></span><strong>{item.name}</strong></div>; } },
+                  { key: 'wallet', header: 'Dompet', render: (item) => walletLabel(walletNameById, item.wallet_id) },
+                  { key: 'cycle', header: 'Siklus', render: (item) => cycleLabel(item.billing_cycle) },
+                  { key: 'amount', header: 'Jumlah', align: 'right', render: (item) => <Amount value={item.amount_minor} type="expense" /> },
+                  { key: 'renewal', header: 'Perpanjangan Berikutnya', render: (item) => formatDateID(item.next_due_date) },
+                  { key: 'status', header: 'Status', render: (item) => <Badge tone={statusTone(item.status)}>{statusLabel(item.status)}</Badge> },
+                  { key: 'action', header: 'Aksi', render: (item) => <div className="inline-actions"><Button to={`/subscriptions/${item.id}/pay`} size="small">Bayar</Button><Button size="small" variant="danger" onClick={() => setTarget(item)} aria-label={`Hapus langganan ${item.name}`}><AppIcon name="delete" /></Button></div> },
+                ]}
+              />
+            </Card>
+          </>
+        )}
       </div>
 
       <Modal
