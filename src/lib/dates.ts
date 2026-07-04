@@ -35,3 +35,32 @@ export function toYYYYMMDD(d: Date): string {
   const dd = String(d.getUTCDate()).padStart(2, '0')
   return `${yyyy}-${mm}-${dd}`
 }
+
+/**
+ * Format a date value (RFC3339 string, Date, or ms) as an Indonesian date,
+ * e.g. `1 Jun 2026`. API dates are full RFC3339 timestamps even for DATE
+ * columns, so parse defensively and fall back to '-' on empty/invalid input
+ * instead of rendering `Invalid Date` or a raw ISO string.
+ */
+export function formatDateID(value: string | number | Date | null | undefined): string {
+  if (value === null || value === undefined || value === '') return '-'
+  const d = value instanceof Date ? value : new Date(value)
+  if (Number.isNaN(d.getTime())) return '-'
+  return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
+}
+
+/**
+ * Like {@link formatDateID} but includes the time, e.g. `1 Jun 2026, 20.10`.
+ */
+export function formatDateTimeID(value: string | number | Date | null | undefined): string {
+  if (value === null || value === undefined || value === '') return '-'
+  const d = value instanceof Date ? value : new Date(value)
+  if (Number.isNaN(d.getTime())) return '-'
+  return d.toLocaleString('id-ID', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}

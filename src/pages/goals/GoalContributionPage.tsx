@@ -92,7 +92,7 @@ export function GoalContributionPage() {
             <div className="panel-head"><div><h3>Informasi Setoran</h3><p>Pilih dompet sumber, jumlah, tanggal, dan catatan setoran.</p></div></div>
             <form className="form-stack" onSubmit={onSubmit}>
               {!goalWallet && (
-                <span className="error-text">Dompet target tabungan belum tersedia, setoran tidak dapat dicatat.</span>
+                <span className="form-error">Dompet target tabungan belum tersedia, setoran tidak dapat dicatat.</span>
               )}
               <div className="form-two">
                 <label>

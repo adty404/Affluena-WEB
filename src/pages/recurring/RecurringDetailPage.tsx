@@ -5,6 +5,7 @@ import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { Modal } from '../../components/ui/Modal';
+import { EmptyState } from '../../components/ui/EmptyState';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { Amount } from '../../components/finance/Amount';
 import { useToast } from '../../components/ui/Toast';
@@ -12,6 +13,7 @@ import { useCategories } from '../../hooks/useCategories';
 import { useRecurringRule, useDeleteRecurringRule } from '../../hooks/useRecurring';
 import { useWallets } from '../../hooks/useWallets';
 import { categoryLabel, createNameById, walletLabel } from '../../lib/financeLabels';
+import { formatDateID, formatDateTimeID } from '../../lib/dates';
 import { ACTIONS } from '../../lib/copy';
 
 const statusTone = (status: string) => status === 'active' || status === 'success' ? 'green' : status === 'paused' || status === 'skipped' ? 'orange' : status === 'cancelled' ? 'gray' : 'red';
@@ -31,11 +33,11 @@ export function RecurringDetailPage() {
   const walletNameById = createNameById(walletsData?.wallets ?? []);
   const categoryNameById = createNameById(categoriesData?.categories ?? []);
 
-  if (isLoading) return <AppLayout title="Detail Berulang" description={ACTIONS.memuat}><div className="p-8">{ACTIONS.memuat}</div></AppLayout>;
-  if (error || !rule) return <AppLayout title="Detail Berulang" description="Gagal memuat"><div className="p-8 text-red-500">Gagal memuat aturan berulang. Periksa koneksi lalu coba lagi.</div></AppLayout>;
+  if (isLoading) return <AppLayout title="Detail Berulang" description={ACTIONS.memuat}><div className="loading-state">{ACTIONS.memuat}</div></AppLayout>;
+  if (error || !rule) return <AppLayout title="Detail Berulang" description="Gagal memuat"><Card className="panel-card"><EmptyState icon={<AppIcon name="empty" />} title="Gagal memuat aturan berulang" description="Periksa koneksi lalu coba lagi." action={<Button to="/recurring">{ACTIONS.kembali}</Button>} /></Card></AppLayout>;
 
-  const lastRun = rule.last_run_at ? new Date(rule.last_run_at).toLocaleString('id-ID') : null;
-  const nextRun = rule.next_run_at ? new Date(rule.next_run_at).toLocaleString('id-ID') : '—';
+  const lastRun = rule.last_run_at ? formatDateTimeID(rule.last_run_at) : null;
+  const nextRun = rule.next_run_at ? formatDateTimeID(rule.next_run_at) : '—';
   const sourceWallet = walletLabel(walletNameById, rule.wallet_id);
   const destinationWallet = walletLabel(walletNameById, rule.to_wallet_id);
   const ruleCategory = categoryLabel(categoryNameById, rule.category_id, rule.type);
@@ -54,14 +56,14 @@ export function RecurringDetailPage() {
     <AppLayout title="Detail Berulang" description="Konfigurasi aturan, jadwal berikutnya, dan riwayat eksekusi terbaru.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
-          <div><span className="badge dark">● {statusLabel(rule.status)}</span><h2>{rule.name}</h2><p>{rule.note}</p></div>
+          <div><Badge className="dark">{statusLabel(rule.status)}</Badge><h2>{rule.name}</h2><p>{rule.note}</p></div>
           <div className="app-hero-actions"><Button to="/recurring">{ACTIONS.kembali}</Button><Button to={`/recurring/${rule.id}/edit`}><AppIcon name="edit" /> Edit</Button><Button to={`/recurring/${rule.id}/run`} variant="primary"><AppIcon name="run" /> Jalankan Manual</Button><Button variant="danger" onClick={() => setDeleteOpen(true)}><AppIcon name="delete" /> {ACTIONS.hapus}</Button></div>
         </section>
 
         <section className="stat-grid">
           <Card className="stat-card"><span>Jumlah</span><strong><Amount value={rule.amount_minor} type={rule.type === 'income' ? 'income' : 'expense'} /></strong><small>{typeLabel(rule.type)}</small></Card>
           <Card className="stat-card blue"><span>Frekuensi</span><strong>{frequencyLabel(rule.frequency)}</strong><small>jadwal pengulangan</small></Card>
-          <Card className="stat-card orange"><span>Jadwal Berikutnya</span><strong>{new Date(rule.next_run_at).toLocaleDateString()}</strong><small>tanggal eksekusi</small></Card>
+          <Card className="stat-card orange"><span>Jadwal Berikutnya</span><strong>{formatDateID(rule.next_run_at)}</strong><small>tanggal eksekusi</small></Card>
           <Card className="stat-card"><span>Status</span><strong>{statusLabel(rule.status)}</strong><small>{sourceWallet}</small></Card>
         </section>
 

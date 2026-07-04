@@ -183,8 +183,14 @@ export function TransactionListPage() {
         </section>
 
         <Card className="panel-card">
-          <div className="panel-head"><div><h3>Tabel Transaksi</h3><p>Semua transaksi lengkap dengan filter dan aksi.</p></div><Button to="/transactions/new" size="small" variant="primary">+ Transaksi</Button></div>
-          <DataTable columns={columns} data={transactions} getRowKey={(tx) => tx.id} />
+          <div className="panel-head"><div><h3>Tabel Transaksi</h3><p>Semua transaksi lengkap dengan filter dan aksi.</p></div><Button to="/transactions/new" size="small" variant="primary"><AppIcon name="add" /> Transaksi</Button></div>
+          <DataTable
+            columns={columns}
+            data={transactions}
+            getRowKey={(tx) => tx.id}
+            emptyMessage={hasFilters ? 'Tidak ada transaksi yang cocok dengan filter.' : 'Belum ada transaksi.'}
+            activeFilters={activeFilterChips}
+          />
         </Card>
       </div>
     </AppLayout>

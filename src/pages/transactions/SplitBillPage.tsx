@@ -14,6 +14,7 @@ import { AppIcon } from '../../components/ui/AppIcon';
 import { useWallets } from '../../hooks/useWallets';
 import { useCategories } from '../../hooks/useCategories';
 import { useSplitBill } from '../../hooks/useTransactions';
+import { toLocalDatetimeInput } from '../../lib/dates';
 import { splitTransactionSchema, type SplitTransactionFormData } from '../../schemas/transaction';
 
 export function SplitBillPage() {
@@ -30,7 +31,7 @@ export function SplitBillPage() {
     resolver: zodResolver(splitTransactionSchema),
     defaultValues: {
       total_amount_minor: 0,
-      transaction_at: new Date().toISOString().slice(0, 16),
+      transaction_at: toLocalDatetimeInput(new Date()),
       splits: [],
     }
   });
@@ -120,7 +121,7 @@ export function SplitBillPage() {
                     <option value="">Pilih Dompet</option>
                     {walletsData?.wallets?.map((wallet) => <option key={wallet.id} value={wallet.id}>{wallet.name}</option>)}
                   </Select>
-                  {errors.wallet_id && <span className="error-text">{errors.wallet_id.message}</span>}
+                  {errors.wallet_id && <span className="form-error">{errors.wallet_id.message}</span>}
                 </label>
                 <label>
                   <span>Kategori</span>
@@ -128,25 +129,25 @@ export function SplitBillPage() {
                     <option value="">Pilih Kategori</option>
                     {categoriesData?.categories?.filter(c => c.type === 'expense').map((cat) => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
                   </Select>
-                  {errors.category_id && <span className="error-text">{errors.category_id.message}</span>}
+                  {errors.category_id && <span className="form-error">{errors.category_id.message}</span>}
                 </label>
               </div>
               <div className="form-two">
                 <label>
                   <span>Jumlah Total (Rp)</span>
                   <Input type="number" {...register('total_amount_minor', { valueAsNumber: true })} />
-                  {errors.total_amount_minor && <span className="error-text">{errors.total_amount_minor.message}</span>}
+                  {errors.total_amount_minor && <span className="form-error">{errors.total_amount_minor.message}</span>}
                 </label>
                 <label>
                   <span>Tanggal</span>
                   <Input type="datetime-local" {...register('transaction_at')} />
-                  {errors.transaction_at && <span className="error-text">{errors.transaction_at.message}</span>}
+                  {errors.transaction_at && <span className="form-error">{errors.transaction_at.message}</span>}
                 </label>
               </div>
               <label>
                 <span>Catatan</span>
                 <Textarea {...register('note')} />
-                {errors.note && <span className="error-text">{errors.note.message}</span>}
+                {errors.note && <span className="form-error">{errors.note.message}</span>}
               </label>
             </form>
           </Card>
@@ -166,7 +167,7 @@ export function SplitBillPage() {
                 </div>
               ))}
               {fields.length === 0 && <p>Belum ada peserta.</p>}
-              {errors.splits && <span className="error-text">{errors.splits.message}</span>}
+              {errors.splits && <span className="form-error">{errors.splits.message}</span>}
             </div>
           </Card>
         </section>

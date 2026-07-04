@@ -200,6 +200,14 @@
 .skeleton-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 .skeleton-row span { min-height: 70px; border-radius: 16px; background: var(--line); }
 @keyframes shimmer { from { background-position: 0 0; } to { background-position: -200% 0; } }
+/* Shared loading + inline panel-note utilities (existing tokens only) */
+.loading-state { padding: 20px; color: var(--muted); font-weight: 850; }
+.panel-note { padding: 1rem; margin: 0; color: var(--muted); line-height: 1.55; }
+.panel-note.danger { color: var(--danger); }
+.warning-note { padding: 14px; border: 1px solid rgba(184,123,46,.28); border-radius: 16px; background: var(--warning-soft); color: var(--warning); font-weight: 800; line-height: 1.5; }
+.stat-grid.three { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 1100px) { .stat-grid.three { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 760px) { .stat-grid.three { grid-template-columns: 1fr; } }
 .badge.red { color: var(--danger); border-color: rgba(194,85,63,.18); background: rgba(249,236,232,.95); }
 @media (max-width: 1100px) { .dashboard-grid { grid-template-columns: 1fr; } .card-grid.two { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 760px) { .transaction-row { grid-template-columns: 42px 1fr; } .transaction-row .amount { grid-column: 2; text-align: left; } .card-grid.two { grid-template-columns: 1fr; } .cashflow-chart svg { height: 220px; } .expense-list > div, .forecast-step > div { align-items: flex-start; flex-direction: column; } .skeleton-row { grid-template-columns: 1fr; } }

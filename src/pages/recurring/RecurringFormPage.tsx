@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
+import { Badge } from '../../components/ui/Badge';
 import { Input, Select, Textarea } from '../../components/ui/Input';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { Amount } from '../../components/finance/Amount';
@@ -97,14 +98,14 @@ export function RecurringFormPage() {
   };
 
   if (isEdit && isLoadingRule) {
-    return <AppLayout title="Edit Aturan Berulang" description={ACTIONS.memuat}><div className="p-8">{ACTIONS.memuat}</div></AppLayout>;
+    return <AppLayout title="Edit Aturan Berulang" description={ACTIONS.memuat}><div className="loading-state">{ACTIONS.memuat}</div></AppLayout>;
   }
 
   return (
     <AppLayout title={isEdit ? 'Edit Aturan Berulang' : 'Tambah Aturan Berulang'} description="Atur frekuensi, dompet, kategori, jumlah, dan status.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
-          <div><span className="badge dark">● Aturan Berulang</span><h2>{isEdit ? 'Perbarui aturan dengan status dan jadwal berikutnya yang jelas.' : 'Buat transaksi otomatis yang tetap bisa kamu kontrol manual.'}</h2><p>Transaksi akan dibuat otomatis sesuai jadwal, dan kamu tetap bisa menjalankannya manual kapan saja.</p></div>
+          <div><Badge className="dark">Aturan Berulang</Badge><h2>{isEdit ? 'Perbarui aturan dengan status dan jadwal berikutnya yang jelas.' : 'Catat transaksi rutin sesuai jadwal yang tetap bisa kamu kontrol manual.'}</h2><p>Transaksi akan dicatat sesuai jadwal, dan kamu tetap bisa menjalankannya manual kapan saja.</p></div>
           <div className="app-hero-actions"><Button to="/recurring">{ACTIONS.kembali}</Button><Button variant="primary" onClick={handleSubmit(onSubmit)} disabled={isSubmitting}><AppIcon name="save" /> Simpan Aturan</Button></div>
         </section>
 
@@ -276,7 +277,7 @@ export function RecurringFormPage() {
             <div className="panel-head"><div><h3>Pratinjau Jadwal</h3><p>Gambaran eksekusi sebelum disimpan.</p></div></div>
             <div className="metric-list">
               <div><span>Perkiraan jumlah</span><strong><Amount value={amount || 0} type={type === 'income' ? 'income' : 'expense'} /></strong></div>
-              <div><span>Perilaku status</span><strong>Aktif berjalan otomatis, dijeda dilewati dengan aman.</strong></div>
+              <div><span>Perilaku status</span><strong>Aktif berjalan sesuai jadwal, dijeda dilewati dengan aman.</strong></div>
             </div>
           </Card>
         </section>

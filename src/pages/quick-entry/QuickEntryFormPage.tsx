@@ -68,7 +68,7 @@ export function QuickEntryFormPage() {
   };
 
   if (isEdit && isLoadingTemplate) {
-    return <AppLayout title="Edit Catat Cepat" description="Memuat..."><div className="p-8">Memuat...</div></AppLayout>;
+    return <AppLayout title="Edit Catat Cepat" description="Memuat..."><div className="loading-state">Memuat...</div></AppLayout>;
   }
 
   return (

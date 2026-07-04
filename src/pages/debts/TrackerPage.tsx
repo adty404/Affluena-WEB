@@ -9,6 +9,9 @@ import { Amount } from '../../components/finance/Amount';
 import { itemAccentVars } from '../../components/finance/ColorPicker';
 import { useDebts } from '../../hooks/useDebts';
 import { useInstallments, useSubscriptions } from '../../hooks/useTrackers';
+import { useWallets } from '../../hooks/useWallets';
+import { createNameById, walletLabel } from '../../lib/financeLabels';
+import { formatDateID } from '../../lib/dates';
 import { NAV } from '../../lib/copy';
 
 type TrackerItem = { id: string; title: string; module: string; walletName: string; amount: number; dueDate: string; status: string; to: string; color?: string };
@@ -28,19 +31,31 @@ export function TrackerPage() {
   const { data: debtsData, isLoading: isLoadingDebts } = useDebts();
   const { data: installmentsData, isLoading: isLoadingInstallments } = useInstallments();
   const { data: subscriptionsData, isLoading: isLoadingSubscriptions } = useSubscriptions();
+  const { data: walletsData } = useWallets();
 
   const debts = debtsData?.debts ?? [];
   const installments = installmentsData?.installments ?? [];
   const subscriptions = subscriptionsData?.subscriptions ?? [];
+  const walletNameById = createNameById(walletsData?.wallets ?? []);
 
   const trackerItems: TrackerItem[] = [
-    ...debts.map((item) => ({ id: item.id, title: item.counterparty_name, module: 'Utang', walletName: item.wallet_id, amount: item.remaining_amount_minor, dueDate: item.due_date || '-', status: item.status, to: `/debts/${item.id}` })),
-    ...installments.map((item) => ({ id: item.id, title: item.name, module: 'Cicilan', walletName: item.wallet_id, amount: item.monthly_amount_minor, dueDate: `Tanggal ${item.due_day}`, status: item.status, to: `/installments/${item.id}/pay`, color: item.color })),
-    ...subscriptions.map((item) => ({ id: item.id, title: item.name, module: 'Langganan', walletName: item.wallet_id, amount: item.amount_minor, dueDate: item.next_due_date, status: item.status, to: `/subscriptions/${item.id}/pay`, color: item.color })),
+    ...debts.map((item) => ({ id: item.id, title: item.counterparty_name, module: 'Utang', walletName: walletLabel(walletNameById, item.wallet_id), amount: item.remaining_amount_minor, dueDate: formatDateID(item.due_date), status: item.status, to: `/debts/${item.id}` })),
+    ...installments.map((item) => ({ id: item.id, title: item.name, module: 'Cicilan', walletName: walletLabel(walletNameById, item.wallet_id), amount: item.monthly_amount_minor, dueDate: `Tanggal ${item.due_day}`, status: item.status, to: `/installments/${item.id}/pay`, color: item.color })),
+    ...subscriptions.map((item) => ({ id: item.id, title: item.name, module: 'Langganan', walletName: walletLabel(walletNameById, item.wallet_id), amount: item.amount_minor, dueDate: formatDateID(item.next_due_date), status: item.status, to: `/subscriptions/${item.id}/pay`, color: item.color })),
   ];
 
   const totalDue = installments.reduce((sum, item) => sum + item.monthly_amount_minor, 0) + subscriptions.reduce((sum, item) => sum + item.amount_minor, 0) + debts.filter(d => d.type === 'payable' && d.status === 'open').reduce((sum, item) => sum + item.remaining_amount_minor, 0);
-  const dueSoon = debts.filter(d => d.status === 'open' && d.due_date).length; // Simplified
+  // "Segera jatuh tempo" = open debts whose due_date falls within the next 7 days
+  // (the same real 7-day window DebtListPage uses), not merely any dated open debt.
+  const nowForDue = new Date();
+  const dueWindowStart = new Date(nowForDue.getFullYear(), nowForDue.getMonth(), nowForDue.getDate());
+  const dueWindowEnd = new Date(nowForDue.getFullYear(), nowForDue.getMonth(), nowForDue.getDate() + 7);
+  const dueSoon = debts.filter((d) => {
+    if (d.status !== 'open' || !d.due_date) return false;
+    const due = new Date(d.due_date);
+    if (Number.isNaN(due.getTime())) return false;
+    return due >= dueWindowStart && due <= dueWindowEnd;
+  }).length;
 
   const isLoading = isLoadingDebts || isLoadingInstallments || isLoadingSubscriptions;
 
@@ -92,13 +107,13 @@ export function TrackerPage() {
     <AppLayout title={NAV.pemantauUtang} description="Kalender jatuh tempo untuk utang, cicilan, dan langganan.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
-          <div><span className="badge dark">● {NAV.pemantauUtang}</span><h2>Semua kewajiban berkala terlihat dalam satu tempat.</h2><p>Kalender jatuh tempo menggabungkan utang, cicilan, dan langganan beserta pengingatnya.</p></div>
+          <div><Badge className="dark">{NAV.pemantauUtang}</Badge><h2>Semua kewajiban berkala terlihat dalam satu tempat.</h2><p>Kalender jatuh tempo menggabungkan utang, cicilan, dan langganan beserta pengingatnya.</p></div>
           <div className="app-hero-actions"><Button to="/debts/new/payable"><AppIcon name="payable" /> Tambah Utang</Button><Button to="/installments/new"><AppIcon name="installment" /> Tambah Cicilan</Button><Button to="/subscriptions/new" variant="primary"><AppIcon name="subscription" /> Tambah Langganan</Button></div>
         </section>
 
         <section className="stat-grid">
           <Card className="stat-card orange"><span>Total Kewajiban</span><strong><Amount value={totalDue} type="expense" /></strong><small>Utang + cicilan + langganan</small></Card>
-          <Card className="stat-card"><span>Segera Jatuh Tempo</span><strong>{dueSoon}</strong><small>utang berjalan</small></Card>
+          <Card className="stat-card"><span>Segera Jatuh Tempo</span><strong>{dueSoon}</strong><small>7 hari ke depan</small></Card>
           <Card className="stat-card blue"><span>Langganan</span><strong>{subscriptions.length}</strong><small>Perpanjangan terpantau</small></Card>
           <Card className="stat-card purple"><span>Cicilan</span><strong>{installments.length}</strong><small>Tenor terpantau</small></Card>
         </section>
@@ -107,7 +122,7 @@ export function TrackerPage() {
           <Card className="panel-card">
             <div className="panel-head"><div><h3>Jatuh Tempo Terdekat</h3><p>Kewajiban dengan tanggal jatuh tempo terdekat.</p></div><Button to="/recurring" size="small"><AppIcon name="recurring" /> {NAV.berulang}</Button></div>
             {isLoading ? (
-              <p style={{ padding: '1rem', color: 'var(--muted)' }}>Memuat...</p>
+              <p className="panel-note">Memuat...</p>
             ) : upcomingDue.length > 0 ? (
               <div className="due-calendar-grid">
                 {upcomingDue.map((item) => (
@@ -118,7 +133,7 @@ export function TrackerPage() {
                 ))}
               </div>
             ) : (
-              <p style={{ padding: '1rem', color: 'var(--muted)' }}>Belum ada kewajiban dengan tanggal jatuh tempo.</p>
+              <p className="panel-note">Belum ada kewajiban dengan tanggal jatuh tempo.</p>
             )}
           </Card>
 

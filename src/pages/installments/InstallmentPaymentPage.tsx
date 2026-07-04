@@ -4,6 +4,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
+import { Badge } from '../../components/ui/Badge';
+import { EmptyState } from '../../components/ui/EmptyState';
 import { Input, Textarea } from '../../components/ui/Input';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { Amount } from '../../components/finance/Amount';
@@ -30,7 +32,7 @@ export function InstallmentPaymentPage() {
   if (isLoading) {
     return (
       <AppLayout title="Bayar Cicilan" description="Memuat...">
-        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Memuat</span><strong>...</strong></div></div></Card></div>
+        <div className="dashboard-page grid-stack"><div className="loading-state">Memuat...</div></div>
       </AppLayout>
     );
   }
@@ -38,7 +40,7 @@ export function InstallmentPaymentPage() {
   if (!item) {
     return (
       <AppLayout title="Bayar Cicilan" description="Tidak ditemukan">
-        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Gagal</span><strong>Cicilan tidak ditemukan</strong></div></div></Card></div>
+        <div className="dashboard-page grid-stack"><Card className="panel-card"><EmptyState icon={<AppIcon name="empty" />} title="Cicilan tidak ditemukan" description="Cicilan mungkin sudah dihapus." action={<Button to="/installments">Kembali ke daftar</Button>} /></Card></div>
       </AppLayout>
     );
   }
@@ -60,18 +62,16 @@ export function InstallmentPaymentPage() {
   return (
     <AppLayout title="Bayar Cicilan" description="Catat pembayaran cicilan dan perbarui progres tenor.">
       <div className="dashboard-page grid-stack">
-        <section className="app-hero-card dashboard-hero"><div><span className="badge dark">● Pembayaran Cicilan</span><h2>Bayar {item.name} dan perbarui progres tenor.</h2><p>Pembayaran tercatat sebagai transaksi pengeluaran dan menambah jumlah cicilan terbayar.</p></div><div className="app-hero-actions"><Button to="/installments">Kembali</Button></div></section>
+        <section className="app-hero-card dashboard-hero"><div><Badge className="dark">Pembayaran Cicilan</Badge><h2>Bayar {item.name} dan perbarui progres tenor.</h2><p>Pembayaran tercatat sebagai transaksi pengeluaran dan menambah jumlah cicilan terbayar.</p></div><div className="app-hero-actions"><Button to="/installments">Kembali</Button></div></section>
         <section className="form-detail-grid">
           <Card className="panel-card">
             <div className="panel-head"><div><h3>Informasi Pembayaran</h3><p>Tanggal pembayaran dan catatan.</p></div></div>
             <form className="form-stack" onSubmit={form.handleSubmit(onSubmit)} noValidate>
-              <div className="form-two">
-                <label>
-                  <span>Tanggal Pembayaran</span>
-                  <Input type="date" {...form.register('paid_at')} />
-                  {form.formState.errors.paid_at && <span className="form-error">{form.formState.errors.paid_at.message}</span>}
-                </label>
-              </div>
+              <label>
+                <span>Tanggal Pembayaran</span>
+                <Input type="date" {...form.register('paid_at')} />
+                {form.formState.errors.paid_at && <span className="form-error">{form.formState.errors.paid_at.message}</span>}
+              </label>
               <label>
                 <span>Catatan</span>
                 <Textarea {...form.register('note')} placeholder={`Pembayaran untuk ${item.name}.`} />

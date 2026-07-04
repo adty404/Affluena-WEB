@@ -6,22 +6,29 @@ import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { DataTable } from '../../components/ui/DataTable';
 import { Modal } from '../../components/ui/Modal';
+import { EmptyState } from '../../components/ui/EmptyState';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { Amount } from '../../components/finance/Amount';
 import { ProgressBar } from '../../components/finance/ProgressBar';
 import { useToast } from '../../components/ui/Toast';
 import { useDebt, useDeleteDebt } from '../../hooks/useDebts';
+import { useWallets } from '../../hooks/useWallets';
+import { createNameById, walletLabel } from '../../lib/financeLabels';
+import { formatDateID } from '../../lib/dates';
 import type { DebtPayment } from '../../types/debt';
 
 const statusLabel = (status: string) => status === 'cancelled' ? 'Dibatalkan' : status === 'paid' ? 'Lunas' : 'Belum Lunas';
+const statusTone = (status: string) => status === 'cancelled' ? 'red' : status === 'paid' ? 'green' : 'orange';
 
 export function DebtDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { showToast } = useToast();
   const { data: debt, isLoading } = useDebt(id ?? '');
+  const { data: walletsData } = useWallets();
   const deleteMut = useDeleteDebt();
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const walletNameById = createNameById(walletsData?.wallets ?? []);
 
   const handleDelete = () => {
     if (!debt) return;
@@ -37,7 +44,7 @@ export function DebtDetailPage() {
   if (isLoading) {
     return (
       <AppLayout title="Detail Utang" description="Memuat...">
-        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Memuat</span><strong>...</strong></div></div></Card></div>
+        <div className="dashboard-page grid-stack"><div className="loading-state">Memuat...</div></div>
       </AppLayout>
     );
   }
@@ -45,7 +52,7 @@ export function DebtDetailPage() {
   if (!debt) {
     return (
       <AppLayout title="Detail Utang" description="Tidak ditemukan">
-        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Gagal</span><strong>Utang tidak ditemukan</strong></div></div></Card></div>
+        <div className="dashboard-page grid-stack"><Card className="panel-card"><EmptyState icon={<AppIcon name="empty" />} title="Utang tidak ditemukan" description="Utang mungkin sudah dihapus." action={<Button to="/debts">Kembali ke daftar</Button>} /></Card></div>
       </AppLayout>
     );
   }
@@ -57,7 +64,7 @@ export function DebtDetailPage() {
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <span className="badge dark">● {debt.type === 'payable' ? 'Utang' : 'Piutang'}</span>
+            <Badge className="dark">{debt.type === 'payable' ? 'Utang' : 'Piutang'}</Badge>
             <h2>{debt.counterparty_name}</h2>
             <p>{debt.note}</p>
           </div>
@@ -67,8 +74,8 @@ export function DebtDetailPage() {
         <section className="stat-grid">
           <Card className="stat-card"><span>Nominal Awal</span><strong><Amount value={debt.principal_amount_minor} /></strong><small>{debt.counterparty_name}</small></Card>
           <Card className="stat-card"><span>Terbayar</span><strong><Amount value={debt.paid_amount_minor} type="income" /></strong><small>{progress}% terbayar</small></Card>
-          <Card className="stat-card orange"><span>Sisa</span><strong><Amount value={debt.remaining_amount_minor} type={debt.type === 'payable' ? 'expense' : 'income'} /></strong><small>Jatuh tempo {debt.due_date || '-'}</small></Card>
-          <Card className="stat-card blue"><span>Status</span><strong>{statusLabel(debt.status)}</strong><small>Dompet: {debt.wallet_id}</small></Card>
+          <Card className="stat-card orange"><span>Sisa</span><strong><Amount value={debt.remaining_amount_minor} type={debt.type === 'payable' ? 'expense' : 'income'} /></strong><small>Jatuh tempo {formatDateID(debt.due_date)}</small></Card>
+          <Card className="stat-card blue"><span>Status</span><strong><Badge tone={statusTone(debt.status)}>{statusLabel(debt.status)}</Badge></strong><small>{walletLabel(walletNameById, debt.wallet_id)}</small></Card>
         </section>
 
         <section className="form-detail-grid">
@@ -78,8 +85,8 @@ export function DebtDetailPage() {
               data={debt.payments || []}
               getRowKey={(payment) => payment.id}
               columns={[
-                { key: 'date', header: 'Tanggal', render: (payment) => payment.paid_at },
-                { key: 'transaction', header: 'Transaksi', render: (payment) => <Badge tone="blue">{payment.transaction_id}</Badge> },
+                { key: 'date', header: 'Tanggal', render: (payment) => formatDateID(payment.paid_at) },
+                { key: 'transaction', header: 'Transaksi', render: (payment) => payment.transaction_id ? <Button to={`/transactions/${payment.transaction_id}`} size="small">Lihat</Button> : '-' },
                 { key: 'amount', header: 'Jumlah', align: 'right', render: (payment) => <Amount value={payment.amount_minor} type="income" /> },
                 { key: 'note', header: 'Catatan', render: (payment) => payment.note },
               ]}
@@ -92,7 +99,7 @@ export function DebtDetailPage() {
               <div><span>Progres</span><strong>{progress}%</strong></div>
               <ProgressBar value={progress} tone={debt.type === 'payable' ? 'orange' : 'green'} />
               <div><span>Efek ke dompet</span><strong>{debt.type === 'payable' ? 'Saldo berkurang saat dibayar' : 'Saldo bertambah saat diterima'}</strong></div>
-              <div><span>Status jatuh tempo</span><strong><Badge tone={debt.status === 'cancelled' ? 'red' : debt.status === 'paid' ? 'green' : 'orange'}>{statusLabel(debt.status)}</Badge></strong></div>
+              <div><span>Status jatuh tempo</span><strong><Badge tone={statusTone(debt.status)}>{statusLabel(debt.status)}</Badge></strong></div>
             </div>
           </Card>
         </section>
