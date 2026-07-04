@@ -98,9 +98,9 @@ export function ForecastPage() {
               <div><h3>Proyeksi Akhir Bulan</h3><p>Proyeksi cadangan kas dan risiko.</p></div>
               {forecast && <Badge tone={forecast.status === 'safe' ? 'green' : 'red'}>{forecast.status === 'safe' ? 'Sehat' : 'Melebihi Anggaran'}</Badge>}
             </div>
-            <div className="forecast-step"><div><strong>Pengeluaran Saat Ini</strong><span>{forecast ? formatCurrency(forecast.current_expense_minor) : '...'}</span></div><ProgressBar value={forecast ? (forecast.current_expense_minor / forecast.budget_limit_minor) * 100 : 0} /></div>
-            <div className="forecast-step"><div><strong>Rata-rata Harian</strong><span>{forecast ? formatCurrency(forecast.daily_average_minor) : '...'}</span></div><ProgressBar value={forecast ? (forecast.daily_average_minor / (forecast.budget_limit_minor / 30)) * 100 : 0} tone="orange" /></div>
-            <div className="forecast-step"><div><strong>Prakiraan Pengeluaran</strong><span>{forecast ? formatCurrency(forecast.forecasted_expense_minor) : '...'}</span></div><ProgressBar value={forecast ? (forecast.forecasted_expense_minor / forecast.budget_limit_minor) * 100 : 0} tone={forecast?.status === 'safe' ? 'green' : 'red'} /></div>
+            <div className="forecast-step"><div><strong>Pengeluaran Saat Ini</strong><span>{forecast ? formatCurrency(forecast.current_expense_minor) : '...'}</span></div><ProgressBar value={forecast && forecast.budget_limit_minor > 0 ? (forecast.current_expense_minor / forecast.budget_limit_minor) * 100 : 0} /></div>
+            <div className="forecast-step"><div><strong>Rata-rata Harian</strong><span>{forecast ? formatCurrency(forecast.daily_average_minor) : '...'}</span></div><ProgressBar value={forecast && forecast.budget_limit_minor > 0 ? (forecast.daily_average_minor / (forecast.budget_limit_minor / 30)) * 100 : 0} tone="orange" /></div>
+            <div className="forecast-step"><div><strong>Prakiraan Pengeluaran</strong><span>{forecast ? formatCurrency(forecast.forecasted_expense_minor) : '...'}</span></div><ProgressBar value={forecast && forecast.budget_limit_minor > 0 ? (forecast.forecasted_expense_minor / forecast.budget_limit_minor) * 100 : 0} tone={forecast?.status === 'safe' ? 'green' : 'red'} /></div>
             <div className="forecast-step"><div><strong>Batas Anggaran</strong><span>{forecast ? formatCurrency(forecast.budget_limit_minor) : '...'}</span></div><ProgressBar value={100} tone="blue" /></div>
           </Card>
 

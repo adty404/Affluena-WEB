@@ -12,7 +12,6 @@ import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
 import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
 import { OnboardingPage } from './pages/auth/OnboardingPage';
 import { DashboardPage } from './pages/dashboard/DashboardPage';
-import { AppShellPage } from './pages/app/AppShellPage';
 
 // Lazy-loaded: domain chunks
 const AnalyticsPage = lazy(() => import('./pages/dashboard/AnalyticsPage').then(m => ({ default: m.AnalyticsPage })));
@@ -246,7 +245,6 @@ export function App() {
         <Route path="/settings/ui-audit" element={<Suspense fallback={<PageLoader />}><UIAuditPage /></Suspense>} />
 
         <Route path="/app-menu" element={<Suspense fallback={<PageLoader />}><AppMenuPage /></Suspense>} />
-        <Route path="/app-shell" element={<AppShellPage />} />
         <Route path="/app" element={<Navigate to="/dashboard" replace />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

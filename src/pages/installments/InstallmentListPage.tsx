@@ -19,6 +19,29 @@ import type { Installment } from '../../types/tracker';
 const statusTone = (status: Installment['status']) => status === 'cancelled' ? 'red' : status === 'paid' ? 'green' : 'blue';
 const statusLabel = (status: Installment['status']) => status === 'cancelled' ? 'Dibatalkan' : status === 'paid' ? 'Lunas' : 'Aktif';
 
+/**
+ * Count how many installments fall due within the next 7 days based on their
+ * `due_day` (day-of-month). `due_day` is clamped to the target month's length
+ * so e.g. day 31 in a 30-day month resolves to the 30th.
+ */
+function countDueWithin7Days(items: Installment[], now = new Date()): number {
+  const clampDay = (year: number, month: number, day: number) => {
+    const lastDay = new Date(year, month + 1, 0).getDate();
+    return new Date(year, month, Math.min(day, lastDay));
+  };
+  return items.filter((item) => {
+    const y = now.getFullYear();
+    const m = now.getMonth();
+    let due = clampDay(y, m, item.due_day);
+    if (due < new Date(y, m, now.getDate())) {
+      // This month's due date already passed; look at next month's.
+      due = clampDay(y, m + 1, item.due_day);
+    }
+    const diffDays = Math.ceil((due.getTime() - new Date(y, m, now.getDate()).getTime()) / 86_400_000);
+    return diffDays >= 0 && diffDays <= 7;
+  }).length;
+}
+
 export function InstallmentListPage() {
   const { data, isLoading, error } = useInstallments();
   const deleteMut = useDeleteInstallment();
@@ -26,8 +49,12 @@ export function InstallmentListPage() {
   const [target, setTarget] = useState<Installment | null>(null);
   const installments = data?.installments ?? [];
 
-  const monthlyDue = installments.reduce((sum, item) => sum + item.monthly_amount_minor, 0);
-  const outstanding = installments.reduce((sum, item) => sum + (item.monthly_amount_minor * item.remaining_months), 0);
+  // Totals + "aktif" count should only reflect active installments; cancelled/paid
+  // ones no longer generate monthly dues or outstanding principal.
+  const activeInstallments = installments.filter((item) => item.status === 'active');
+  const monthlyDue = activeInstallments.reduce((sum, item) => sum + item.monthly_amount_minor, 0);
+  const outstanding = activeInstallments.reduce((sum, item) => sum + (item.monthly_amount_minor * item.remaining_months), 0);
+  const dueSoon = countDueWithin7Days(activeInstallments);
 
   const confirmDelete = () => {
     if (!target) return;
@@ -49,10 +76,10 @@ export function InstallmentListPage() {
         </section>
 
         <section className="stat-grid">
-          <Card className="stat-card"><span>Cicilan Aktif</span><strong>{installments.length}</strong><small>Sedang berjalan</small></Card>
+          <Card className="stat-card"><span>Cicilan Aktif</span><strong>{activeInstallments.length}</strong><small>Sedang berjalan</small></Card>
           <Card className="stat-card orange"><span>Tagihan Bulanan</span><strong><Amount value={monthlyDue} type="expense" /></strong><small>Pengeluaran tetap</small></Card>
           <Card className="stat-card blue"><span>Sisa Pokok</span><strong><Amount value={outstanding} /></strong><small>Belum terbayar</small></Card>
-          <Card className="stat-card purple"><span>Segera Jatuh Tempo</span><strong>0</strong><small>7 hari ke depan</small></Card>
+          <Card className="stat-card purple"><span>Segera Jatuh Tempo</span><strong>{dueSoon}</strong><small>7 hari ke depan</small></Card>
         </section>
 
         <section className="entity-card-grid stable-card-grid">

@@ -58,6 +58,7 @@ export function TransactionListPage() {
   
   const income = transactions.filter((tx) => tx.type === 'income').reduce((sum, tx) => sum + tx.amount_minor, 0);
   const expenses = transactions.filter((tx) => tx.type === 'expense').reduce((sum, tx) => sum + tx.amount_minor, 0);
+  const net = income - expenses;
   
   const columns = [
     {
@@ -136,10 +137,10 @@ export function TransactionListPage() {
         </section>
 
         <section className="stat-grid">
-          <Card className="stat-card"><span>Total Pemasukan</span><strong><Amount value={income} variant="income" /></strong><small>Bulan ini</small></Card>
-          <Card className="stat-card orange"><span>Total Pengeluaran</span><strong><Amount value={expenses} variant="expense" /></strong><small>Bulan ini</small></Card>
+          <Card className="stat-card"><span>Total Pemasukan</span><strong><Amount value={income} variant="income" /></strong><small>Transaksi yang tampil</small></Card>
+          <Card className="stat-card orange"><span>Total Pengeluaran</span><strong><Amount value={expenses} variant="expense" /></strong><small>Transaksi yang tampil</small></Card>
           <Card className="stat-card blue"><span>{NAV.transaksi}</span><strong>{transactions.length}</strong><small>Transaksi tercatat</small></Card>
-          <Card className="stat-card purple"><span>Arus Bersih</span><strong><Amount value={income - expenses} variant="income" /></strong><small>Pemasukan - pengeluaran</small></Card>
+          <Card className="stat-card purple"><span>Arus Bersih</span><strong><Amount value={net} variant={net < 0 ? 'expense' : 'income'} /></strong><small>Pemasukan - pengeluaran</small></Card>
         </section>
 
         {hasFilters && (

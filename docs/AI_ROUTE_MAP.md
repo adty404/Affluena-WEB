@@ -178,8 +178,11 @@ Do not interpret `/exports/new` or `/exports/history` as `/exports/:id`.
 ## App Menu
 
 - `/app-menu`
-- `/app-shell`
 - `/app` redirects to `/dashboard`
+
+> The unlinked `/app-shell` demo route was removed — it rendered hardcoded
+> placeholder money as if it were real finances. Use `/dashboard` (real data)
+> instead.
 
 ## Active Link Checklist
 

@@ -13,6 +13,7 @@ import { useCategories } from '../../hooks/useCategories';
 import { useTransactions } from '../../hooks/useTransactions';
 import { useWallets } from '../../hooks/useWallets';
 import { useTags } from '../../hooks/useTags';
+import { toYearMonth } from '../../lib/dates';
 import type { Transaction } from '../../types/transaction';
 
 const statusLabel = {
@@ -36,12 +37,21 @@ export function BudgetDetailPage() {
 
   // Transactions for this category + month drive the "included transactions" table.
   const monthStart = budgetMonth ? `${budgetMonth}-01` : undefined;
+  // Upper bound = first day of the NEXT month, so the query doesn't pull in
+  // later months' expenses.
+  const monthEnd = (() => {
+    if (!budgetMonth) return undefined;
+    const [y, m] = budgetMonth.split('-').map(Number);
+    const next = new Date(y, m, 1); // m is 1-based → Date month index gives next month
+    return toYearMonth(next) + '-01';
+  })();
   const { data: transactionsData } = useTransactions(
     budget
       ? {
           type: 'expense',
           category_id: budget.category_id,
           from: monthStart,
+          to: monthEnd,
         }
       : {},
   );
@@ -58,7 +68,9 @@ export function BudgetDetailPage() {
   const categoryName = category?.name ?? 'Kategori tidak dikenal';
 
   const budgetTransactions = (transactionsData?.transactions ?? []).filter(
-    (t) => t.type === 'expense' && t.transaction_at.slice(0, 7) === budgetMonth,
+    // Bucket by LOCAL month so this matches the server-computed spent total at
+    // the WIB day boundary (a raw UTC slice diverges there).
+    (t) => t.type === 'expense' && toYearMonth(new Date(t.transaction_at)) === budgetMonth,
   );
 
   // Prefer authoritative figures from the API summary/report; fall back to local computation.

@@ -38,8 +38,18 @@ export function DebtListPage() {
 
   const totalPayable = debts.filter(d => d.type === 'payable' && d.status === 'open').reduce((acc, d) => acc + d.remaining_amount_minor, 0);
   const totalReceivable = debts.filter(d => d.type === 'receivable' && d.status === 'open').reduce((acc, d) => acc + d.remaining_amount_minor, 0);
-  const paidThisMonth = debts.filter(d => d.status === 'paid').reduce((acc, d) => acc + d.paid_amount_minor, 0); // Simplified
-  const dueSoon = debts.filter(d => d.status === 'open' && d.due_date).length; // Simplified
+  // No per-payment date is exposed here, so this is all-time paid — labeled honestly.
+  const totalPaid = debts.filter(d => d.status === 'paid').reduce((acc, d) => acc + d.paid_amount_minor, 0);
+  // "Segera jatuh tempo" = open debts whose due_date falls within the next 7 days.
+  const now = new Date();
+  const in7Days = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 7);
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const dueSoon = debts.filter(d => {
+    if (d.status !== 'open' || !d.due_date) return false;
+    const due = new Date(d.due_date);
+    if (Number.isNaN(due.getTime())) return false;
+    return due >= startOfToday && due <= in7Days;
+  }).length;
 
   return (
     <AppLayout title={NAV.utang} description="Kelola utang, piutang, pembayaran, dan pengingat jatuh tempo.">
@@ -60,8 +70,8 @@ export function DebtListPage() {
         <section className="stat-grid">
           <Card className="stat-card orange"><span>Total Utang</span><strong><Amount value={totalPayable} type="expense" /></strong><small>Harus dibayar</small></Card>
           <Card className="stat-card"><span>Total Piutang</span><strong><Amount value={totalReceivable} type="income" /></strong><small>Perlu ditagih</small></Card>
-          <Card className="stat-card blue"><span>Lunas Bulan Ini</span><strong><Amount value={paidThisMonth} /></strong><small>Pembayaran utang</small></Card>
-          <Card className="stat-card purple"><span>Segera Jatuh Tempo</span><strong>{dueSoon}</strong><small>utang berjalan</small></Card>
+          <Card className="stat-card blue"><span>Total Lunas</span><strong><Amount value={totalPaid} /></strong><small>Pembayaran utang</small></Card>
+          <Card className="stat-card purple"><span>Segera Jatuh Tempo</span><strong>{dueSoon}</strong><small>7 hari ke depan</small></Card>
         </section>
 
         <section className="entity-card-grid stable-card-grid">

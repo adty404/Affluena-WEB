@@ -4,6 +4,7 @@ import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { DataTable } from '../../components/ui/DataTable';
+import { EmptyState } from '../../components/ui/EmptyState';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { Amount } from '../../components/finance/Amount';
 import { FinanceOverviewCard } from '../../components/finance/FinanceOverviewCard';
@@ -15,7 +16,7 @@ import { NAV } from '../../lib/copy';
 import type { Goal } from '../../types/goal';
 
 export function GoalListPage() {
-  const { data: goals = [], isLoading } = useGoals();
+  const { data: goals = [], isLoading, error } = useGoals();
 
   const totalTarget = goals.reduce((sum, g) => sum + g.target_amount_minor, 0);
   const totalSaved = goals.reduce((sum, g) => sum + g.collected_amount_minor, 0);
@@ -50,7 +51,11 @@ export function GoalListPage() {
           <Card className="stat-card purple"><span>Target Bersama</span><strong>{sharedGoals}</strong><small>Dengan anggota</small></Card>
         </section>
 
-        {isLoading ? (
+        {error ? (
+          <Card className="panel-card">
+            <EmptyState icon={<AppIcon name="empty" />} title="Gagal memuat target" description="Periksa koneksi lalu coba lagi." />
+          </Card>
+        ) : isLoading ? (
           <div className="loading-state">Memuat target...</div>
         ) : (
           <>
