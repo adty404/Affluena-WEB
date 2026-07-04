@@ -93,7 +93,7 @@ export function SplitBillPage() {
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <span className="badge dark">● Bagi Tagihan</span>
+            <span className="badge dark">Bagi Tagihan</span>
             <h2>Bagi tagihan bersama teman tanpa repot hitung manual.</h2>
             <p>Bagianmu tercatat sebagai pengeluaran dan bagian tiap peserta otomatis menjadi piutang.</p>
           </div>

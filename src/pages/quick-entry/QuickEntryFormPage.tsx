@@ -75,7 +75,7 @@ export function QuickEntryFormPage() {
     <AppLayout title={isEdit ? 'Edit Catat Cepat' : 'Catat Cepat Baru'} description="Buat template transaksi siap pakai.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
-          <div><span className="badge dark">● Catat Cepat</span><h2>{isEdit ? 'Edit template transaksi rutin.' : 'Buat template transaksi rutin.'}</h2><p>Sekali disimpan, template bisa dijalankan kapan pun untuk mencatat transaksi yang sama.</p></div>
+          <div><span className="badge dark">Catat Cepat</span><h2>{isEdit ? 'Edit template transaksi rutin.' : 'Buat template transaksi rutin.'}</h2><p>Sekali disimpan, template bisa dijalankan kapan pun untuk mencatat transaksi yang sama.</p></div>
           <div className="app-hero-actions"><Button to="/quick-entry">Kembali</Button><Button variant="primary" onClick={handleSubmit(onSubmit)} disabled={isSubmitting}>Simpan Template</Button></div>
         </section>
 

@@ -99,7 +99,7 @@ export function GoalFormPage() {
     <AppLayout title={isEdit ? 'Edit Target' : 'Target Baru'} description="Buat dan perbarui target tabungan dengan jumlah dan batas waktu yang jelas.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
-          <div><span className="badge dark">● Target Tabungan</span><h2>{isEdit ? 'Perbarui target dan rencana setoranmu.' : 'Buat target tabungan baru yang realistis.'}</h2><p>Tentukan nama, jumlah target, dan batas waktu supaya rencana menabungmu jelas.</p></div>
+          <div><span className="badge dark">Target Tabungan</span><h2>{isEdit ? 'Perbarui target dan rencana setoranmu.' : 'Buat target tabungan baru yang realistis.'}</h2><p>Tentukan nama, jumlah target, dan batas waktu supaya rencana menabungmu jelas.</p></div>
           <div className="app-hero-actions"><Button to="/goals"><AppIcon name="back" /> Kembali</Button><Button variant="primary" onClick={handleSubmit(onSubmit)} disabled={isSubmitting}><AppIcon name="save" /> Simpan</Button></div>
         </section>
 

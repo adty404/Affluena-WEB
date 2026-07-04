@@ -60,7 +60,7 @@ export function SubscriptionFormPage() {
   return (
     <AppLayout title="Tambah Langganan" description="Catat langganan dengan siklus tagihan dan pengingat.">
       <div className="dashboard-page grid-stack">
-        <section className="app-hero-card dashboard-hero"><div><span className="badge dark">● Formulir Langganan</span><h2>Catat langganan dengan siklus tagihan dan pengingat.</h2><p>Langganan yang tercatat ikut dihitung dalam pengeluaran bulanan kamu.</p></div><div className="app-hero-actions"><Button to="/subscriptions">Kembali</Button></div></section>
+        <section className="app-hero-card dashboard-hero"><div><span className="badge dark">Formulir Langganan</span><h2>Catat langganan dengan siklus tagihan dan pengingat.</h2><p>Langganan yang tercatat ikut dihitung dalam pengeluaran bulanan kamu.</p></div><div className="app-hero-actions"><Button to="/subscriptions">Kembali</Button></div></section>
         <section className="form-detail-grid">
           <Card className="panel-card">
             <div className="panel-head"><div><h3>Informasi Langganan</h3><p>Layanan, dompet, siklus, dan tanggal perpanjangan.</p></div></div>

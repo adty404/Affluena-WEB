@@ -19,7 +19,7 @@ export function WidgetStatesPage() {
       <div className="grid stack-lg">
         <section className="app-hero-card">
           <div>
-            <Badge tone="gray">● Tampilan Widget</Badge>
+            <Badge tone="gray">Tampilan Widget</Badge>
             <h2>Beranda tetap rapi dan informatif meski data belum lengkap.</h2>
             <p>Lihat bagaimana setiap widget tampil saat memuat, kosong, gagal, atau berhasil.</p>
           </div>

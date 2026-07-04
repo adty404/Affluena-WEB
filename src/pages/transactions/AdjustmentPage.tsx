@@ -56,7 +56,7 @@ export function AdjustmentPage() {
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <span className="badge dark">● Penyesuaian</span>
+            <span className="badge dark">Penyesuaian</span>
             <h2>Penyesuaian untuk mengoreksi saldo, bukan pengeluaran biasa.</h2>
             <p>Tulis alasan yang jelas karena penyesuaian langsung mengubah saldo dompet kamu.</p>
           </div>

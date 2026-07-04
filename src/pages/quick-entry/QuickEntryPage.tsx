@@ -54,7 +54,7 @@ export function QuickEntryPage() {
     <AppLayout title={NAV.catatCepat} description="Template siap pakai untuk transaksi rutin.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
-          <div><span className="badge dark">● {NAV.catatCepat}</span><h2>Template transaksi rutin agar pencatatan harian makin cepat.</h2><p>Simpan detail transaksi yang sering berulang, lalu jalankan kapan saja dalam sekali klik.</p></div>
+          <div><span className="badge dark">{NAV.catatCepat}</span><h2>Template transaksi rutin agar pencatatan harian makin cepat.</h2><p>Simpan detail transaksi yang sering berulang, lalu jalankan kapan saja dalam sekali klik.</p></div>
           <div className="app-hero-actions"><Button to="/quick-entry/new" variant="primary">+ Template</Button><Button to="/transactions/new">Transaksi Manual</Button></div>
         </section>
         

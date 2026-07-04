@@ -44,7 +44,7 @@ export function AccountSettingsPage() {
   return (
     <AppLayout title="Pengaturan Akun" description="Kelola identitas akun (nama, avatar).">
       <div className="dashboard-page grid-stack">
-        <SettingsHero badge="● Akun" title="Profil akun Affluena." description="Perbarui nama dan avatar. Email tidak bisa diubah (hubungi admin jika perlu).">
+        <SettingsHero badge="Akun" title="Profil akun Affluena." description="Perbarui nama dan avatar. Email tidak bisa diubah (hubungi admin jika perlu).">
           <Button to="/settings"><AppIcon name="back" /> Pengaturan</Button>
         </SettingsHero>
 

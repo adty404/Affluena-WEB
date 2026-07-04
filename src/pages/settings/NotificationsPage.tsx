@@ -69,7 +69,7 @@ export function NotificationsPage() {
   return (
     <AppLayout title="Preferensi Notifikasi" description="Pengingat anggaran, jatuh tempo, transaksi berulang, dan keamanan.">
       <div className="dashboard-page grid-stack">
-        <SettingsHero badge="● Pemberitahuan" title="Atur pemberitahuan penting tanpa bikin berisik." description="Kendalikan pengingat anggaran, jatuh tempo H-3, transaksi berulang, dan keamanan sesuai kebutuhan kamu.">
+        <SettingsHero badge="Pemberitahuan" title="Atur pemberitahuan penting tanpa bikin berisik." description="Kendalikan pengingat anggaran, jatuh tempo H-3, transaksi berulang, dan keamanan sesuai kebutuhan kamu.">
           <Button to="/alerts"><AppIcon name="warning" /> Pusat Pemberitahuan</Button>
         </SettingsHero>
 

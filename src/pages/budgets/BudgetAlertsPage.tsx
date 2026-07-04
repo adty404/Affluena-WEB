@@ -23,7 +23,7 @@ export function BudgetAlertsPage() {
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <span className="badge dark">● Anggaran</span>
+            <span className="badge dark">Anggaran</span>
             <h2>Tahu lebih awal saat anggaranmu mulai menipis.</h2>
             <p>Kamu mendapat pemberitahuan saat pengeluaran mendekati batas dan saat batas terlampaui, jadi bisa langsung ambil tindakan.</p>
           </div>
