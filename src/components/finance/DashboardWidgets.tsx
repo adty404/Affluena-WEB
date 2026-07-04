@@ -1,14 +1,18 @@
 import { Badge } from '../ui/Badge';
+import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 import { AppIcon } from '../ui/AppIcon';
+import { EmptyState } from '../ui/EmptyState';
+import { Amount } from './Amount';
 import { ProgressBar } from './ProgressBar';
+import { formatIDR } from '../../lib/money';
 import type { DashboardStat, DashboardTransaction, ExpenseSlice, ForecastItem } from '../../types/dashboard';
 
-type StatGridProps = { stats: DashboardStat[] };
+type StatGridProps = { stats: DashboardStat[]; className?: string };
 
-export function StatGrid({ stats }: StatGridProps) {
+export function StatGrid({ stats, className }: StatGridProps) {
   return (
-    <section className="stat-grid">
+    <section className={`stat-grid${className ? ` ${className}` : ''}`}>
       {stats.map((stat) => (
         <article className={`stat-card dashboard-stat ${stat.tone ?? ''}`} key={stat.label}>
           <span>{stat.label}</span>
@@ -31,11 +35,13 @@ export function CashflowChart({ trend }: { trend?: { month: string; income_minor
           </div>
         </div>
         <div className="cashflow-chart" aria-label="Grafik tren arus kas">
-          <p style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>Belum ada data</p>
+          <p className="panel-note" style={{ textAlign: 'center' }}>Belum ada data</p>
         </div>
       </Card>
     );
   }
+
+  const latest = trend[trend.length - 1];
 
   const maxVal = Math.max(...trend.map(t => Math.max(t.income_minor, t.expense_minor)), 1000000);
   const width = 760;
@@ -73,6 +79,11 @@ export function CashflowChart({ trend }: { trend?: { month: string; income_minor
         <span><i className="legend-dot income" />Pemasukan</span>
         <span><i className="legend-dot expense" />Pengeluaran</span>
       </div>
+      {latest && (
+        <p className="panel-note">
+          {latest.month}: pemasukan {formatIDR(latest.income_minor)}, pengeluaran {formatIDR(latest.expense_minor)}.
+        </p>
+      )}
     </Card>
   );
 }
@@ -164,20 +175,29 @@ export function RecentTransactions({ items }: { items: DashboardTransaction[] })
           <p>Aktivitas keuangan terakhir kamu.</p>
         </div>
       </div>
-      <div className="transaction-list compact">
-        {items.map((item) => (
-          <div className="transaction-row" key={item.id}>
-            <div className={`transaction-icon ${item.type}`}>
-              <AppIcon name={item.type === 'income' ? 'arrow-down' : 'arrow-up'} />
+      {items.length === 0 ? (
+        <EmptyState
+          icon={<AppIcon name="transactions" />}
+          title="Belum ada transaksi"
+          description="Transaksi terbarumu akan muncul di sini."
+          action={<Button to="/transactions/new" variant="primary"><AppIcon name="add" /> Catat Transaksi</Button>}
+        />
+      ) : (
+        <div className="transaction-list compact">
+          {items.map((item) => (
+            <div className="transaction-row" key={item.id}>
+              <div className={`transaction-icon ${item.type}`}>
+                <AppIcon name={item.type === 'income' ? 'arrow-down' : 'arrow-up'} />
+              </div>
+              <div>
+                <strong>{item.title}</strong>
+                <span>{item.category} · {item.wallet} · {item.date}</span>
+              </div>
+              <Amount value={item.amountMinor} type={item.type} />
             </div>
-            <div>
-              <strong>{item.title}</strong>
-              <span>{item.category} · {item.wallet} · {item.date}</span>
-            </div>
-            <strong className={`amount ${item.type}`}>{item.amount}</strong>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </Card>
   );
 }
@@ -205,14 +225,23 @@ export function WalletPortfolio({ items }: { items: { name: string; value: strin
           <p>Sebaran saldo di semua dompetmu.</p>
         </div>
       </div>
-      <div className="portfolio-list">
-        {items.map((item) => (
-          <div key={item.name}>
-            <div className="portfolio-head"><strong>{item.name}</strong><span>{item.value}</span></div>
-            <ProgressBar value={item.percent} tone="green" />
-          </div>
-        ))}
-      </div>
+      {items.length === 0 ? (
+        <EmptyState
+          icon={<AppIcon name="wallet" />}
+          title="Belum ada dompet"
+          description="Tambah dompet untuk melihat sebaran saldomu di sini."
+          action={<Button to="/wallets/new" variant="primary"><AppIcon name="add" /> Tambah Dompet</Button>}
+        />
+      ) : (
+        <div className="portfolio-list">
+          {items.map((item) => (
+            <div key={item.name}>
+              <div className="portfolio-head"><strong>{item.name}</strong><span>{item.value}</span></div>
+              <ProgressBar value={item.percent} tone="green" />
+            </div>
+          ))}
+        </div>
+      )}
     </Card>
   );
 }

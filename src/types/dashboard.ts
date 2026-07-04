@@ -25,7 +25,7 @@ export type DashboardTransaction = {
   title: string;
   category: string;
   wallet: string;
-  amount: string;
+  amountMinor: number;
   type: 'income' | 'expense';
   date: string;
 };
