@@ -127,4 +127,7 @@ export function invalidateFinancialQueries(client: QueryClient) {
   client.invalidateQueries({ queryKey: queryKeys.transactions.all })
   client.invalidateQueries({ queryKey: queryKeys.dashboard.all })
   client.invalidateQueries({ queryKey: queryKeys.budgets.all })
+  // `queryKeys.reports` has no `.all` — match every report by its literal
+  // prefix so /reports pages don't show stale money after a mutation.
+  client.invalidateQueries({ queryKey: ['reports'] })
 }

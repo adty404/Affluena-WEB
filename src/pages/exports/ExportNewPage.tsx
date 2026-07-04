@@ -90,6 +90,14 @@ export function ExportNewPage() {
     }
   };
 
+  // Default the export range to the current month (first day → last day), local
+  // time, instead of a hardcoded stale month.
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const today = new Date();
+  const firstOfMonth = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-01`;
+  const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+  const lastOfMonth = `${lastDay.getFullYear()}-${pad(lastDay.getMonth() + 1)}-${pad(lastDay.getDate())}`;
+
   return (
     <AppLayout title="Buat Ekspor" description="Buat ekspor data CSV dengan pilihan modul dan periode yang jelas.">
       <div className="dashboard-page grid-stack">
@@ -99,8 +107,8 @@ export function ExportNewPage() {
             <div className="panel-head"><div><h3>Konfigurasi Ekspor</h3><p>Atur modul, format, dan rentang tanggal data yang mau kamu ekspor.</p></div></div>
             <form className="form-grid" onSubmit={handleSubmit}>
               <div className="form-two"><label className="field"><span>Modul</span><Select defaultValue="Transactions"><option value="Transactions">Transaksi</option></Select></label><label className="field"><span>Format</span><Select defaultValue="CSV"><option>CSV</option></Select></label></div>
-              <div className="form-two"><label className="field"><span>Tanggal mulai</span><Input type="date" name="from" defaultValue="2026-06-01" /></label><label className="field"><span>Tanggal akhir</span><Input type="date" name="to" defaultValue="2026-06-30" /></label></div>
-              <label className="field"><span>Nama ekspor</span><Input defaultValue="Transaksi Juni 2026" /><small>Dipakai sebagai usulan nama berkas unduhan.</small></label>
+              <div className="form-two"><label className="field"><span>Tanggal mulai</span><Input type="date" name="from" defaultValue={firstOfMonth} /></label><label className="field"><span>Tanggal akhir</span><Input type="date" name="to" defaultValue={lastOfMonth} /></label></div>
+              <label className="field"><span>Nama ekspor</span><Input defaultValue="Ekspor Transaksi" /><small>Dipakai sebagai usulan nama berkas unduhan.</small></label>
               <div className="form-actions"><Button to="/exports">Batal</Button><Button type="submit" variant="primary" disabled={exportMut.isPending}><AppIcon name="export" /> {exportMut.isPending ? 'Membuat...' : 'Buat Ekspor'}</Button></div>
             </form>
           </Card>

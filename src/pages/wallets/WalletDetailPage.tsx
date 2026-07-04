@@ -8,6 +8,7 @@ import { useWallet, useWalletAnalytics } from '../../hooks/useWallets';
 import { walletTypeLabels } from '../../schemas/wallet';
 import { formatIDR } from '../../lib/money';
 import { fromRFC3339, toYearMonth } from '../../lib/dates';
+import { canManageWallet } from '../../lib/wallet';
 
 const walletRoleLabels: Record<string, string> = {
   owner: 'Pemilik',
@@ -51,6 +52,7 @@ export function WalletDetailPage() {
   }
 
   const shared = wallet.role && wallet.role !== 'owner';
+  const canManage = canManageWallet(wallet);
   const created = fromRFC3339(wallet.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
   const updated = fromRFC3339(wallet.updated_at).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
   const lastActivity = analytics?.last_activity_at
@@ -76,7 +78,7 @@ export function WalletDetailPage() {
             <p>{wallet.description || `Dibuat ${created}. Terakhir diperbarui ${updated}.`}</p>
           </div>
           <div className="app-hero-actions">
-            <Button to={`/wallets/${wallet.id}/edit`}>Edit</Button>
+            {canManage ? <Button to={`/wallets/${wallet.id}/edit`}>Edit</Button> : null}
             {shared ? <Button to={`/wallets/${wallet.id}/sharing`}>Anggota</Button> : null}
             <Button to="/wallets">Kembali</Button>
           </div>

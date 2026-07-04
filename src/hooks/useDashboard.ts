@@ -6,12 +6,13 @@ import {
   getForecast,
 } from '../api/dashboard'
 import { queryKeys } from '../lib/queryClient'
+import { currentMonth } from '../lib/reporting'
 
 export function useDashboardSummary(month?: string) {
-  const currentMonth = month || new Date().toISOString().slice(0, 7)
+  const resolvedMonth = month || currentMonth()
   return useQuery({
-    queryKey: queryKeys.dashboard.summary(currentMonth),
-    queryFn: () => getDashboardSummary(currentMonth),
+    queryKey: queryKeys.dashboard.summary(resolvedMonth),
+    queryFn: () => getDashboardSummary(resolvedMonth),
   })
 }
 
@@ -23,17 +24,17 @@ export function useCashflowTrend(months: number = 12) {
 }
 
 export function useExpenseDistribution(month?: string) {
-  const currentMonth = month || new Date().toISOString().slice(0, 7)
+  const resolvedMonth = month || currentMonth()
   return useQuery({
-    queryKey: queryKeys.dashboard.expenseDistribution(currentMonth),
-    queryFn: () => getExpenseDistribution(currentMonth),
+    queryKey: queryKeys.dashboard.expenseDistribution(resolvedMonth),
+    queryFn: () => getExpenseDistribution(resolvedMonth),
   })
 }
 
 export function useForecast(month?: string) {
-  const currentMonth = month || new Date().toISOString().slice(0, 7)
+  const resolvedMonth = month || currentMonth()
   return useQuery({
-    queryKey: queryKeys.dashboard.forecast(currentMonth),
-    queryFn: () => getForecast(currentMonth),
+    queryKey: queryKeys.dashboard.forecast(resolvedMonth),
+    queryFn: () => getForecast(resolvedMonth),
   })
 }

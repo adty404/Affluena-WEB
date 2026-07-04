@@ -1,4 +1,4 @@
-import type { AppWidget, ModuleGroup } from '../types/finance';
+import type { ModuleGroup } from '../types/finance';
 import type { AppIconName } from '../components/ui/AppIcon';
 
 export const featureCards: { icon: AppIconName; title: string; body: string }[] = [
@@ -26,13 +26,6 @@ export const modules: ModuleGroup[] = [
     description: 'Anggaran, utang-piutang, transaksi berulang, target tabungan, ekspor CSV, dan pemberitahuan.',
     items: ['Progres mudah dipantau', 'Status yang jelas', 'Riwayat aktivitas'],
   },
-];
-
-export const appWidgets: AppWidget[] = [
-  { title: 'Total Saldo', value: 'Rp 24.560.000', note: '+12.5% dari bulan lalu', tone: 'green' },
-  { title: 'Pemasukan', value: 'Rp 12.750.000', note: 'Juni 2026', tone: 'blue' },
-  { title: 'Pengeluaran', value: 'Rp 6.420.000', note: '61% dari anggaran', tone: 'orange' },
-  { title: 'Skor Kesehatan', value: '82/100', note: 'Keuangan terkendali baik', tone: 'purple' },
 ];
 
 export const onboardingOptions = [

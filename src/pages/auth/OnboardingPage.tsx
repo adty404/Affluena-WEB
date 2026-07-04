@@ -12,8 +12,10 @@ export function OnboardingPage() {
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault();
-    showToast(`Pilihan tersimpan: ${selected}. Membuka Beranda...`);
-    window.setTimeout(() => navigate('/dashboard'), 450);
+    // This page is logged-out only (PublicOnly), so /dashboard would bounce to
+    // /login. Carry the chosen goal into registration instead.
+    showToast(`Pilihan tersimpan: ${selected}. Lanjut daftar...`);
+    window.setTimeout(() => navigate('/register', { state: { goal: selected } }), 450);
   }
 
   return (

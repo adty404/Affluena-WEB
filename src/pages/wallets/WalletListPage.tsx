@@ -10,6 +10,7 @@ import { itemAccentVars } from '../../components/finance/ColorPicker';
 import { useWallets } from '../../hooks/useWallets';
 import { NAV } from '../../lib/copy';
 import { walletTypeLabels } from '../../schemas/wallet';
+import { canManageWallet } from '../../lib/wallet';
 import type { Wallet } from '../../types/wallet';
 
 const walletIcons: Record<Wallet['type'], AppIconName> = {
@@ -49,7 +50,7 @@ export function WalletListPage() {
     { key: 'action', header: 'Aksi', render: (wallet: Wallet) => (
       <div className="inline-actions">
         <Button size="small" to={`/wallets/${wallet.id}`}>Lihat</Button>
-        <Button size="small" to={`/wallets/${wallet.id}/edit`}>Edit</Button>
+        {canManageWallet(wallet) ? <Button size="small" to={`/wallets/${wallet.id}/edit`}>Edit</Button> : null}
       </div>
     ) },
   ];

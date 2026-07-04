@@ -10,6 +10,7 @@ import { BalanceDeltaPreview } from '../../components/transactions/BalanceDeltaP
 import { useWallets } from '../../hooks/useWallets';
 import { useCreateTransaction } from '../../hooks/useTransactions';
 import { transactionSchema, type TransactionFormData } from '../../schemas/transaction';
+import { toLocalDatetimeInput } from '../../lib/dates';
 
 export function TransferPage() {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ export function TransferPage() {
     defaultValues: {
       type: 'transfer',
       amount_minor: 0,
-      transaction_at: new Date().toISOString().slice(0, 16),
+      transaction_at: toLocalDatetimeInput(new Date()),
     }
   });
 
