@@ -70,7 +70,7 @@ export function GoalMembersPage() {
                 <label>
                   <span>Email</span>
                   <Input {...register('email')} placeholder="rina@example.com" />
-                  {errors.email && <small className="field-error">{errors.email.message}</small>}
+                  {errors.email && <small className="form-error">{errors.email.message}</small>}
                 </label>
               </div>
               <div className="form-row-between"><Button to={`/goals/${goal.id}`}>Batal</Button><Button type="submit" variant="primary" disabled={isSubmitting || inviteMember.isPending}><AppIcon name="profile" /> {inviteMember.isPending ? 'Mengundang...' : 'Undang Anggota'}</Button></div>
