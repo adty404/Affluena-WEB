@@ -3,6 +3,7 @@ import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { DataTable } from '../../components/ui/DataTable';
+import { EmptyState } from '../../components/ui/EmptyState';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { actorLabel } from '../../lib/auditLabels';
 import { NAV } from '../../lib/copy';
@@ -12,21 +13,21 @@ import { useSystemLogs } from '../../hooks/useSystemLogs';
 const statusTone = (code: number) => code >= 500 ? 'red' : code >= 400 ? 'orange' : code >= 300 ? 'blue' : 'green';
 
 export function SystemLogListPage() {
-  const { data, isLoading, isError } = useSystemLogs();
+  const { data, isLoading, isError, refetch } = useSystemLogs();
   const systemLogs = data?.logs ?? [];
 
   return (
     <AppLayout title={NAV.logSistem} description="Catatan teknis permintaan aplikasi lengkap dengan status dan latensi.">
       <div className="dashboard-page grid-stack">
-        <section className="app-hero-card dashboard-hero"><div><Badge>● Log Sistem</Badge><h2>Pantau permintaan penting untuk audit teknis.</h2><p>Setiap permintaan tercatat dengan metode, status, latensi, dan pengguna.</p></div><div className="app-hero-actions"><Button to="/activities">Riwayat Aktivitas</Button><Button to="/reports" variant="primary"><AppIcon name="chart" /> Laporan</Button></div></section>
+        <section className="app-hero-card dashboard-hero"><div><Badge>Log Sistem</Badge><h2>Pantau permintaan penting untuk audit teknis.</h2><p>Setiap permintaan tercatat dengan metode, status, latensi, dan pengguna.</p></div><div className="app-hero-actions"><Button to="/activities">Riwayat Aktivitas</Button><Button to="/reports" variant="primary"><AppIcon name="chart" /> Laporan</Button></div></section>
         <Card className="panel-card">
           <div className="panel-head"><div><h3>Log Permintaan</h3><p>Log terbaru dari transaksi, utang, berulang, ekspor, dan pemberitahuan.</p></div></div>
           {isLoading ? (
-            <div className="empty-state"><p>Memuat log...</p></div>
+            <div className="loading-state">Memuat log...</div>
           ) : isError ? (
-            <div className="empty-state"><p>Gagal memuat log. Coba muat ulang halaman.</p></div>
+            <EmptyState icon={<AppIcon name="empty" />} title="Gagal memuat log" description="Periksa koneksi lalu coba lagi." action={<Button variant="primary" onClick={() => refetch()}><AppIcon name="recurring" /> Coba lagi</Button>} />
           ) : systemLogs.length === 0 ? (
-            <div className="empty-state"><p>Belum ada log.</p></div>
+            <EmptyState icon={<AppIcon name="history" />} title="Belum ada log" description="Catatan teknis permintaan aplikasi akan muncul di sini." />
           ) : (
             <DataTable<SystemLog>
               data={systemLogs}

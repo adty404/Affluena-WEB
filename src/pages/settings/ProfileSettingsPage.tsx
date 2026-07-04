@@ -70,7 +70,7 @@ export function ProfileSettingsPage() {
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <Badge>● Profil</Badge>
+            <Badge>Profil</Badge>
             <h2>Profil dan preferensi aplikasi yang mudah diakses.</h2>
             <p>Kelola identitas, preferensi, dan keamanan akun kamu dari satu tempat.</p>
           </div>
@@ -95,7 +95,6 @@ export function ProfileSettingsPage() {
                 <label><span>Email</span><Input defaultValue={isLoading ? 'Memuat…' : (user?.email ?? '')} disabled /></label>
               </div>
               <div className="form-two">
-                <label><span>Nama pengguna</span><Input defaultValue="" disabled placeholder="Belum tersedia" /></label>
                 <label>
                   <span>Mata uang bawaan</span>
                   <Select {...form.register('currency')}>
@@ -104,8 +103,6 @@ export function ProfileSettingsPage() {
                     <option value="SGD">SGD</option>
                   </Select>
                 </label>
-              </div>
-              <div className="form-two">
                 <label>
                   <span>Halaman awal</span>
                   <Select {...form.register('start_page')}>
@@ -114,14 +111,14 @@ export function ProfileSettingsPage() {
                     <option value="Budgets">Anggaran</option>
                   </Select>
                 </label>
-                <label>
-                  <span>Mode ringkas</span>
-                  <Select {...form.register('compact_mode')}>
-                    <option value="Comfortable">Nyaman</option>
-                    <option value="Compact">Ringkas</option>
-                  </Select>
-                </label>
               </div>
+              <label>
+                <span>Mode ringkas</span>
+                <Select {...form.register('compact_mode')}>
+                  <option value="Comfortable">Nyaman</option>
+                  <option value="Compact">Ringkas</option>
+                </Select>
+              </label>
               <div className="form-row-between">
                 <Button to="/dashboard">Batal</Button>
                 <Button type="submit" variant="primary" disabled={form.formState.isSubmitting || updateMut.isPending}>

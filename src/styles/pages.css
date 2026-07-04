@@ -1155,6 +1155,32 @@ input.form-control {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
   gap: 12px;
 }
+/* Read-only scope chips — deliberately flat (no card border/shadow) so they
+   don't read as interactive filters next to the MonthPicker. */
+.report-meta-chip {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--surface-soft);
+}
+.report-meta-chip span {
+  min-width: 0;
+  color: var(--muted-2);
+  font-size: 11px;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.report-meta-chip strong {
+  min-width: 0;
+  color: var(--ink);
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .filter-card {
   padding: 16px;
   display: grid;

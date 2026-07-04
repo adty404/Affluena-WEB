@@ -3,6 +3,7 @@ import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
+import { EmptyState } from '../../components/ui/EmptyState';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { actorLabel, formatTimestamp, humanizeUserAgent, relativeTime } from '../../lib/auditLabels';
 import { useSystemLog } from '../../hooks/useSystemLog';
@@ -11,13 +12,13 @@ const statusTone = (code: number) => code >= 500 ? 'red' : code >= 400 ? 'orange
 
 export function SystemLogDetailPage() {
   const { id } = useParams();
-  const { data: log, isLoading, isError } = useSystemLog(id ?? '');
+  const { data: log, isLoading, isError, refetch } = useSystemLog(id ?? '');
 
   if (isLoading) {
     return (
       <AppLayout title="Detail Log Sistem" description="Detail lengkap satu catatan permintaan.">
         <div className="dashboard-page grid-stack">
-          <div className="empty-state"><p>Memuat log...</p></div>
+          <div className="loading-state">Memuat log...</div>
         </div>
       </AppLayout>
     );
@@ -27,7 +28,9 @@ export function SystemLogDetailPage() {
     return (
       <AppLayout title="Detail Log Sistem" description="Detail lengkap satu catatan permintaan.">
         <div className="dashboard-page grid-stack">
-          <div className="empty-state"><p>Log tidak ditemukan atau gagal dimuat.</p><Button to="/system-logs">Kembali ke Log Sistem</Button></div>
+          <Card className="panel-card">
+            <EmptyState icon={<AppIcon name="empty" />} title="Log tidak ditemukan" description="Catatan permintaan ini gagal dimuat atau sudah tidak tersedia." action={<Button variant="primary" onClick={() => refetch()}><AppIcon name="recurring" /> Coba lagi</Button>} />
+          </Card>
         </div>
       </AppLayout>
     );
@@ -40,7 +43,7 @@ export function SystemLogDetailPage() {
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <Badge tone={statusTone(log.status_code)}>● {log.method} · {log.status_code}</Badge>
+            <Badge tone={statusTone(log.status_code)}>{log.method} · {log.status_code}</Badge>
             <h2>{log.path}</h2>
             <p>{formatTimestamp(log.created_at)} · {relativeTime(log.created_at)}</p>
           </div>

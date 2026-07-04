@@ -3,6 +3,7 @@ import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { DataTable } from '../../components/ui/DataTable';
+import { EmptyState } from '../../components/ui/EmptyState';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { severityLabel, severityTone } from '../../components/reports/ReportCards';
 import { actorLabel, humanizeAction, humanizeEntity, relativeTime } from '../../lib/auditLabels';
@@ -18,21 +19,21 @@ function getSeverity(entityType: string): 'info' | 'success' | 'warning' | 'dang
 }
 
 export function ActivityListPage() {
-  const { data, isLoading, isError } = useActivities();
+  const { data, isLoading, isError, refetch } = useActivities();
   const activities = data?.data ?? [];
 
   return (
     <AppLayout title={NAV.riwayatAktivitas} description="Jejak semua perubahan penting di akun kamu.">
       <div className="dashboard-page grid-stack">
-        <section className="app-hero-card dashboard-hero"><div><Badge>● Aktivitas</Badge><h2>Semua perubahan penting dapat ditelusuri dari riwayat aktivitas.</h2><p>Telusuri transaksi, pembayaran utang, transaksi berulang, ekspor, dan target bersama.</p></div><div className="app-hero-actions"><Button to="/system-logs">Log Sistem</Button><Button to="/reports" variant="primary">Laporan</Button></div></section>
+        <section className="app-hero-card dashboard-hero"><div><Badge>Aktivitas</Badge><h2>Semua perubahan penting dapat ditelusuri dari riwayat aktivitas.</h2><p>Telusuri transaksi, pembayaran utang, transaksi berulang, ekspor, dan target bersama.</p></div><div className="app-hero-actions"><Button to="/system-logs">Log Sistem</Button><Button to="/reports" variant="primary">Laporan</Button></div></section>
         <Card className="panel-card">
           <div className="panel-head"><div><h3>Linimasa Aktivitas</h3><p>Kejadian terbaru lengkap dengan modul, aktor, dan tingkat.</p></div></div>
           {isLoading ? (
-            <div className="empty-state"><p>Memuat aktivitas...</p></div>
+            <div className="loading-state">Memuat aktivitas...</div>
           ) : isError ? (
-            <div className="empty-state"><p>Gagal memuat aktivitas. Coba muat ulang halaman.</p></div>
+            <EmptyState icon={<AppIcon name="empty" />} title="Gagal memuat aktivitas" description="Periksa koneksi lalu coba lagi." action={<Button variant="primary" onClick={() => refetch()}><AppIcon name="recurring" /> Coba lagi</Button>} />
           ) : activities.length === 0 ? (
-            <div className="empty-state"><p>Belum ada aktivitas.</p></div>
+            <EmptyState icon={<AppIcon name="history" />} title="Belum ada aktivitas" description="Perubahan penting pada akunmu akan muncul di sini." />
           ) : (
             <DataTable<Activity>
               data={activities}

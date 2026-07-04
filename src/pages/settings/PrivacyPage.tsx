@@ -3,20 +3,23 @@ import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
 import { Modal } from '../../components/ui/Modal';
-import { useToast } from '../../components/ui/Toast';
+import { EmptyState } from '../../components/ui/EmptyState';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { SettingRow, SettingsCard, SettingsHero, SettingsToggle } from './SettingsShared';
+import { useActivities } from '../../hooks/useActivities';
+import { humanizeAction, humanizeEntity, relativeTime } from '../../lib/auditLabels';
 
 export function PrivacyPage() {
-  const { showToast } = useToast();
   const [maskAmounts, setMaskAmounts] = useState(false);
   const [shareAnalytics, setShareAnalytics] = useState(true);
   const [auditOpen, setAuditOpen] = useState(false);
+  const { data: activitiesData, isLoading: activitiesLoading } = useActivities({ limit: 3 });
+  const recentActivities = (activitiesData?.data ?? []).slice(0, 3);
 
   return (
     <AppLayout title="Privasi Data" description="Kontrol visibilitas data, penyamaran nominal, dan akses audit.">
       <div className="dashboard-page grid-stack">
-        <SettingsHero badge="● Privasi" title="Kontrol privasi untuk data keuangan pribadi." description="Penyamaran nominal, audit data, dan ekspor data pribadi dibuat transparan supaya kamu tetap pegang kendali.">
+        <SettingsHero badge="Privasi" title="Kontrol privasi untuk data keuangan pribadi." description="Penyamaran nominal, audit data, dan ekspor data pribadi dibuat transparan supaya kamu tetap pegang kendali.">
           <Button to="/settings/data"><AppIcon name="download" /> Kelola Data</Button>
           <Button variant="primary" onClick={() => setAuditOpen(true)}><AppIcon name="list" /> Audit Privasi</Button>
         </SettingsHero>
@@ -31,13 +34,25 @@ export function PrivacyPage() {
             </div>
           </SettingsCard>
 
-          <SettingsCard icon="warning" title="Aktivitas Privasi" description="Peristiwa penting yang terkait data sensitif.">
-            <div className="settings-timeline">
-              <div><Badge>Dilihat</Badge><strong>Laporan saldo dompet dibuka</strong><span>Hari ini 20:10 · Beranda</span></div>
-              <div><Badge tone="blue">Diekspor</Badge><strong>Ekspor CSV dibuat</strong><span>Kemarin · Transaksi</span></div>
-              <div><Badge tone="orange">Diubah</Badge><strong>Saluran notifikasi diperbarui</strong><span>12 Jun 2026 · Pengaturan</span></div>
-            </div>
-            <div className="modal-actions left-actions"><Button to="/activities"><AppIcon name="history" /> Buka Riwayat Aktivitas</Button></div>
+          <SettingsCard icon="warning" title="Aktivitas Terbaru" description="Perubahan terakhir pada data akunmu.">
+            {activitiesLoading ? (
+              <div className="loading-state">Memuat...</div>
+            ) : recentActivities.length === 0 ? (
+              <EmptyState icon={<AppIcon name="history" />} title="Belum ada aktivitas" description="Perubahan pada akun dan datamu akan muncul di sini." action={<Button to="/activities"><AppIcon name="history" /> Buka Riwayat Aktivitas</Button>} />
+            ) : (
+              <>
+                <div className="settings-timeline">
+                  {recentActivities.map((activity) => (
+                    <div key={activity.id}>
+                      <Badge tone="gray">{humanizeEntity(activity.entity_type)}</Badge>
+                      <strong>{`${humanizeAction(activity.action_type)} ${humanizeEntity(activity.entity_type)}`}</strong>
+                      <span>{relativeTime(activity.created_at)}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="modal-actions left-actions"><Button to="/activities"><AppIcon name="history" /> Buka Riwayat Aktivitas</Button></div>
+              </>
+            )}
           </SettingsCard>
         </section>
 
