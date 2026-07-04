@@ -4,6 +4,20 @@ This project uses GitHub Actions for deployment to the VPS.
 
 For the complete beginner-friendly manual deploy and CI/CD guide, read [`DEPLOYMENT_VPS_STEP_BY_STEP.md`](DEPLOYMENT_VPS_STEP_BY_STEP.md).
 
+## Workflows
+
+- **`.github/workflows/ci.yml` (Web CI)** — the pre-merge gate. Runs on every `pull_request`
+  targeting `master` and on `push` to any non-`master` branch. It installs deps (`npm ci`), runs
+  the tests (`npm run test:run`), and type-checks + builds (`npm run build`). No secrets are
+  required; `VITE_API_BASE_URL` falls back to `http://localhost:8080` when the repo variable is
+  unset. This blocks red PRs before they reach `master`.
+- **`.github/workflows/deploy.yml` (Web CI/CD)** — runs only on `push` to `master` (and
+  `workflow_dispatch`). It repeats the build/test gate, then packages `dist/` and deploys to the
+  VPS. CI does **not** deploy; deploy does **not** run on PRs, so the two never duplicate work on
+  `master`.
+
+The rest of this document covers the secrets/variables the deploy workflow needs.
+
 Important: GitHub secrets are created one by one. Do not create one big secret that contains all values.
 
 ## 1. Where To Add Secrets
