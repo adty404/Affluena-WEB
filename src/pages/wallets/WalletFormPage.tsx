@@ -13,6 +13,7 @@ import { ColorPicker, normalizeItemColor } from '../../components/finance/ColorP
 import { useCreateWallet, useDeleteWallet, useUpdateWallet, useWallet } from '../../hooks/useWallets';
 import { walletCreateSchema, walletUpdateSchema, walletTypeOptions, type WalletCreateFormValues, type WalletUpdateFormValues } from '../../schemas/wallet';
 import { majorToMinor, formatIDR } from '../../lib/money';
+import { canManageWallet } from '../../lib/wallet';
 import type { ApiError } from '../../api/types';
 
 export function WalletFormPage() {
@@ -96,6 +97,25 @@ export function WalletFormPage() {
     return (
       <AppLayout title="Edit Dompet" description="Dompet tidak ditemukan.">
         <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Error</span><strong>Dompet tidak ditemukan.</strong></div></div><div className="modal-actions"><Button to="/wallets">Kembali ke daftar</Button></div></Card></div>
+      </AppLayout>
+    );
+  }
+
+  // Shared viewers/members can't edit a wallet they don't own — show a read-only
+  // notice instead of a form that would fail on save.
+  if (isEdit && existing && !canManageWallet(existing)) {
+    return (
+      <AppLayout title="Edit Dompet" description="Dompet bersama hanya bisa dilihat.">
+        <div className="dashboard-page grid-stack">
+          <Card className="panel-card">
+            <div className="panel-head"><div><h3>Hanya lihat</h3><p>Kamu bukan pemilik dompet ini, jadi tidak bisa mengubahnya.</p></div></div>
+            <div className="readiness-list">
+              <div><span>Dompet</span><strong>{existing.name}</strong></div>
+              <div><span>Aksesmu</span><strong>{existing.role === 'viewer' ? 'Hanya lihat' : 'Anggota (bisa mencatat)'}</strong></div>
+            </div>
+            <div className="modal-actions"><Button to={`/wallets/${id}`}>Lihat Detail</Button><Button to="/wallets">Kembali ke daftar</Button></div>
+          </Card>
+        </div>
       </AppLayout>
     );
   }

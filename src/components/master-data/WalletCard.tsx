@@ -6,6 +6,7 @@ import { Amount } from '../finance/Amount';
 import { itemAccentVars } from '../finance/ColorPicker';
 import type { Wallet } from '../../types/wallet';
 import { walletTypeLabels } from '../../schemas/wallet';
+import { canManageWallet } from '../../lib/wallet';
 
 type WalletCardProps = { wallet: Wallet };
 
@@ -45,6 +46,8 @@ const walletRoleLabels: Record<string, string> = {
 
 export function WalletCard({ wallet }: WalletCardProps) {
   const shared = isShared(wallet);
+  // Only the owner may edit/delete a wallet; shared viewers/members are read-only.
+  const canManage = canManageWallet(wallet);
   const subtitle = shared
     ? `${walletTypeLabels[wallet.type]} · ${walletRoleLabels[wallet.role ?? ''] ?? wallet.role} · ${memberCount(wallet)} anggota`
     : walletTypeLabels[wallet.type];
@@ -71,7 +74,7 @@ export function WalletCard({ wallet }: WalletCardProps) {
       </p>
       <div className="wallet-card-actions">
         <Button size="small" to={`/wallets/${wallet.id}`}>Detail</Button>
-        <Button size="small" to={`/wallets/${wallet.id}/edit`}>Edit</Button>
+        {canManage ? <Button size="small" to={`/wallets/${wallet.id}/edit`}>Edit</Button> : null}
         {shared ? <Button size="small" to={`/wallets/${wallet.id}/sharing`}>Anggota</Button> : null}
       </div>
     </article>

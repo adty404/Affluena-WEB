@@ -2,6 +2,7 @@ import { createContext, useCallback, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import * as authApi from '../api/auth'
 import { getAccessToken, setTokens, clearTokens } from '../lib/token'
+import { queryClient } from '../lib/queryClient'
 import type { AuthUser, LoginRequest, RegisterRequest } from '../types/auth'
 
 interface AuthContextValue {
@@ -54,6 +55,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(() => {
     clearTokens()
     setUser(null)
+    // Drop every cached query so the next user on this tab never sees the
+    // previous user's data. Runs on ALL logout paths (Topbar, Profile, etc.).
+    queryClient.clear()
   }, [])
 
   const value = useMemo<AuthContextValue>(
