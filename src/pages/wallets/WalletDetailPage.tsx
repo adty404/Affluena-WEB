@@ -3,6 +3,8 @@ import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
+import { EmptyState } from '../../components/ui/EmptyState';
+import { AppIcon } from '../../components/ui/AppIcon';
 import { Amount } from '../../components/finance/Amount';
 import { useWallet, useWalletAnalytics } from '../../hooks/useWallets';
 import { walletTypeLabels } from '../../schemas/wallet';
@@ -31,7 +33,7 @@ export function WalletDetailPage() {
   if (isLoading) {
     return (
       <AppLayout title="Detail Dompet" description="Memuat…">
-        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Memuat dompet</span><strong>…</strong></div></div></Card></div>
+        <div className="dashboard-page grid-stack"><div className="loading-state">Memuat...</div></div>
       </AppLayout>
     );
   }
@@ -41,10 +43,7 @@ export function WalletDetailPage() {
       <AppLayout title="Detail Dompet" description="Dompet tidak ditemukan.">
         <div className="dashboard-page grid-stack">
           <Card className="panel-card">
-            <div className="readiness-list">
-              <div><span>Error</span><strong>{(error as { error?: string } | null)?.error ?? 'Dompet tidak ditemukan'}</strong></div>
-            </div>
-            <div className="modal-actions"><Button to="/wallets">Kembali ke daftar</Button></div>
+            <EmptyState icon={<AppIcon name="empty" />} title="Dompet tidak ditemukan" description={(error as { error?: string } | null)?.error ?? 'Dompet mungkin sudah dihapus.'} action={<Button to="/wallets">Kembali ke daftar</Button>} />
           </Card>
         </div>
       </AppLayout>
@@ -58,7 +57,8 @@ export function WalletDetailPage() {
   const lastActivity = analytics?.last_activity_at
     ? fromRFC3339(analytics.last_activity_at).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
     : 'Belum ada aktivitas';
-  const memberCount = wallet.members?.length ?? (shared ? 2 : 1);
+  // Only surface an actual member count; never a guessed `shared ? 2 : 1`.
+  const memberCount = wallet.members?.length;
 
   const inflow = analytics?.inflow_minor ?? 0;
   const outflow = analytics?.outflow_minor ?? 0;
@@ -73,7 +73,7 @@ export function WalletDetailPage() {
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <Badge className="dark">{shared ? `Dompet bersama · ${walletRoleLabels[wallet.role ?? ''] ?? wallet.role} · ${memberCount} anggota` : 'Dompet pribadi'}</Badge>
+            <Badge className="dark">{shared ? `Dompet bersama · ${walletRoleLabels[wallet.role ?? ''] ?? wallet.role}${memberCount !== undefined ? ` · ${memberCount} anggota` : ''}` : 'Dompet pribadi'}</Badge>
             <h2>{wallet.name}</h2>
             <p>{wallet.description || `Dibuat ${created}. Terakhir diperbarui ${updated}.`}</p>
           </div>
@@ -133,7 +133,7 @@ export function WalletDetailPage() {
         </section>
 
         <Card className="panel-card">
-          <div className="panel-head"><div><h3>Anggota Dompet</h3><p>{memberCount} orang dengan akses.</p></div></div>
+          <div className="panel-head"><div><h3>Anggota Dompet</h3><p>{memberCount !== undefined ? `${memberCount} orang dengan akses.` : 'Daftar anggota dengan akses.'}</p></div></div>
           {wallet.members && wallet.members.length > 0 ? (
             <div className="member-list">
               {wallet.members.map((m) => {
@@ -141,7 +141,7 @@ export function WalletDetailPage() {
                 const name = local.charAt(0).toUpperCase() + local.slice(1);
                 return (
                   <div className="member-row" key={m.user_id}>
-                    <div className="avatar">{m.email.slice(0, 2).toUpperCase()}</div>
+                    <div className="avatar" aria-hidden="true">{m.email.slice(0, 2).toUpperCase()}</div>
                     <div>
                       <strong>{name}</strong>
                       <span>{m.email} · {walletRoleLabels[m.role] ?? m.role}</span>

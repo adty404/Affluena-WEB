@@ -34,8 +34,9 @@ function isShared(wallet: Wallet): boolean {
   return wallet.role !== 'owner';
 }
 
-function memberCount(wallet: Wallet): number {
-  return wallet.members?.length ?? (isShared(wallet) ? 2 : 1);
+// Only expose an actual member count; never a guessed fallback.
+function memberCount(wallet: Wallet): number | undefined {
+  return wallet.members?.length;
 }
 
 const walletRoleLabels: Record<string, string> = {
@@ -48,8 +49,9 @@ export function WalletCard({ wallet }: WalletCardProps) {
   const shared = isShared(wallet);
   // Only the owner may edit/delete a wallet; shared viewers/members are read-only.
   const canManage = canManageWallet(wallet);
+  const count = memberCount(wallet);
   const subtitle = shared
-    ? `${walletTypeLabels[wallet.type]} · ${walletRoleLabels[wallet.role ?? ''] ?? wallet.role} · ${memberCount(wallet)} anggota`
+    ? `${walletTypeLabels[wallet.type]} · ${walletRoleLabels[wallet.role ?? ''] ?? wallet.role}${count !== undefined ? ` · ${count} anggota` : ''}`
     : walletTypeLabels[wallet.type];
   // Stored hex colors (and normalized legacy names) tint via --item-accent;
   // wallets without a color keep the type-based default tint.

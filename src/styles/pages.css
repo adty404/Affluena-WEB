@@ -291,7 +291,7 @@
 .tag-preview p { color: var(--muted); line-height: 1.65; margin: 0; }
 .badge.dark { background: rgba(255,255,255,.14); color: rgba(255,255,255,.88); border-color: rgba(255,255,255,.16); }
 @media (max-width: 1180px) { .cards-4 { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 760px) { .cards-4, .category-tree { grid-template-columns: 1fr; } .category-tree-section-head, .wallet-card-top, .member-row { grid-template-columns: 42px 1fr; } .category-tree-section-head .badge, .wallet-card-top .badge, .member-row .badge { grid-column: 2; } .category-node-row { grid-template-columns: 24px 42px minmax(0,1fr) auto; } .category-node-row .badge { grid-column: 3 / -1; justify-self: start; } .category-node-actions { grid-column: 3 / -1; } .category-node-children { margin-left: 16px; padding-left: 14px; } .category-node-children > .category-node::before { left: -14px; width: 12px; } .wallet-mini-grid { grid-template-columns: 1fr; } }
+@media (max-width: 760px) { .cards-4, .category-tree { grid-template-columns: 1fr; } .category-tree-section-head, .wallet-card-top, .member-row { grid-template-columns: 42px 1fr; } .category-tree-section-head .badge, .wallet-card-top .badge, .member-row .badge { grid-column: 2; } .member-row .inline-actions { grid-column: 1 / -1; justify-self: start; margin-top: 8px; } .category-node-row { grid-template-columns: 24px 42px minmax(0,1fr) auto; } .category-node-row .badge { grid-column: 3 / -1; justify-self: start; } .category-node-actions { grid-column: 3 / -1; } .category-node-children { margin-left: 16px; padding-left: 14px; } .category-node-children > .category-node::before { left: -14px; width: 12px; } .wallet-mini-grid { grid-template-columns: 1fr; } }
 
 
 /* Transactions */

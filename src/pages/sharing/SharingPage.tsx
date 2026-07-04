@@ -137,7 +137,7 @@ export function SharingPage() {
             <div className="member-list">
               {incomingPending.map((link) => (
                 <div className="member-row" key={link.id}>
-                  <div className="avatar">{displayName(link).slice(0, 2).toUpperCase()}</div>
+                  <div className="avatar" aria-hidden="true">{displayName(link).slice(0, 2).toUpperCase()}</div>
                   <div>
                     <strong>{displayName(link)}</strong>
                     <span>{link.email} · ingin berbagi dompetnya denganmu</span>
@@ -165,14 +165,14 @@ export function SharingPage() {
               </div>
             </div>
             {isLoading ? (
-              <div className="readiness-list"><div><span>Memuat</span><strong>…</strong></div></div>
+              <div className="loading-state">Memuat...</div>
             ) : owned.length === 0 ? (
-              <div className="readiness-list"><div><span>Status</span><strong>Belum ada yang kamu undang. Tambahkan lewat email.</strong></div></div>
+              <EmptyState icon={<AppIcon name="profile" />} title="Belum ada pemantau" description="Undang orang terpercaya lewat email untuk melihat riwayat dompetmu." />
             ) : (
               <div className="member-list">
                 {owned.map((link) => (
                   <div className="member-row" key={link.id}>
-                    <div className="avatar">{displayName(link).slice(0, 2).toUpperCase()}</div>
+                    <div className="avatar" aria-hidden="true">{displayName(link).slice(0, 2).toUpperCase()}</div>
                     <div>
                       <strong>{displayName(link)}</strong>
                       <span>{link.email} · hanya lihat</span>
@@ -223,14 +223,14 @@ export function SharingPage() {
             <div><h3>Dibagikan Untukku</h3><p>Orang yang membagikan semua dompetnya kepadamu.</p></div>
           </div>
           {isLoading ? (
-            <div className="readiness-list"><div><span>Memuat</span><strong>…</strong></div></div>
+            <div className="loading-state">Memuat...</div>
           ) : sharedWithMe.length === 0 ? (
-            <div className="readiness-list"><div><span>Status</span><strong>Belum ada dompet yang dibagikan untukmu.</strong></div></div>
+            <EmptyState icon={<AppIcon name="wallet" />} title="Belum ada dompet dibagikan" description="Dompet yang dibagikan orang lain untukmu akan muncul di sini." />
           ) : (
             <div className="member-list">
               {sharedWithMe.map((link) => (
                 <div className="member-row" key={link.id}>
-                  <div className="avatar">{displayName(link).slice(0, 2).toUpperCase()}</div>
+                  <div className="avatar" aria-hidden="true">{displayName(link).slice(0, 2).toUpperCase()}</div>
                   <div>
                     <strong>{displayName(link)}</strong>
                     <span>{link.email} · dompetnya tampil di daftar dompetmu</span>

@@ -7,6 +7,7 @@ import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
+import { EmptyState } from '../../components/ui/EmptyState';
 import { Input, Select } from '../../components/ui/Input';
 import { useToast } from '../../components/ui/Toast';
 import { AppIcon } from '../../components/ui/AppIcon';
@@ -57,14 +58,12 @@ export function WalletSharingPage() {
     defaultValues: { email: '', role: 'member' },
   });
 
-  const [lastInvite, setLastInvite] = useState<string | null>(null);
   const [pendingAction, setPendingAction] = useState<WalletShareStatus | null>(null);
 
   async function onSubmit(values: InviteValues) {
     if (!id) return;
     try {
       await inviteMut.mutateAsync({ email: values.email, role: values.role });
-      setLastInvite(`${values.email} · ${roleLabels[values.role]}`);
       showToast(`Undangan terkirim ke ${values.email}.`);
       form.reset();
     } catch (err) {
@@ -90,7 +89,7 @@ export function WalletSharingPage() {
   if (isLoading) {
     return (
       <AppLayout title="Anggota Dompet" description="Memuat…">
-        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Memuat dompet</span><strong>…</strong></div></div></Card></div>
+        <div className="dashboard-page grid-stack"><div className="loading-state">Memuat...</div></div>
       </AppLayout>
     );
   }
@@ -98,7 +97,7 @@ export function WalletSharingPage() {
   if (!wallet) {
     return (
       <AppLayout title="Anggota Dompet" description="Dompet tidak ditemukan.">
-        <div className="dashboard-page grid-stack"><Card className="panel-card"><div className="readiness-list"><div><span>Error</span><strong>Dompet tidak ditemukan.</strong></div></div><div className="modal-actions"><Button to="/wallets">Kembali ke daftar</Button></div></Card></div>
+        <div className="dashboard-page grid-stack"><Card className="panel-card"><EmptyState icon={<AppIcon name="empty" />} title="Dompet tidak ditemukan" description="Dompet mungkin sudah dihapus." action={<Button to="/wallets">Kembali ke daftar</Button>} /></Card></div>
       </AppLayout>
     );
   }
@@ -116,7 +115,7 @@ export function WalletSharingPage() {
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <span className="badge dark">● Anggota Dompet</span>
+            <Badge className="dark">Anggota Dompet</Badge>
             <h2>{wallet.name}</h2>
             <p>Peran kamu: <strong>{wallet.role ? roleLabels[wallet.role] ?? wallet.role : '—'}</strong>. Status: <strong>{wallet.share_status ? shareStatusLabels[wallet.share_status] ?? wallet.share_status : '—'}</strong>.</p>
           </div>
@@ -151,20 +150,20 @@ export function WalletSharingPage() {
           </Card>
         ) : null}
 
-        <section className="dashboard-grid">
+        <section className="entity-card-grid stable-card-grid">
           <Card className="panel-card">
             <div className="panel-head"><div><h3>Anggota ({members.length})</h3><p>Pemilik dan orang yang diundang.</p></div></div>
             {membersLoading ? (
-              <div className="readiness-list"><div><span>Memuat anggota</span><strong>…</strong></div></div>
+              <div className="loading-state">Memuat anggota...</div>
             ) : members.length === 0 ? (
-              <div className="readiness-list"><div><span>Status</span><strong>Belum ada anggota</strong></div></div>
+              <EmptyState icon={<AppIcon name="profile" />} title="Belum ada anggota" description="Undang orang terpercaya lewat email untuk berbagi akses dompet ini." />
             ) : (
               <div className="member-list">
                 {members.map((m) => {
                   const isMe = currentUserId && m.user_id === currentUserId;
                   return (
                     <div className="member-row" key={`${m.wallet_id}-${m.user_id}`}>
-                      <div className="avatar">{m.email.slice(0, 2).toUpperCase()}</div>
+                      <div className="avatar" aria-hidden="true">{m.email.slice(0, 2).toUpperCase()}</div>
                       <div>
                         <strong>{memberLabel(m.email)}{isMe ? ' (Kamu)' : ''}</strong>
                         <span>{m.email} · {roleLabels[m.role] ?? m.role}</span>
@@ -202,18 +201,12 @@ export function WalletSharingPage() {
                   <option value="member">{roleLabels.member}</option>
                   <option value="viewer">{roleLabels.viewer}</option>
                 </Select>
-                <small className="field-help">Anggota bisa mencatat transaksi di dompet ini; hanya lihat berarti cuma bisa melihat.</small>
+                <small className="field-help">Anggota bisa mencatat transaksi di dompet ini. Hanya lihat hanya bisa melihat, tidak bisa mencatat.</small>
               </label>
               <Button type="submit" variant="primary" full disabled={form.formState.isSubmitting || inviteMut.isPending}>
                 <AppIcon name="save" /> {inviteMut.isPending ? 'Mengirim…' : 'Kirim Undangan'}
               </Button>
             </form>
-            {lastInvite ? (
-              <div className="readiness-list" style={{ marginTop: 16 }}>
-                <div><span>Undangan terakhir</span><strong>{lastInvite}</strong></div>
-                <div><span>Status</span><strong>Menunggu</strong></div>
-              </div>
-            ) : null}
           </Card>
         </section>
 
