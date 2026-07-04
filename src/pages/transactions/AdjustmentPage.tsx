@@ -8,6 +8,7 @@ import { Input, Select, Textarea } from '../../components/ui/Input';
 import { useToast } from '../../components/ui/Toast';
 import { BalanceDeltaPreview } from '../../components/transactions/BalanceDeltaPreview';
 import { useWallets } from '../../hooks/useWallets';
+import { canRecordToWallet } from '../../lib/wallet';
 import { useCreateTransaction } from '../../hooks/useTransactions';
 import { transactionSchema, type TransactionFormData } from '../../schemas/transaction';
 import { toLocalDatetimeInput } from '../../lib/dates';
@@ -76,7 +77,7 @@ export function AdjustmentPage() {
                   <span>Dompet</span>
                   <Select {...register('wallet_id')}>
                     <option value="">Pilih Dompet</option>
-                    {(walletsData?.wallets ?? []).map((wallet) => <option key={wallet.id} value={wallet.id}>{wallet.name}</option>)}
+                    {(walletsData?.wallets ?? []).filter(canRecordToWallet).map((wallet) => <option key={wallet.id} value={wallet.id}>{wallet.name}</option>)}
                   </Select>
                   {errors.wallet_id && <span className="form-error">{errors.wallet_id.message}</span>}
                 </label>

@@ -7,6 +7,7 @@ import { Input, Select, Textarea } from '../../components/ui/Input';
 import { useToast } from '../../components/ui/Toast';
 import { BalanceDeltaPreview } from '../../components/transactions/BalanceDeltaPreview';
 import { useWallets } from '../../hooks/useWallets';
+import { canRecordToWallet } from '../../lib/wallet';
 import { useCategories } from '../../hooks/useCategories';
 import { useTags } from '../../hooks/useTags';
 import { useCreateTransaction, useUpdateTransaction, useTransaction } from '../../hooks/useTransactions';
@@ -141,7 +142,7 @@ export function TransactionFormPage() {
                     render={({ field }) => (
                       <Select name={field.name} value={field.value ?? ''} onChange={(e) => field.onChange(e.target.value)} onBlur={field.onBlur}>
                         <option value="">Pilih Dompet</option>
-                        {walletsData?.wallets?.map((wallet) => <option key={wallet.id} value={wallet.id}>{wallet.name}</option>)}
+                        {walletsData?.wallets?.filter(canRecordToWallet).map((wallet) => <option key={wallet.id} value={wallet.id}>{wallet.name}</option>)}
                       </Select>
                     )}
                   />
