@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
-import { Input, Select, Textarea } from '../../components/ui/Input';
+import { Input, Select } from '../../components/ui/Input';
 import { useToast } from '../../components/ui/Toast';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { Amount } from '../../components/finance/Amount';
@@ -15,6 +15,7 @@ import { ColorPicker, normalizeItemColor } from '../../components/finance/ColorP
 import { useCategories } from '../../hooks/useCategories';
 import { useBudget, useCreateBudget, useUpdateBudget, useDeleteBudget } from '../../hooks/useBudgets';
 import { budgetSchema, type BudgetFormData } from '../../schemas/budget';
+import { currentMonth } from '../../lib/reporting';
 
 export function BudgetFormPage() {
   const { id } = useParams();
@@ -36,12 +37,13 @@ export function BudgetFormPage() {
     reset,
     watch,
     setValue,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<BudgetFormData>({
     resolver: zodResolver(budgetSchema),
     defaultValues: {
       category_id: '',
-      month: new Date().toISOString().slice(0, 7),
+      month: currentMonth(),
       limit_minor: 0,
       color: '',
       icon: '',
@@ -52,7 +54,7 @@ export function BudgetFormPage() {
     if (isEdit && budget) {
       reset({
         category_id: budget.category_id,
-        month: budget.month ? budget.month.slice(0, 7) : new Date().toISOString().slice(0, 7),
+        month: budget.month ? budget.month.slice(0, 7) : currentMonth(),
         limit_minor: budget.limit_minor,
         color: normalizeItemColor(budget.color),
         // No icon picker on web yet — round-trip whatever mobile stored.
@@ -122,10 +124,16 @@ export function BudgetFormPage() {
               <div className="form-two">
                 <label>
                   <span>Kategori Pengeluaran</span>
-                  <Select {...register('category_id')}>
-                    <option value="">Pilih kategori</option>
-                    {expenseCategories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
-                  </Select>
+                  <Controller
+                    control={control}
+                    name="category_id"
+                    render={({ field }) => (
+                      <Select name={field.name} value={field.value ?? ''} onChange={(e) => field.onChange(e.target.value)} onBlur={field.onBlur}>
+                        <option value="">Pilih kategori</option>
+                        {expenseCategories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
+                      </Select>
+                    )}
+                  />
                   {errors.category_id && <span className="field-error">{errors.category_id.message}</span>}
                   <small className="field-help">Anggaran hanya berlaku untuk kategori pengeluaran.</small>
                 </label>
@@ -145,23 +153,6 @@ export function BudgetFormPage() {
                   />
                   {errors.limit_minor && <span className="field-error">{errors.limit_minor.message}</span>}
                 </label>
-                <label>
-                  <span>Sisa Anggaran</span>
-                  <Select defaultValue="none"><option value="none">Tidak dibawa ke bulan berikutnya</option><option value="remaining">Sisa dibawa ke bulan berikutnya</option><option value="overspend">Kelebihan belanja dibawa ke bulan berikutnya</option></Select>
-                  <small className="field-help">Bawaan: sisa tidak dibawa otomatis ke bulan berikutnya.</small>
-                </label>
-              </div>
-              <div className="form-two">
-                <label>
-                  <span>Batas Notifikasi Peringatan</span>
-                  <Select defaultValue="80"><option value="70">70%</option><option value="75">75%</option><option value="80">80%</option><option value="90">90%</option></Select>
-                  <small className="field-help">Notifikasi pertama dikirim saat penggunaan melewati angka ini.</small>
-                </label>
-                <label>
-                  <span>Batas Notifikasi Terlampaui</span>
-                  <Select defaultValue="100"><option value="95">95%</option><option value="100">100%</option><option value="110">110%</option></Select>
-                  <small className="field-help">Anggaran dianggap terlampaui saat pengeluaran melewati angka ini.</small>
-                </label>
               </div>
               <label>
                 <span>Warna</span>
@@ -170,11 +161,6 @@ export function BudgetFormPage() {
                   onChange={(hex) => setValue('color', hex, { shouldDirty: true })}
                 />
                 <small className="field-help">Warna yang sama dipakai di aplikasi mobile.</small>
-              </label>
-              <label>
-                <span>Catatan</span>
-                <Textarea defaultValue="" />
-                <small className="field-help">Tambahkan konteks agar anggaran mudah dipahami.</small>
               </label>
               <div className="form-row-between">
                 <div>

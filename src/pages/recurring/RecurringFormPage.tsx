@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
@@ -14,6 +14,7 @@ import { useCategories } from '../../hooks/useCategories';
 import { useRecurringRule, useCreateRecurringRule, useUpdateRecurringRule } from '../../hooks/useRecurring';
 import { recurringRuleSchema, type RecurringRuleInput } from '../../schemas/recurring';
 import { ACTIONS } from '../../lib/copy';
+import { toLocalDatetimeInput } from '../../lib/dates';
 import { useEffect } from 'react';
 
 export function RecurringFormPage() {
@@ -32,7 +33,7 @@ export function RecurringFormPage() {
   const wallets = walletsData?.wallets || [];
   const categories = categoriesData?.categories || [];
 
-  const { register, handleSubmit, formState: { errors, isSubmitting }, reset, watch, setValue } = useForm<RecurringRuleInput>({
+  const { register, handleSubmit, formState: { errors, isSubmitting }, reset, watch, setValue, control } = useForm<RecurringRuleInput>({
     resolver: zodResolver(recurringRuleSchema),
     defaultValues: {
       type: 'expense',
@@ -40,6 +41,7 @@ export function RecurringFormPage() {
       status: 'active',
       interval_count: 1,
       amount_minor: 0,
+      next_run_at: toLocalDatetimeInput(new Date()),
       color: '',
       icon: '',
     }
@@ -56,8 +58,10 @@ export function RecurringFormPage() {
         amount_minor: rule.amount_minor,
         frequency: rule.frequency,
         interval_count: rule.interval_count,
-        next_run_at: rule.next_run_at.split('T')[0] + 'T00:00:00Z', // Simplified for date input
-        end_at: rule.end_at ? rule.end_at.split('T')[0] + 'T00:00:00Z' : undefined,
+        // datetime-local wants a bare local 'YYYY-MM-DDTHH:mm'; a trailing Z
+        // (or seconds) makes the input render blank.
+        next_run_at: rule.next_run_at.slice(0, 16),
+        end_at: rule.end_at ? rule.end_at.slice(0, 16) : undefined,
         status: rule.status,
         note: rule.note || '',
         color: normalizeItemColor(rule.color),
@@ -112,42 +116,69 @@ export function RecurringFormPage() {
                 <label>
                   <span>Nama</span>
                   <Input {...register('name')} />
+                  {errors.name && <span className="form-error">{errors.name.message}</span>}
                 </label>
                 <label>
                   <span>Tipe</span>
-                  <Select {...register('type')}>
-                    <option value="income">Pemasukan</option>
-                    <option value="expense">Pengeluaran</option>
-                    <option value="transfer">Transfer</option>
-                    <option value="adjustment">Penyesuaian</option>
-                  </Select>
+                  <Controller
+                    control={control}
+                    name="type"
+                    render={({ field }) => (
+                      <Select name={field.name} value={field.value ?? ''} onChange={(e) => field.onChange(e.target.value)} onBlur={field.onBlur}>
+                        <option value="income">Pemasukan</option>
+                        <option value="expense">Pengeluaran</option>
+                        <option value="transfer">Transfer</option>
+                        <option value="adjustment">Penyesuaian</option>
+                      </Select>
+                    )}
+                  />
                 </label>
               </div>
 
               <div className="form-two">
                 <label>
                   <span>Dompet</span>
-                  <Select {...register('wallet_id')}>
-                    <option value="">Pilih Dompet</option>
-                    {wallets.map((wallet) => <option key={wallet.id} value={wallet.id}>{wallet.name}</option>)}
-                  </Select>
+                  <Controller
+                    control={control}
+                    name="wallet_id"
+                    render={({ field }) => (
+                      <Select name={field.name} value={field.value ?? ''} onChange={(e) => field.onChange(e.target.value)} onBlur={field.onBlur}>
+                        <option value="">Pilih Dompet</option>
+                        {wallets.map((wallet) => <option key={wallet.id} value={wallet.id}>{wallet.name}</option>)}
+                      </Select>
+                    )}
+                  />
+                  {errors.wallet_id && <span className="form-error">{errors.wallet_id.message}</span>}
                 </label>
                 <label>
                   <span>Dompet Tujuan (untuk Transfer)</span>
-                  <Select {...register('to_wallet_id')} disabled={type !== 'transfer'}>
-                    <option value="">Tidak dipakai</option>
-                    {wallets.map((wallet) => <option key={wallet.id} value={wallet.id}>{wallet.name}</option>)}
-                  </Select>
+                  <Controller
+                    control={control}
+                    name="to_wallet_id"
+                    render={({ field }) => (
+                      <Select name={field.name} value={field.value ?? ''} onChange={(e) => field.onChange(e.target.value)} onBlur={field.onBlur} disabled={type !== 'transfer'}>
+                        <option value="">Tidak dipakai</option>
+                        {wallets.map((wallet) => <option key={wallet.id} value={wallet.id}>{wallet.name}</option>)}
+                      </Select>
+                    )}
+                  />
+                  {errors.to_wallet_id && <span className="form-error">{errors.to_wallet_id.message}</span>}
                 </label>
               </div>
 
               <div className="form-two">
                 <label>
                   <span>Kategori</span>
-                  <Select {...register('category_id')} disabled={type === 'transfer'}>
-                    <option value="">Pilih Kategori</option>
-                    {categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
-                  </Select>
+                  <Controller
+                    control={control}
+                    name="category_id"
+                    render={({ field }) => (
+                      <Select name={field.name} value={field.value ?? ''} onChange={(e) => field.onChange(e.target.value)} onBlur={field.onBlur} disabled={type === 'transfer'}>
+                        <option value="">Pilih Kategori</option>
+                        {categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
+                      </Select>
+                    )}
+                  />
                 </label>
                 <label>
                   <span>Jumlah (Rp)</span>
@@ -156,16 +187,23 @@ export function RecurringFormPage() {
                     {...register('amount_minor', { valueAsNumber: true })}
 
                   />
+                  {errors.amount_minor && <span className="form-error">{errors.amount_minor.message}</span>}
                 </label>
               </div>
 
               <div className="form-three">
                 <label>
                   <span>Frekuensi</span>
-                  <Select {...register('frequency')}>
-                    <option value="weekly">Mingguan</option>
-                    <option value="monthly">Bulanan</option>
-                  </Select>
+                  <Controller
+                    control={control}
+                    name="frequency"
+                    render={({ field }) => (
+                      <Select name={field.name} value={field.value ?? ''} onChange={(e) => field.onChange(e.target.value)} onBlur={field.onBlur}>
+                        <option value="weekly">Mingguan</option>
+                        <option value="monthly">Bulanan</option>
+                      </Select>
+                    )}
+                  />
                 </label>
                 <label>
                   <span>Interval Pengulangan</span>
@@ -177,11 +215,17 @@ export function RecurringFormPage() {
                 </label>
                 <label>
                   <span>Status</span>
-                  <Select {...register('status')}>
-                    <option value="active">Aktif</option>
-                    <option value="paused">Dijeda</option>
-                    <option value="cancelled">Dibatalkan</option>
-                  </Select>
+                  <Controller
+                    control={control}
+                    name="status"
+                    render={({ field }) => (
+                      <Select name={field.name} value={field.value ?? ''} onChange={(e) => field.onChange(e.target.value)} onBlur={field.onBlur}>
+                        <option value="active">Aktif</option>
+                        <option value="paused">Dijeda</option>
+                        <option value="cancelled">Dibatalkan</option>
+                      </Select>
+                    )}
+                  />
                 </label>
               </div>
 
@@ -193,6 +237,7 @@ export function RecurringFormPage() {
                     {...register('next_run_at')}
 
                   />
+                  {errors.next_run_at && <span className="form-error">{errors.next_run_at.message}</span>}
                 </label>
                 <label>
                   <span>Tanggal Berakhir (Opsional)</span>

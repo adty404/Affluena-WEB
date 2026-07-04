@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
@@ -15,6 +15,7 @@ import { useToast } from '../../components/ui/Toast';
 import { useGoal, useCreateGoal, useUpdateGoal } from '../../hooks/useGoals';
 import { goalSchema, type GoalFormData } from '../../schemas/goal';
 import { goalStatusBadgeTone, goalStatusLabel } from '../../lib/goalStatus';
+import { toLocalDatetimeInput } from '../../lib/dates';
 
 export function GoalFormPage() {
   const { id } = useParams();
@@ -26,7 +27,7 @@ export function GoalFormPage() {
   const createGoal = useCreateGoal();
   const updateGoal = useUpdateGoal();
 
-  const { register, handleSubmit, formState: { errors, isSubmitting }, reset, watch, setValue } = useForm<GoalFormData>({
+  const { register, handleSubmit, formState: { errors, isSubmitting }, reset, watch, setValue, control } = useForm<GoalFormData>({
     resolver: zodResolver(goalSchema),
     defaultValues: {
       name: '',
@@ -43,7 +44,7 @@ export function GoalFormPage() {
       reset({
         name: goal.name,
         target_amount_minor: goal.target_amount_minor,
-        deadline: goal.deadline ? new Date(goal.deadline).toISOString().slice(0, 16) : '',
+        deadline: goal.deadline ? toLocalDatetimeInput(new Date(goal.deadline)) : '',
         status: goal.status,
         color: normalizeItemColor(goal.color),
         // No icon picker on web yet — round-trip whatever mobile stored.
@@ -127,11 +128,17 @@ export function GoalFormPage() {
                 {isEdit && (
                   <label>
                     <span>Status</span>
-                    <Select {...register('status')}>
-                      <option value="active">Aktif</option>
-                      <option value="achieved">Tercapai</option>
-                      <option value="cancelled">Dibatalkan</option>
-                    </Select>
+                    <Controller
+                      control={control}
+                      name="status"
+                      render={({ field }) => (
+                        <Select name={field.name} value={field.value ?? ''} onChange={(e) => field.onChange(e.target.value)} onBlur={field.onBlur}>
+                          <option value="active">Aktif</option>
+                          <option value="achieved">Tercapai</option>
+                          <option value="cancelled">Dibatalkan</option>
+                        </Select>
+                      )}
+                    />
                     <small className="field-help">Tercapai menandai target selesai; dibatalkan menghentikan pemantauan.</small>
                   </label>
                 )}

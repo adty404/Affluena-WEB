@@ -12,8 +12,9 @@ import { useTags } from '../../hooks/useTags';
 import { useCreateTransaction, useUpdateTransaction, useTransaction } from '../../hooks/useTransactions';
 import { transactionSchema, type TransactionFormData } from '../../schemas/transaction';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm as useReactHookForm } from 'react-hook-form';
+import { useForm as useReactHookForm, Controller } from 'react-hook-form';
 import { useEffect } from 'react';
+import { toLocalDatetimeInput } from '../../lib/dates';
 
 export function TransactionFormPage() {
   const { id } = useParams();
@@ -29,29 +30,41 @@ export function TransactionFormPage() {
   const createMutation = useCreateTransaction();
   const updateMutation = useUpdateTransaction(id || '');
 
-  const { register, handleSubmit, formState: { errors }, reset, watch } = useReactHookForm<TransactionFormData>({
+  const { register, handleSubmit, formState: { errors }, reset, watch, control } = useReactHookForm<TransactionFormData>({
     resolver: zodResolver(transactionSchema),
     defaultValues: {
       type: 'expense',
       amount_minor: 0,
-      transaction_at: new Date().toISOString().slice(0, 16),
+      transaction_at: toLocalDatetimeInput(new Date()),
       tag_ids: [],
     }
   });
 
   useEffect(() => {
     if (isEdit && transactionData) {
+      // Transfers/adjustments carry fields (to_wallet_id / signed amounts) this
+      // generic income/expense form can't represent — editing them here would
+      // silently drop to_wallet_id and force the type to expense. Send the user
+      // to the dedicated editor instead of flattening the record.
+      if (transactionData.type === 'transfer') {
+        navigate('/transactions/transfer', { replace: true });
+        return;
+      }
+      if (transactionData.type === 'adjustment') {
+        navigate('/transactions/adjustment', { replace: true });
+        return;
+      }
       reset({
         type: transactionData.type as any,
         wallet_id: transactionData.wallet_id,
         category_id: transactionData.category_id,
         amount_minor: transactionData.amount_minor,
-        transaction_at: new Date(transactionData.transaction_at).toISOString().slice(0, 16),
+        transaction_at: toLocalDatetimeInput(new Date(transactionData.transaction_at)),
         note: transactionData.note,
         tag_ids: transactionData.tag_ids,
       });
     }
-  }, [isEdit, transactionData, reset]);
+  }, [isEdit, transactionData, reset, navigate]);
 
   const onSubmit = (data: TransactionFormData) => {
     const payload = {
@@ -108,28 +121,46 @@ export function TransactionFormPage() {
               <div className="form-two">
                 <label>
                   <span>Tipe</span>
-                  <Select {...register('type')}>
-                    <option value="expense">Pengeluaran</option>
-                    <option value="income">Pemasukan</option>
-                  </Select>
+                  <Controller
+                    control={control}
+                    name="type"
+                    render={({ field }) => (
+                      <Select name={field.name} value={field.value ?? ''} onChange={(e) => field.onChange(e.target.value)} onBlur={field.onBlur}>
+                        <option value="expense">Pengeluaran</option>
+                        <option value="income">Pemasukan</option>
+                      </Select>
+                    )}
+                  />
                   {errors.type && <span className="error-text">{errors.type.message}</span>}
                 </label>
                 <label>
                   <span>Dompet</span>
-                  <Select {...register('wallet_id')}>
-                    <option value="">Pilih Dompet</option>
-                    {walletsData?.wallets?.map((wallet) => <option key={wallet.id} value={wallet.id}>{wallet.name}</option>)}
-                  </Select>
+                  <Controller
+                    control={control}
+                    name="wallet_id"
+                    render={({ field }) => (
+                      <Select name={field.name} value={field.value ?? ''} onChange={(e) => field.onChange(e.target.value)} onBlur={field.onBlur}>
+                        <option value="">Pilih Dompet</option>
+                        {walletsData?.wallets?.map((wallet) => <option key={wallet.id} value={wallet.id}>{wallet.name}</option>)}
+                      </Select>
+                    )}
+                  />
                   {errors.wallet_id && <span className="error-text">{errors.wallet_id.message}</span>}
                 </label>
               </div>
               <div className="form-two">
                 <label>
                   <span>Kategori</span>
-                  <Select {...register('category_id')}>
-                    <option value="">Pilih Kategori</option>
-                    {categoriesData?.categories?.filter(c => c.type === watchType).map((cat) => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
-                  </Select>
+                  <Controller
+                    control={control}
+                    name="category_id"
+                    render={({ field }) => (
+                      <Select name={field.name} value={field.value ?? ''} onChange={(e) => field.onChange(e.target.value)} onBlur={field.onBlur}>
+                        <option value="">Pilih Kategori</option>
+                        {categoriesData?.categories?.filter(c => c.type === watchType).map((cat) => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
+                      </Select>
+                    )}
+                  />
                   {errors.category_id && <span className="error-text">{errors.category_id.message}</span>}
                 </label>
                 <label>
@@ -146,9 +177,21 @@ export function TransactionFormPage() {
                 </label>
                 <label>
                   <span>Tag</span>
-                  <Select multiple {...register('tag_ids')}>
-                    {tagsData?.tags?.map((tag) => <option key={tag.id} value={tag.id}>{tag.name}</option>)}
-                  </Select>
+                  <Controller
+                    control={control}
+                    name="tag_ids"
+                    render={({ field }) => (
+                      <Select
+                        multi
+                        name={field.name}
+                        value={field.value ?? []}
+                        onChange={(e) => field.onChange((e.target as unknown as { value: string[] }).value)}
+                        onBlur={field.onBlur}
+                      >
+                        {tagsData?.tags?.map((tag) => <option key={tag.id} value={tag.id}>{tag.name}</option>)}
+                      </Select>
+                    )}
+                  />
                   {errors.tag_ids && <span className="error-text">{errors.tag_ids.message}</span>}
                 </label>
               </div>

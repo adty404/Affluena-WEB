@@ -10,6 +10,7 @@ import { BalanceDeltaPreview } from '../../components/transactions/BalanceDeltaP
 import { useWallets } from '../../hooks/useWallets';
 import { useCreateTransaction } from '../../hooks/useTransactions';
 import { transactionSchema, type TransactionFormData } from '../../schemas/transaction';
+import { toLocalDatetimeInput } from '../../lib/dates';
 
 export function AdjustmentPage() {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ export function AdjustmentPage() {
     defaultValues: {
       type: 'adjustment',
       amount_minor: 0,
-      transaction_at: new Date().toISOString().slice(0, 16),
+      transaction_at: toLocalDatetimeInput(new Date()),
     }
   });
 
