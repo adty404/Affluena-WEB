@@ -109,7 +109,7 @@ export function SharingPage() {
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <span className="badge dark">● {NAV.berbagiDompet}</span>
+            <span className="badge dark">{NAV.berbagiDompet}</span>
             <h2>Bagikan riwayat semua dompetmu ke orang terpercaya.</h2>
             <p>
               Undang maksimal {MAX_PARTNER_SHARES} orang untuk melihat semua riwayat dompetmu (hanya lihat, termasuk

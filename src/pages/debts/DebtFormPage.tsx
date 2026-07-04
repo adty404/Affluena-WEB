@@ -61,7 +61,7 @@ export function DebtFormPage() {
     <AppLayout title={title} description="Catat utang atau piutang lengkap dengan tanggal jatuh tempo.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
-          <div><span className="badge dark">● Utang & Piutang</span><h2>{isReceivable ? 'Catat piutang yang harus ditagih.' : 'Catat utang yang harus dibayar.'}</h2><p>Setiap pembayaran akan langsung memperbarui saldo dompet kamu.</p></div>
+          <div><span className="badge dark">Utang & Piutang</span><h2>{isReceivable ? 'Catat piutang yang harus ditagih.' : 'Catat utang yang harus dibayar.'}</h2><p>Setiap pembayaran akan langsung memperbarui saldo dompet kamu.</p></div>
           <div className="app-hero-actions"><Button to="/debts">Kembali</Button></div>
         </section>
 

@@ -66,7 +66,7 @@ export function GoalDetailPage() {
     <AppLayout title="Detail Target" description="Progres target, anggota, dan aksi lanjutan.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
-          <div><span className="badge dark">● Detail Target</span><h2>{goal.name}</h2></div>
+          <div><span className="badge dark">Detail Target</span><h2>{goal.name}</h2></div>
           <div className="app-hero-actions">
             <Button to="/goals"><AppIcon name="back" /> Kembali</Button>
             <Button to={`/goals/${goal.id}/edit`}><AppIcon name="edit" /> Edit</Button>
@@ -116,7 +116,7 @@ export function GoalDetailPage() {
             <div className="readiness-list">
               {goal.members?.map((member) => (
                 <div key={member.user_id}>
-                  <span>{goalMemberLabel(member, currentUserId)}<small>{member.user_id}</small></span>
+                  <span>{goalMemberLabel(member, currentUserId)}</span>
                   <Badge tone={goalMemberStatusTone(member.status)}>{goalMemberStatusLabel(member.status)}</Badge>
                 </div>
               ))}
