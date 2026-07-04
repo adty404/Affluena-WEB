@@ -12,6 +12,7 @@ import { Amount } from '../../components/finance/Amount';
 import { useToast } from '../../components/ui/Toast';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { useWallets } from '../../hooks/useWallets';
+import { canRecordToWallet } from '../../lib/wallet';
 import { useCategories } from '../../hooks/useCategories';
 import { useSplitBill } from '../../hooks/useTransactions';
 import { toLocalDatetimeInput } from '../../lib/dates';
@@ -119,7 +120,7 @@ export function SplitBillPage() {
                   <span>Dompet</span>
                   <Select {...register('wallet_id')}>
                     <option value="">Pilih Dompet</option>
-                    {walletsData?.wallets?.map((wallet) => <option key={wallet.id} value={wallet.id}>{wallet.name}</option>)}
+                    {walletsData?.wallets?.filter(canRecordToWallet).map((wallet) => <option key={wallet.id} value={wallet.id}>{wallet.name}</option>)}
                   </Select>
                   {errors.wallet_id && <span className="form-error">{errors.wallet_id.message}</span>}
                 </label>

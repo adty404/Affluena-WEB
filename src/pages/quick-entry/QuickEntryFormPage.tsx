@@ -7,6 +7,7 @@ import { Card } from '../../components/ui/Card';
 import { Input, Select, Textarea } from '../../components/ui/Input';
 import { useToast } from '../../components/ui/Toast';
 import { useWallets } from '../../hooks/useWallets';
+import { canRecordToWallet } from '../../lib/wallet';
 import { useCategories } from '../../hooks/useCategories';
 import { useQuickEntryTemplate, useCreateQuickEntryTemplate, useUpdateQuickEntryTemplate } from '../../hooks/useQuickEntry';
 import { quickEntryTemplateSchema, type QuickEntryTemplateInput } from '../../schemas/quickEntry';
@@ -25,7 +26,7 @@ export function QuickEntryFormPage() {
   const createMutation = useCreateQuickEntryTemplate();
   const updateMutation = useUpdateQuickEntryTemplate();
 
-  const wallets = walletsData?.wallets || [];
+  const wallets = (walletsData?.wallets || []).filter(canRecordToWallet);
   const categories = categoriesData?.categories || [];
 
   const { register, handleSubmit, formState: { errors, isSubmitting }, reset, watch, control } = useForm<QuickEntryTemplateInput>({
