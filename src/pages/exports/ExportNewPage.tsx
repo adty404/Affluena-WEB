@@ -101,7 +101,7 @@ export function ExportNewPage() {
   return (
     <AppLayout title="Buat Ekspor" description="Buat ekspor data CSV dengan pilihan modul dan periode yang jelas.">
       <div className="dashboard-page grid-stack">
-        <section className="app-hero-card dashboard-hero"><div><Badge>● Ekspor Baru</Badge><h2>Pilih modul, periode, dan format, lalu buat berkas ekspor.</h2><p>Berkas CSV langsung terunduh dan tercatat di riwayat ekspor dengan status dan jumlah baris sebenarnya.</p></div><div className="app-hero-actions"><Button to="/exports">Kembali</Button><Button onClick={openLatest} variant="primary" disabled={!created}><AppIcon name="download" /> Buka Terbaru</Button></div></section>
+        <section className="app-hero-card dashboard-hero"><div><Badge>Ekspor Baru</Badge><h2>Pilih modul, periode, dan format, lalu buat berkas ekspor.</h2><p>Berkas CSV langsung terunduh dan tercatat di riwayat ekspor dengan status dan jumlah baris sebenarnya.</p></div><div className="app-hero-actions"><Button to="/exports">Kembali</Button><Button onClick={openLatest} variant="primary" disabled={!created}><AppIcon name="download" /> Buka Terbaru</Button></div></section>
         <section className="dashboard-grid two-col form-dashboard-grid">
           <Card className="panel-card">
             <div className="panel-head"><div><h3>Konfigurasi Ekspor</h3><p>Atur modul, format, dan rentang tanggal data yang mau kamu ekspor.</p></div></div>

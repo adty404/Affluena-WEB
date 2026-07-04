@@ -17,8 +17,8 @@ export function AuthLayout({ children, title, description, narrow }: AuthLayoutP
           <h1>{title}</h1>
           <p>{description}</p>
           <div className="auth-stat-grid">
-            <div className="auth-stat"><strong>24+</strong><span>Widget keuangan</span></div>
-            <div className="auth-stat"><strong>100%</strong><span>Responsif</span></div>
+            <div className="auth-stat"><strong>Multi-dompet</strong><span>Bank, e-wallet, dan tunai jadi satu</span></div>
+            <div className="auth-stat"><strong>Aman</strong><span>Data finansialmu tetap pribadi</span></div>
           </div>
         </aside>
         <section className={`auth-card ${narrow ? 'narrow' : ''}`}>

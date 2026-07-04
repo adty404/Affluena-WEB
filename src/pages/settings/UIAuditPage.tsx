@@ -19,7 +19,7 @@ export function UIAuditPage() {
   return (
     <AppLayout title="Audit UI" description="Checklist responsif, navigasi, tombol, ikon, dan formulir.">
       <div className="dashboard-page grid-stack">
-        <SettingsHero badge="● Audit UI" title="Audit kualitas tampilan agar pengalaman tetap rapi." description="Halaman ini memusatkan checklist kualitas UX untuk semua area utama Affluena.">
+        <SettingsHero badge="Audit UI" title="Audit kualitas tampilan agar pengalaman tetap rapi." description="Halaman ini memusatkan checklist kualitas UX untuk semua area utama Affluena.">
           <Button to="/app-menu"><AppIcon name="more" /> {NAV.aksesLengkap}</Button>
           <Button to="/settings" variant="primary"><AppIcon name="settings" /> {NAV.pengaturan}</Button>
         </SettingsHero>

@@ -60,7 +60,7 @@ export function TransferPage() {
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <span className="badge dark">● Transfer</span>
+            <span className="badge dark">Transfer</span>
             <h2>Pindahkan saldo dari dompet asal ke dompet tujuan.</h2>
             <p>Dompet asal dan dompet tujuan harus berbeda, dan transfer tidak memerlukan kategori.</p>
           </div>

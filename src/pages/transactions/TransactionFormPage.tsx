@@ -111,7 +111,7 @@ export function TransactionFormPage() {
     <AppLayout title={isEdit ? 'Edit Transaksi' : 'Transaksi Baru'} description="Catat pemasukan atau pengeluaran dengan kategori dan tag.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
-          <div><span className="badge dark">● Pemasukan / Pengeluaran</span><h2>{isEdit ? 'Perbarui detail transaksi kamu.' : 'Catat pemasukan atau pengeluaran baru.'}</h2><p>Lengkapi dompet, kategori, jumlah, dan catatan — perubahan saldo langsung terlihat sebelum disimpan.</p></div>
+          <div><span className="badge dark">Pemasukan / Pengeluaran</span><h2>{isEdit ? 'Perbarui detail transaksi kamu.' : 'Catat pemasukan atau pengeluaran baru.'}</h2><p>Lengkapi dompet, kategori, jumlah, dan catatan — perubahan saldo langsung terlihat sebelum disimpan.</p></div>
           <div className="app-hero-actions"><Button to="/transactions">Kembali</Button><Button variant="primary" onClick={handleSubmit(onSubmit)}>Simpan</Button></div>
         </section>
         <section className="dashboard-grid transaction-entry-grid">

@@ -125,7 +125,7 @@ export function TransactionListPage() {
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <span className="badge dark">● {NAV.transaksi}</span>
+            <span className="badge dark">{NAV.transaksi}</span>
             <h2>Catat semua transaksi dan pantau perubahan saldomu.</h2>
             <p>Pemasukan menambah saldo, pengeluaran mengurangi saldo, transfer memindahkan saldo antar dompet, dan penyesuaian mengoreksi saldo secara manual.</p>
           </div>

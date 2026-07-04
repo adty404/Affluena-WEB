@@ -64,7 +64,7 @@ export function PreferencesPage() {
   return (
     <AppLayout title="Preferensi Aplikasi" description="Mata uang, bahasa, format tanggal, dan tampilan aplikasi.">
       <div className="dashboard-page grid-stack">
-        <SettingsHero badge="● Preferensi" title="Preferensi dibuat jelas untuk aplikasi keuangan Indonesia." description="Atur mata uang, format tanggal, bahasa, zona waktu, dan kenyamanan tampilan aplikasi.">
+        <SettingsHero badge="Preferensi" title="Preferensi dibuat jelas untuk aplikasi keuangan Indonesia." description="Atur mata uang, format tanggal, bahasa, zona waktu, dan kenyamanan tampilan aplikasi.">
           <Button to="/settings"><AppIcon name="back" /> Pengaturan</Button>
           <Button variant="primary" onClick={() => persist('Preferensi tersimpan.')}><AppIcon name="save" /> Simpan Preferensi</Button>
         </SettingsHero>

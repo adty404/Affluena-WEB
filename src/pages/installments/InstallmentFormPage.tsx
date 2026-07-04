@@ -64,7 +64,7 @@ export function InstallmentFormPage() {
     <AppLayout title="Tambah Cicilan" description="Catat cicilan baru dengan tenor, tanggal tagihan, dan dompet.">
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
-          <div><span className="badge dark">● Formulir Cicilan</span><h2>Catat cicilan dengan jadwal pembayaran yang jelas.</h2><p>Cicilan yang tercatat akan selalu terlihat di Pemantau Utang dan Beranda.</p></div>
+          <div><span className="badge dark">Formulir Cicilan</span><h2>Catat cicilan dengan jadwal pembayaran yang jelas.</h2><p>Cicilan yang tercatat akan selalu terlihat di Pemantau Utang dan Beranda.</p></div>
           <div className="app-hero-actions"><Button to="/installments">Kembali</Button></div>
         </section>
         <section className="form-detail-grid">

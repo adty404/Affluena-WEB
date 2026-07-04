@@ -11,7 +11,7 @@ export function AboutPage() {
   return (
     <AppLayout title="Tentang Affluena" description="Informasi aplikasi, versi, dan cakupan fitur.">
       <div className="dashboard-page grid-stack">
-        <SettingsHero badge={`● ${NAV.tentang}`} title="Affluena, aplikasi keuangan pribadi kamu." description="Pengaturan, keamanan, dan privasi membantu kamu mengelola akun dengan aman.">
+        <SettingsHero badge={`${NAV.tentang}`} title="Affluena, aplikasi keuangan pribadi kamu." description="Pengaturan, keamanan, dan privasi membantu kamu mengelola akun dengan aman.">
           <Button to="/settings/ui-audit"><AppIcon name="widgets" /> Audit UI</Button>
           <Button to="/settings" variant="primary"><AppIcon name="settings" /> {NAV.pengaturan}</Button>
         </SettingsHero>

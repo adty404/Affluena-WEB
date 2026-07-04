@@ -25,7 +25,7 @@ export function AppMenuPage() {
       <div className="dashboard-page grid-stack">
         <section className="app-hero-card dashboard-hero">
           <div>
-            <Badge>● {NAV.aksesLengkap}</Badge>
+            <Badge>{NAV.aksesLengkap}</Badge>
             <h2>Semua akses utama tersedia dari satu halaman.</h2>
             <p>Buka halaman mana pun di Affluena langsung dari menu ini.</p>
           </div>
