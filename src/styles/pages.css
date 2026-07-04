@@ -8,7 +8,8 @@
 .hero-proof span { display: inline-flex; align-items: center; gap: 7px; }
 .hero-proof i { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); box-shadow: 0 0 0 4px rgba(23,24,26,.08); }
 .hero-visual { position: relative; min-height: 560px; display: grid; place-items: center; }
-.floating-pill { position: absolute; z-index: 2; padding: 10px 14px; border-radius: 999px; background: white; border: 1px solid var(--line); box-shadow: var(--shadow-soft); font-size: 13px; font-weight: 850; }
+.floating-pill { position: absolute; z-index: 2; display: inline-flex; align-items: center; gap: 6px; padding: 10px 14px; border-radius: 999px; background: white; border: 1px solid var(--line); box-shadow: var(--shadow-soft); font-size: 13px; font-weight: 850; }
+.floating-pill .app-icon { width: 15px; height: 15px; }
 .floating-pill.one { top: 48px; right: 18px; color: var(--success); }
 .floating-pill.two { bottom: 52px; left: 8px; color: var(--success); }
 .dashboard-preview { width: min(100%, 500px); border-radius: 32px; padding: 18px; background: rgba(255,255,255,.86); border: 1px solid rgba(229,229,227,.92); box-shadow: var(--shadow); backdrop-filter: blur(20px); }

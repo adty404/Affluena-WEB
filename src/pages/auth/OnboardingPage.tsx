@@ -44,7 +44,7 @@ export function OnboardingPage() {
             ))}
           </div>
           <div className="onboarding-actions">
-            <Button to="/login">Lewati</Button>
+            <Button to="/register">Lewati</Button>
             <Button type="submit" variant="primary">Selesai</Button>
           </div>
         </form>

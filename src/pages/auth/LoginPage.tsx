@@ -1,10 +1,10 @@
-import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AuthLayout } from '../../layouts/AuthLayout';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
+import { PasswordInput } from '../../components/ui/PasswordInput';
 import { useToast } from '../../components/ui/Toast';
 import { useAuth } from '../../hooks/useAuth';
 import { loginSchema, type LoginFormValues } from '../../schemas/auth';
@@ -15,7 +15,6 @@ export function LoginPage() {
   const location = useLocation();
   const { showToast } = useToast();
   const { login } = useAuth();
-  const [showPassword, setShowPassword] = useState(false);
 
   const from = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname ?? '/dashboard';
 
@@ -51,19 +50,10 @@ export function LoginPage() {
         </label>
         <label>
           <span>Kata Sandi</span>
-          <div className="password-field">
-            <Input
-              type={showPassword ? 'text' : 'password'}
-              autoComplete="current-password"
-              required
-              {...field('password')}
-            />
-            <button type="button" onClick={() => setShowPassword((value) => !value)}>{showPassword ? 'Sembunyikan' : 'Tampilkan'}</button>
-          </div>
+          <PasswordInput autoComplete="current-password" required {...field('password')} />
           {errors.password && <span className="form-error">{errors.password.message}</span>}
         </label>
         <div className="form-row-between">
-          <label className="checkbox-row"><input type="checkbox" /> Ingat saya</label>
           <Link to="/forgot-password">Lupa kata sandi?</Link>
         </div>
         <Button type="submit" variant="primary" full disabled={isSubmitting}>
