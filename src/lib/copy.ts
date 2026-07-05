@@ -34,6 +34,7 @@ export const NAV = {
   pemantauUtang: 'Pemantau Utang',
   laporan: 'Laporan',
   wawasan: 'Wawasan',
+  kalender: 'Kalender',
   riwayatAktivitas: 'Riwayat Aktivitas',
   pemberitahuan: 'Pemberitahuan',
   logSistem: 'Log Sistem',
