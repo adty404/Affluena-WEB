@@ -47,6 +47,7 @@ const planningLinks: NavItem[] = [
 
 const insightsLinks: NavItem[] = [
   { to: '/insights', icon: 'analytics', label: NAV.wawasan, activeWhen: (p) => startsWithSegment(p, '/insights') },
+  { to: '/calendar', icon: 'calendar', label: NAV.kalender, activeWhen: (p) => startsWithSegment(p, '/calendar') },
   { to: '/reports', icon: 'chart', label: NAV.laporan, activeWhen: (p) => startsWithSegment(p, '/reports') },
   { to: '/activities', icon: 'history', label: NAV.riwayatAktivitas, activeWhen: (p) => startsWithSegment(p, '/activities') },
   { to: '/alerts', icon: 'warning', label: NAV.pemberitahuan, activeWhen: (p) => startsWithSegment(p, '/alerts') },

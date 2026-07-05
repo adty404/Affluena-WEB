@@ -17,6 +17,7 @@ import { DashboardPage } from './pages/dashboard/DashboardPage';
 const AnalyticsPage = lazy(() => import('./pages/dashboard/AnalyticsPage').then(m => ({ default: m.AnalyticsPage })));
 const ForecastPage = lazy(() => import('./pages/dashboard/ForecastPage').then(m => ({ default: m.ForecastPage })));
 const InsightsPage = lazy(() => import('./pages/dashboard/InsightsPage').then(m => ({ default: m.InsightsPage })));
+const CalendarPage = lazy(() => import('./pages/calendar/CalendarPage').then(m => ({ default: m.CalendarPage })));
 const WidgetStatesPage = lazy(() => import('./pages/dashboard/WidgetStatesPage').then(m => ({ default: m.WidgetStatesPage })));
 
 const WalletListPage = lazy(() => import('./pages/wallets/WalletListPage').then(m => ({ default: m.WalletListPage })));
@@ -143,6 +144,7 @@ export function App() {
         <Route path="/dashboard/widget-states" element={<Suspense fallback={<PageLoader />}><WidgetStatesPage /></Suspense>} />
 
         <Route path="/insights" element={<Suspense fallback={<PageLoader />}><InsightsPage /></Suspense>} />
+        <Route path="/calendar" element={<Suspense fallback={<PageLoader />}><CalendarPage /></Suspense>} />
 
         <Route path="/wallets" element={<Suspense fallback={<PageLoader />}><WalletListPage /></Suspense>} />
         <Route path="/wallets/new" element={<Suspense fallback={<PageLoader />}><WalletFormPage /></Suspense>} />

@@ -17,3 +17,21 @@ export function majorToMinor(formatted: string): number {
 export function formatIDR(minor: number): string {
   return IDR_FORMATTER.format(minor)
 }
+
+/**
+ * Ultra-compact rupiah for dense surfaces (calendar day cells), mirroring
+ * mobile's `MoneyFormatter.compactIdr`: 950 → `950`, 25000 → `25rb`,
+ * 1200000 → `1,2jt`, 2500000000 → `2,5M`. Uses the absolute value — callers
+ * add their own `+`/`−` sign.
+ */
+export function formatIDRCompact(minor: number): string {
+  const n = Math.abs(Math.trunc(minor))
+  const compact = (value: number): string => {
+    const rounded = Math.round(value * 10) / 10
+    return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1).replace('.', ',')
+  }
+  if (n >= 1_000_000_000) return `${compact(n / 1_000_000_000)}M`
+  if (n >= 1_000_000) return `${compact(n / 1_000_000)}jt`
+  if (n >= 1_000) return `${compact(n / 1_000)}rb`
+  return String(n)
+}

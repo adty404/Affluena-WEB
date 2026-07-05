@@ -33,6 +33,7 @@ Use this file to understand existing routes and avoid active-link/dynamic-route 
 - `/dashboard/forecast`
 - `/dashboard/widget-states`
 - `/insights` — Wawasan (current-month category breakdown; in the sidebar's "Wawasan" section)
+- `/calendar` — Kalender (monthly money calendar: Monday-start day grid + day-detail panel; in the sidebar's "Wawasan" section next to `/insights`)
 
 ## Wallets
 
