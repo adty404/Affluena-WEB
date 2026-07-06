@@ -6,8 +6,8 @@ import { Modal } from '../../components/ui/Modal';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { Card } from '../../components/ui/Card';
 import { EmptyState } from '../../components/ui/EmptyState';
-import { RecentTransactions, StatGrid, WalletPortfolio } from '../../components/finance/DashboardWidgets';
-import { useDashboardSummary } from '../../hooks/useDashboard';
+import { NetWorthTrend, RecentTransactions, StatGrid, WalletPortfolio } from '../../components/finance/DashboardWidgets';
+import { useCashflowTrend, useDashboardSummary } from '../../hooks/useDashboard';
 import { useCategories } from '../../hooks/useCategories';
 import { useTransactions } from '../../hooks/useTransactions';
 import { useWallets } from '../../hooks/useWallets';
@@ -15,6 +15,7 @@ import { categoryLabel, createNameById, walletPairLabel } from '../../lib/financ
 import { formatDateID } from '../../lib/dates';
 import { NAV } from '../../lib/copy';
 import { formatIDR } from '../../lib/money';
+import { buildNetWorthSeries } from '../../lib/netWorth';
 import type { DashboardStat, DashboardTransaction } from '../../types/dashboard';
 
 const mobileDashboardActions = [
@@ -32,6 +33,7 @@ export function DashboardPage() {
   const { data: txData } = useTransactions({ limit: 5 });
   const { data: walletsData } = useWallets();
   const { data: categoriesData } = useCategories();
+  const { data: trendData, isLoading: trendLoading } = useCashflowTrend(12);
 
   const walletNameById = createNameById(walletsData?.wallets ?? []);
   const categoryNameById = createNameById(categoriesData?.categories ?? []);
@@ -47,6 +49,31 @@ export function DashboardPage() {
     { label: 'Pengeluaran Bulan Ini', value: '...', note: 'Memuat...' },
     { label: 'Arus Kas', value: '...', note: 'Memuat...' },
   ];
+
+  // Savings rate = monthly cashflow ÷ monthly income for the current month
+  // (mirrors mobile's Beranda tile). Guard income == 0 → show "—" rather than
+  // dividing by zero.
+  const savingsRate: string = summary && summary.monthly_income_minor > 0
+    ? `${Math.round((summary.monthly_cashflow_minor / summary.monthly_income_minor) * 100)}%`
+    : '—';
+
+  // Net-worth trend: anchor at the current net worth, walk backward through the
+  // cashflow trend, then clamp to the earliest OWNED wallet's created month so
+  // wallet initial balances / adjustments don't back-propagate. Only wallets
+  // this account owns count for the clamp (wallets shared TO you aren't part of
+  // this account's net-worth reconstruction).
+  const trendBuckets = trendData?.trend ?? [];
+  const monthlyNetCashflows = trendBuckets.map((b) => b.cashflow_minor);
+  const monthKeys = trendBuckets.map((b) => b.month);
+  const ownWalletCreatedAts = (walletsData?.wallets ?? [])
+    .filter((w) => !w.role || w.role === 'owner')
+    .map((w) => w.created_at);
+  const earliestWalletCreatedAt = ownWalletCreatedAts.length > 0
+    ? ownWalletCreatedAts.reduce((earliest, at) => (at < earliest ? at : earliest))
+    : undefined;
+  const netWorthSeries = summary
+    ? buildNetWorthSeries(summary.net_worth_minor, monthlyNetCashflows, { monthKeys, earliestWalletCreatedAt })
+    : [];
 
   const recentTransactions: DashboardTransaction[] = (txData?.transactions ?? []).map(tx => ({
     id: tx.id,
@@ -120,6 +147,17 @@ export function DashboardPage() {
             <StatGrid stats={stats} />
           )}
         </div>
+
+        {!summaryError && (
+          <section className="dashboard-insights">
+            <Card className="stat-card networth-savings-tile green">
+              <span>Rasio Menabung</span>
+              <strong>{savingsRate}</strong>
+              <small>dari pemasukan bulan ini</small>
+            </Card>
+            <NetWorthTrend series={netWorthSeries} loading={trendLoading || !summary} />
+          </section>
+        )}
 
         <section className="dashboard-grid">
           <div className="grid stack-lg">
