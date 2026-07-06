@@ -70,6 +70,13 @@ Use this file to understand existing routes and avoid active-link/dynamic-route 
 - `/transactions/:id`
 - `/transactions/:id/edit`
 
+> `/transactions` supports a `search` URL param (debounced ~350ms, capped at 100
+> chars) alongside the existing `type`/`wallet_id`/`category_id`/`tag_id`/`from`/
+> `to` params. It maps to the API's `search` query on `GET /api/v1/transactions`,
+> which matches note + category name + wallet name **server-side, full-history**
+> (the API 400s past 100 chars). The list page therefore turns OFF the
+> `DataTable`'s built-in client search — search is never applied twice.
+
 Do not interpret these as `/transactions/:id`:
 - `/transactions/new`
 - `/transactions/transfer`

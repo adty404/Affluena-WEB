@@ -6,7 +6,7 @@ export type AppIconName =
   | 'transactions' | 'split' | 'quick'
   | 'budget' | 'budgetForm' | 'budgetAlert' | 'budgetReport'
   | 'debt' | 'receivable' | 'payable' | 'tracker' | 'installment' | 'subscription' | 'pay' | 'history' | 'run' | 'active' | 'paused' | 'cancelled' | 'recurring' | 'home' | 'add' | 'more'
-  | 'trend' | 'chart' | 'calendar' | 'list' | 'filter'
+  | 'trend' | 'chart' | 'calendar' | 'list' | 'filter' | 'search'
   | 'save' | 'back' | 'edit' | 'delete' | 'export'
   | 'warning' | 'success' | 'food' | 'transport' | 'shopping' | 'bills'
   | 'health' | 'empty' | 'close' | 'profile' | 'settings' | 'copy' | 'download'
@@ -60,6 +60,7 @@ const paths: Record<AppIconName, string[]> = {
   calendar: ['M5 5h14v15H5z', 'M8 3v4', 'M16 3v4', 'M5 10h14'],
   list: ['M8 6h12', 'M8 12h12', 'M8 18h12', 'M4 6h.01', 'M4 12h.01', 'M4 18h.01'],
   filter: ['M4 5h16l-6 7v6l-4 2v-8L4 5Z'],
+  search: ['M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14Z', 'M20 20l-4.35-4.35'],
   save: ['M5 4h12l2 2v14H5z', 'M8 4v6h8', 'M8 17h8'],
   back: ['M15 6l-6 6 6 6'],
   edit: ['M4 20h4l11-11-4-4L4 16v4Z', 'M14 6l4 4'],

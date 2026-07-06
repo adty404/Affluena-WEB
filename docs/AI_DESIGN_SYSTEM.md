@@ -83,6 +83,17 @@ existing tokens only — do not introduce new colour values:
   never a locale-less `toLocaleDateString()` or a raw ISO string.
 - Money always renders through `Amount` / `formatIDR` with the correct
   income/expense type — never a raw formatted string in a styled `<strong>`.
+- `NetWorthTrend` (`src/components/finance/DashboardWidgets.tsx`) is the Beranda
+  "Tren Kekayaan Bersih" sparkline — an inline SVG area+line (income-green
+  `--success` stroke over `--success-soft` fill, emphasized endpoint dot). Its
+  data comes from the pure `buildNetWorthSeries` helper (`src/lib/netWorth.ts`,
+  a 1:1 port of mobile's `net_worth_series.dart`): anchor at the current
+  `net_worth_minor`, walk backward through `useCashflowTrend(12)`'s per-month
+  `cashflow_minor`, clamped to the earliest OWNED wallet's created month. Shows
+  a skeleton while loading and a muted "belum cukup data" note under 2 points —
+  never a NaN axis. The savings-rate stat (`monthly_cashflow_minor /
+  monthly_income_minor`, `—` when income is 0) sits beside it in the
+  `.dashboard-insights` grid.
 
 ## Typography
 

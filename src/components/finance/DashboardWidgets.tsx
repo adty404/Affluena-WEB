@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
@@ -84,6 +85,80 @@ export function CashflowChart({ trend }: { trend?: { month: string; income_minor
           {latest.month}: pemasukan {formatIDR(latest.income_minor)}, pengeluaran {formatIDR(latest.expense_minor)}.
         </p>
       )}
+    </Card>
+  );
+}
+
+/**
+ * Inline SVG sparkline of the reconstructed net-worth trend (mirrors mobile's
+ * Beranda "Tren kekayaan bersih"). `series` is the oldest → newest minor-unit
+ * points from `buildNetWorthSeries`; its last element is the current net worth,
+ * emphasized with an endpoint dot. Renders an area fill under an income-green
+ * line. Falls back to a skeleton while loading and a muted note when there is
+ * not enough data to draw a line.
+ */
+export function NetWorthTrend({ series, loading }: { series: number[]; loading?: boolean }) {
+  const latest = series.length > 0 ? series[series.length - 1] : 0;
+
+  let body: ReactNode;
+  if (loading) {
+    body = <div className="networth-spark networth-spark-skeleton" aria-hidden="true" />;
+  } else if (series.length < 2) {
+    body = (
+      <p className="panel-note" style={{ textAlign: 'center' }}>
+        Belum cukup data untuk menampilkan tren.
+      </p>
+    );
+  } else {
+    const width = 320;
+    const height = 96;
+    const paddingX = 6;
+    const paddingY = 10;
+    const chartWidth = width - paddingX * 2;
+    const chartHeight = height - paddingY * 2;
+    const min = Math.min(...series);
+    const max = Math.max(...series);
+    const span = max - min || 1;
+
+    const getX = (index: number) => paddingX + (index / (series.length - 1)) * chartWidth;
+    const getY = (value: number) => paddingY + (1 - (value - min) / span) * chartHeight;
+
+    const points = series.map((value, i) => ({ x: getX(i), y: getY(value) }));
+    const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+    const areaPath = `${linePath} L ${points[points.length - 1].x} ${height - paddingY} L ${points[0].x} ${height - paddingY} Z`;
+    const end = points[points.length - 1];
+
+    body = (
+      <div className="networth-spark" aria-label="Grafik tren kekayaan bersih">
+        <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" role="img">
+          <path d={areaPath} fill="var(--success-soft)" stroke="none" />
+          <path
+            d={linePath}
+            fill="none"
+            stroke="var(--success)"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            vectorEffect="non-scaling-stroke"
+          />
+          <circle cx={end.x} cy={end.y} r="3.5" fill="var(--success)" />
+        </svg>
+      </div>
+    );
+  }
+
+  return (
+    <Card className="dashboard-panel networth-panel">
+      <div className="panel-head">
+        <div>
+          <h3>Tren Kekayaan Bersih</h3>
+          <p>Perkiraan {series.length > 1 ? `${series.length} bulan terakhir` : '12 bulan terakhir'}.</p>
+        </div>
+        {!loading && series.length > 0 && (
+          <strong className="networth-latest">{formatIDR(latest)}</strong>
+        )}
+      </div>
+      {body}
     </Card>
   );
 }

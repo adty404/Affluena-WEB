@@ -1,9 +1,11 @@
+import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { DataTable } from '../../components/ui/DataTable';
+import { Input } from '../../components/ui/Input';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { Amount } from '../../components/finance/Amount';
 import { TransactionItem } from '../../components/transactions/TransactionItem';
@@ -15,6 +17,10 @@ import { useWallets } from '../../hooks/useWallets';
 import { useCategories } from '../../hooks/useCategories';
 import { useTags } from '../../hooks/useTags';
 import { NAV } from '../../lib/copy';
+
+/** Max search length the API accepts (it 400s past 100 chars). */
+const SEARCH_MAX_LEN = 100;
+const SEARCH_DEBOUNCE_MS = 350;
 
 export function TransactionListPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -29,12 +35,44 @@ export function TransactionListPage() {
   const tagId = searchParams.get('tag_id');
   const from = searchParams.get('from');
   const to = searchParams.get('to');
+  const search = searchParams.get('search');
   if (type) filterParams.type = type;
   if (walletId) filterParams.wallet_id = walletId;
   if (categoryId) filterParams.category_id = categoryId;
   if (tagId) filterParams.tag_id = tagId;
   if (from) filterParams.from = from;
   if (to) filterParams.to = to;
+  if (search) filterParams.search = search;
+
+  // Local search field, debounced into the `search` URL param (consistent with
+  // the other from/to/type/wallet/category searchParams). Server-side search is
+  // full-history — the DataTable's built-in client search is turned off below
+  // so we never also client-filter the loaded page.
+  const [searchInput, setSearchInput] = useState(search ?? '');
+  const searchInitialized = useRef(false);
+  // Keep the field in sync when the URL param changes externally (chip clear,
+  // back/forward) — but only when it actually diverges, so typing isn't fought.
+  useEffect(() => {
+    setSearchInput(search ?? '');
+  }, [search]);
+  useEffect(() => {
+    // Skip the very first run so we don't rewrite the URL from initial state.
+    if (!searchInitialized.current) {
+      searchInitialized.current = true;
+      return;
+    }
+    const trimmed = searchInput.trim().slice(0, SEARCH_MAX_LEN);
+    const handle = setTimeout(() => {
+      const current = searchParams.get('search') ?? '';
+      if (trimmed === current) return;
+      const next = new URLSearchParams(searchParams);
+      if (trimmed) next.set('search', trimmed);
+      else next.delete('search');
+      setSearchParams(next, { replace: true });
+    }, SEARCH_DEBOUNCE_MS);
+    return () => clearTimeout(handle);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchInput]);
 
   const hasFilters = Object.keys(filterParams).length > 0;
   const filterTo = hasFilters ? `/transactions/filter?${searchParams.toString()}` : '/transactions/filter';
@@ -47,6 +85,7 @@ export function TransactionListPage() {
   const tagName = (id: string | null) => (tagsData?.tags ?? []).find((t) => t.id === id)?.name;
 
   const activeFilterChips: string[] = [];
+  if (search) activeFilterChips.push(`Cari: “${search}”`);
   if (type) activeFilterChips.push(transactionTypeLabels[type as Transaction['type']] ?? type);
   if (walletId) activeFilterChips.push(walletName(walletId) ?? 'Dompet');
   if (categoryId) activeFilterChips.push(categoryName(categoryId) ?? 'Kategori');
@@ -54,8 +93,22 @@ export function TransactionListPage() {
   if (from) activeFilterChips.push(`Dari ${from}`);
   if (to) activeFilterChips.push(`Sampai ${to}`);
 
-  const clearFilters = () => setSearchParams({});
+  const clearFilters = () => {
+    setSearchInput('');
+    setSearchParams({});
+  };
+  const clearSearch = () => {
+    setSearchInput('');
+    const next = new URLSearchParams(searchParams);
+    next.delete('search');
+    setSearchParams(next, { replace: true });
+  };
   
+  // A search or any filter narrows a full-history query, so an empty result is
+  // "no match" rather than "nothing recorded yet".
+  const noMatchMessage = 'Tidak ada transaksi yang cocok.';
+  const emptyMessage = hasFilters ? noMatchMessage : 'Belum ada transaksi.';
+
   const income = transactions.filter((tx) => tx.type === 'income').reduce((sum, tx) => sum + tx.amount_minor, 0);
   const expenses = transactions.filter((tx) => tx.type === 'expense').reduce((sum, tx) => sum + tx.amount_minor, 0);
   const net = income - expenses;
@@ -143,6 +196,25 @@ export function TransactionListPage() {
           <Card className="stat-card purple"><span>Arus Bersih</span><strong><Amount value={net} variant={net < 0 ? 'expense' : 'income'} /></strong><small>Pemasukan - pengeluaran</small></Card>
         </section>
 
+        <Card className="panel-card transaction-search-bar">
+          <label className="transaction-search-field">
+            <AppIcon name="search" />
+            <Input
+              type="search"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              maxLength={SEARCH_MAX_LEN}
+              placeholder="Cari catatan, kategori, atau dompet…"
+              aria-label="Cari transaksi"
+            />
+            {searchInput && (
+              <button type="button" className="transaction-search-clear" onClick={clearSearch} aria-label="Hapus pencarian">
+                <AppIcon name="close" />
+              </button>
+            )}
+          </label>
+        </Card>
+
         {hasFilters && (
           <Card className="panel-card filter-active-bar">
             <div className="panel-head">
@@ -166,7 +238,7 @@ export function TransactionListPage() {
             <div className="transaction-list">
               {isLoading && <p>Memuat transaksi...</p>}
               {error && <p>Gagal memuat transaksi.</p>}
-              {!isLoading && !error && transactions.length === 0 && <p>{hasFilters ? 'Tidak ada transaksi yang cocok dengan filter.' : 'Belum ada transaksi.'}</p>}
+              {!isLoading && !error && transactions.length === 0 && <p>{emptyMessage}</p>}
               {transactions.slice(0, 4).map((tx) => <TransactionItem key={tx.id} transaction={tx} />)}
             </div>
           </Card>
@@ -188,7 +260,8 @@ export function TransactionListPage() {
             columns={columns}
             data={transactions}
             getRowKey={(tx) => tx.id}
-            emptyMessage={hasFilters ? 'Tidak ada transaksi yang cocok dengan filter.' : 'Belum ada transaksi.'}
+            searchable={false}
+            emptyMessage={emptyMessage}
             activeFilters={activeFilterChips}
           />
         </Card>
