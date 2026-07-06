@@ -5,6 +5,7 @@ import {
   daysInMonth,
   mondayStartOffset,
   monthLabelID,
+  stepDay,
 } from './calendar'
 import type { Transaction } from '../types/transaction'
 
@@ -101,5 +102,31 @@ describe('calendar date helpers', () => {
     expect(daysInMonth(2026, 7)).toBe(31)
     expect(daysInMonth(2026, 2)).toBe(28)
     expect(daysInMonth(2028, 2)).toBe(29)
+  })
+})
+
+describe('stepDay', () => {
+  it('steps within the same month', () => {
+    expect(stepDay(2026, 7, 15, 1)).toEqual({ year: 2026, month: 7, day: 16 })
+    expect(stepDay(2026, 7, 15, -1)).toEqual({ year: 2026, month: 7, day: 14 })
+  })
+
+  it('rolls forward across a month end', () => {
+    expect(stepDay(2026, 7, 31, 1)).toEqual({ year: 2026, month: 8, day: 1 })
+  })
+
+  it('rolls backward across a month start', () => {
+    expect(stepDay(2026, 7, 1, -1)).toEqual({ year: 2026, month: 6, day: 30 })
+  })
+
+  it('wraps the year at 31 Dec / 1 Jan', () => {
+    expect(stepDay(2026, 12, 31, 1)).toEqual({ year: 2027, month: 1, day: 1 })
+    expect(stepDay(2027, 1, 1, -1)).toEqual({ year: 2026, month: 12, day: 31 })
+  })
+
+  it('handles leap-day boundaries', () => {
+    expect(stepDay(2028, 2, 28, 1)).toEqual({ year: 2028, month: 2, day: 29 })
+    expect(stepDay(2028, 3, 1, -1)).toEqual({ year: 2028, month: 2, day: 29 })
+    expect(stepDay(2026, 2, 28, 1)).toEqual({ year: 2026, month: 3, day: 1 })
   })
 })

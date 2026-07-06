@@ -14,6 +14,7 @@ import {
   daysInMonth,
   mondayStartOffset,
   monthLabelID,
+  stepDay,
   WEEKDAYS_ID,
 } from '../../lib/calendar';
 import { NAV } from '../../lib/copy';
@@ -51,6 +52,16 @@ export function CalendarPage() {
   const goPrev = () => goToMonth(new Date(year, month - 2, 1));
   const goNext = () => goToMonth(new Date(year, month, 1));
   const goToday = () => goToMonth(new Date());
+
+  // Step the selected day by ±1, crossing month boundaries (Date normalises
+  // day 0 → last day of the previous month, and day 32 → the next month), and
+  // follow the grid to whatever month the new day lands in.
+  const goToDay = (delta: number) => {
+    if (selectedDay == null) return;
+    const next = stepDay(year, month, selectedDay, delta);
+    setRefDate(new Date(next.year, next.month - 1, next.day));
+    setSelectedDay(next.day);
+  };
 
   const monthLabel = monthLabelID(year, month);
   const netMinor = buckets.incomeMinor - buckets.expenseMinor;
@@ -159,6 +170,12 @@ export function CalendarPage() {
                       : `${selectedTransactions.length} transaksi tercatat.`}
                 </p>
               </div>
+              {selectedDay != null && (
+                <div className="inline-actions calendar-nav">
+                  <Button size="icon" onClick={() => goToDay(-1)} aria-label="Hari sebelumnya"><AppIcon name="back" /></Button>
+                  <Button size="icon" className="calendar-next" onClick={() => goToDay(1)} aria-label="Hari berikutnya"><AppIcon name="back" /></Button>
+                </div>
+              )}
             </div>
 
             {selectedDay == null ? (
