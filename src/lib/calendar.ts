@@ -89,3 +89,21 @@ export function mondayStartOffset(year: number, month: number): number {
 export function daysInMonth(year: number, month: number): number {
   return new Date(year, month, 0).getDate()
 }
+
+/** A calendar day as year + 1-based month + day-of-month. */
+export interface CalendarDate {
+  year: number
+  month: number
+  day: number
+}
+
+/**
+ * Step a calendar day by `delta` days (usually ±1), crossing month and year
+ * boundaries. `Date` normalises overflow — day 0 rolls to the last day of the
+ * previous month, day 32 to the next month — so this handles month ends, leap
+ * days, and year wraps without special cases. `month` is 1-based in and out.
+ */
+export function stepDay(year: number, month: number, day: number, delta: number): CalendarDate {
+  const d = new Date(year, month - 1, day + delta)
+  return { year: d.getFullYear(), month: d.getMonth() + 1, day: d.getDate() }
+}
