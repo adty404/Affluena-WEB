@@ -322,6 +322,14 @@
 .tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
 .tag-row span { border-radius: 999px; padding: 5px 8px; color: var(--muted); background: var(--surface-soft); font-size: 11px; font-weight: 850; }
 .quick-action-grid { display: grid; gap: 10px; }
+.transaction-search-bar { padding: 12px 14px; }
+.transaction-search-field { display: flex; align-items: center; gap: 10px; }
+.transaction-search-field > .app-icon { flex: none; width: 18px; height: 18px; color: var(--muted); }
+.transaction-search-field .form-control { border: none; box-shadow: none; padding: 6px 0; background: transparent; }
+.transaction-search-field .form-control:focus { outline: none; box-shadow: none; }
+.transaction-search-clear { flex: none; display: grid; place-items: center; width: 28px; height: 28px; border: none; border-radius: 999px; background: var(--surface-soft); color: var(--muted); cursor: pointer; }
+.transaction-search-clear:hover { color: var(--ink); background: var(--line); }
+.transaction-search-clear .app-icon { width: 14px; height: 14px; }
 .balance-delta-card { align-self: start; }
 .delta-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 .delta-grid div, .info-grid div { padding: 14px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface-soft); }

@@ -15,6 +15,11 @@ export interface TransactionListParams {
   tag_id?: string
   from?: string
   to?: string
+  /**
+   * Server-side full-text search over note + category name + wallet name.
+   * Max 100 chars — the API 400s past that, so the UI caps the input at 100.
+   */
+  search?: string
   limit?: number
   offset?: number
   sort?: string
