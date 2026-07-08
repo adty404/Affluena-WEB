@@ -125,6 +125,21 @@
   .form-row-between { align-items: flex-start; flex-direction: column; }
 }
 
+/* Label/value rows (Aturan Dompet card, delete confirmations, detail meta, …)
+   are side-by-side on wide screens. On a phone the value is often a full
+   sentence ("Dibuat otomatis lewat Target Tabungan"), which space-between
+   squeezes into a cramped, ragged right column. Stack label-over-value so the
+   value gets the full width; the label reads as a quiet caption above it. */
+@media (max-width: 600px) {
+  .readiness-list div {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  .readiness-list span { font-size: 12px; font-weight: 800; color: var(--muted); }
+  .readiness-list strong { font-size: 14px; }
+}
+
 
 /* Dashboard */
 .dashboard-page { animation: fadeIn .2s ease; }
