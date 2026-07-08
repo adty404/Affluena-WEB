@@ -68,6 +68,11 @@ existing tokens only — do not introduce new colour values:
 - `.report-meta-chip` — flat read-only scope chip for report pages; deliberately
   has no card border/shadow so it does not read as an interactive filter next to
   the `MonthPicker`.
+- `.readiness-list` — the shared label/value info rows (wallet-create "Aturan
+  Dompet", delete/confirm dialogs, detail-meta panels). Rows are side-by-side on
+  wide screens; **below 600px they stack (label as a muted caption over the
+  full-width value)** so long sentence values don't get squeezed into a cramped
+  right column. Keep that responsive rule — don't force side-by-side on mobile.
 
 ## Shared components of note
 
