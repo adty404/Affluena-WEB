@@ -93,9 +93,8 @@ export function SubscriptionListPage() {
                   amount={item.amount_minor}
                   amountType="expense"
                   accentColor={item.color}
-                  description={`Dibayar dari ${walletLabel(walletNameById, item.wallet_id)}. Perpanjangan berikutnya ${formatDateID(item.next_due_date)}.`}
-                  metaLeft={item.account_detail}
-                  metaRight={cycleLabel(item.billing_cycle)}
+                  description={`Dibayar dari ${walletLabel(walletNameById, item.wallet_id)}. Perpanjangan berikutnya ${formatDateID(item.next_due_date)}.${item.account_detail ? ` Akun: ${item.account_detail}.` : ''}`}
+                  metaLeft={cycleLabel(item.billing_cycle)}
                   actions={<><Button to={`/subscriptions/${item.id}/pay`} size="small" variant="primary"><AppIcon name="pay" /> Bayar</Button><Button size="small" variant="danger" onClick={() => setTarget(item)} aria-label={`Hapus langganan ${item.name}`}><AppIcon name="delete" /> Hapus</Button></>}
                 />
               ))}

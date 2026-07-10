@@ -117,12 +117,12 @@ export function GoalDetailPage() {
             <div className="readiness-list">
               {goal.members?.map((member) => (
                 <div key={member.user_id}>
-                  <span>{goalMemberLabel(member, currentUserId)}</span>
+                  <strong>{goalMemberLabel(member, currentUserId)}</strong>
                   <Badge tone={goalMemberStatusTone(member.status)}>{goalMemberStatusLabel(member.status)}</Badge>
                 </div>
               ))}
               {(!goal.members || goal.members.length === 0) && (
-                <div className="empty-state">Baru kamu sejauh ini. Undang anggota untuk menabung bersama.</div>
+                <p className="panel-note">Baru kamu sejauh ini. Undang anggota untuk menabung bersama.</p>
               )}
             </div>
           </Card>

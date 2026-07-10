@@ -28,7 +28,7 @@ export function RecurringHistoryPage() {
           <div className="app-hero-actions"><Button to={`/recurring/${rule.id}`}>Kembali</Button><Button to={`/recurring/${rule.id}/run`} variant="primary"><AppIcon name="run" /> Jalankan Manual</Button></div>
         </section>
 
-        <section className="stat-grid">
+        <section className="stat-grid two">
           <Card className="stat-card"><span>Terakhir Dijalankan</span><strong>{lastRun ?? 'Belum pernah'}</strong><small>{lastRun ? 'Eksekusi terakhir' : 'Aturan ini belum pernah berjalan'}</small></Card>
           <Card className="stat-card orange"><span>Jadwal Berikutnya</span><strong>{nextRun ?? '—'}</strong><small>Eksekusi terjadwal berikutnya</small></Card>
         </section>

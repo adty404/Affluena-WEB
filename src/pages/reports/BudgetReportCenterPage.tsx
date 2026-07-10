@@ -86,7 +86,7 @@ export function BudgetReportCenterPage() {
             <section className="dashboard-grid two-col">
               <Card className="panel-card">
                 <div className="panel-head"><div><h3>Ringkasan Tren</h3><p>Visual batang dari data ringkasan laporan.</p></div><Button onClick={handleExport} size="small">Ekspor Data Grafik</Button></div>
-                <ReportBarChart rows={rows} />
+                <ReportBarChart rows={rows.map((r) => ({ ...r, name: categoryName(r.name) }))} />
               </Card>
               <Card className="panel-card">
                 <div className="panel-head"><div><h3>Wawasan Laporan</h3><p>Ringkasan penting dari laporan ini.</p></div></div>
@@ -106,7 +106,7 @@ export function BudgetReportCenterPage() {
                 getRowKey={(row) => row.id}
                 columns={[
                   { key: 'name', header: 'Nama', render: (row) => <div className="table-title"><span className={`mini-icon ${row.status === 'critical' ? 'danger' : row.status === 'watch' ? 'warning' : row.status === 'growth' ? 'info' : 'safe'}`}><AppIcon name="budgetReport" /></span><strong>{categoryName(row.name)}</strong><small>{row.category}</small></div> },
-                  { key: 'wallet', header: 'Dompet', render: (row) => row.wallet },
+                  { key: 'wallet', header: 'Dompet', mobileRole: 'hidden', render: (row) => row.wallet },
                   { key: 'amount', header: 'Terpakai (Rp)', align: 'right', render: (row) => <Amount value={row.amount_minor} type="expense" /> },
                   { key: 'previous', header: 'Batas (Rp)', align: 'right', render: (row) => <Amount value={row.previous_amount_minor} /> },
                   { key: 'change', header: 'Pemakaian', render: (row) => <Badge tone={statusTone(row.status)}>{row.change_percent}%</Badge> },

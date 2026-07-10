@@ -75,7 +75,7 @@ export function WalletListPage() {
           </Card>
         ) : null}
 
-        <section className="stat-grid">
+        <section className="stat-grid three">
           <Card className="stat-card"><span>Total Saldo</span><strong>{isLoading ? '…' : <Amount value={totalBalance} />}</strong><small>Dari semua dompet</small></Card>
           <Card className="stat-card blue"><span>Jumlah Dompet</span><strong>{isLoading ? '…' : wallets.length}</strong><small>Dompet aktif</small></Card>
           <Card className="stat-card purple"><span>Dompet Bersama</span><strong>{isLoading ? '…' : sharedCount}</strong><small>Dibagikan denganmu</small></Card>

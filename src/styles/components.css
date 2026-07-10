@@ -35,7 +35,7 @@
 .checkbox-row { display: flex !important; align-items: center; gap: 8px; color: var(--muted); font-size: 13px; font-weight: 750; }
 .form-row-between { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--muted); font-size: 13px; }
 .form-row-between a, .auth-switch a { color: var(--primary-dark); font-weight: 850; }
-.goal-status-actions { justify-content: flex-start; flex-wrap: wrap; gap: 10px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+.goal-status-actions { justify-content: flex-start; flex-wrap: wrap; gap: 10px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
 
 .toast { position: fixed; z-index: 120; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px); opacity: 0; pointer-events: none; background: var(--ink); color: white; padding: 12px 16px; border-radius: 999px; box-shadow: var(--shadow); font-weight: 850; transition: .2s ease; }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -125,4 +125,11 @@
 @keyframes modalSheetIn {
   from { opacity: .92; transform: translateY(18px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive audit P23 — keep the drag-handle category row aligned on mobile */
+@media (max-width: 760px) {
+  .category-node-row.has-drag { grid-template-columns: 20px 24px 42px minmax(0, 1fr) auto; }
+  .category-node-row.has-drag .badge,
+  .category-node-row.has-drag .category-node-actions { grid-column: 4 / -1; }
 }

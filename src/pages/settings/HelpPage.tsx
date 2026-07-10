@@ -30,7 +30,7 @@ export function HelpPage() {
           </SettingsCard>
 
           <SettingsCard icon="health" title="Saluran Bantuan" description="Akses bantuan berdasarkan tipe masalah.">
-            <div className="settings-list">
+            <div className="settings-list compact">
               <div><span>Masalah transaksi</span><Button to="/transactions/filter" size="small"><AppIcon name="filter" /> Buka filter transaksi</Button></div>
               <div><span>Masalah ekspor</span><Button to="/exports/history" size="small"><AppIcon name="download" /> Cek riwayat ekspor</Button></div>
               <div><span>Masalah pemberitahuan</span><Button to="/alerts" size="small"><AppIcon name="warning" /> Buka pemberitahuan</Button></div>
@@ -40,7 +40,7 @@ export function HelpPage() {
         </section>
 
         <Modal open={helpOpen} title="Butuh Bantuan?" description="Sebagian besar masalah bisa langsung kamu selesaikan lewat alur di bawah." onClose={() => setHelpOpen(false)}>
-          <div className="settings-list">
+          <div className="settings-list compact">
             <div><span>Masalah transaksi</span><Button to="/transactions/filter" size="small" onClick={() => setHelpOpen(false)}><AppIcon name="filter" /> Buka filter transaksi</Button></div>
             <div><span>Masalah ekspor</span><Button to="/exports/history" size="small" onClick={() => setHelpOpen(false)}><AppIcon name="download" /> Cek riwayat ekspor</Button></div>
             <div><span>Masalah pemberitahuan</span><Button to="/alerts" size="small" onClick={() => setHelpOpen(false)}><AppIcon name="warning" /> Buka pemberitahuan</Button></div>

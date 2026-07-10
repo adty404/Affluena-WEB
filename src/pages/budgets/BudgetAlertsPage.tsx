@@ -46,11 +46,11 @@ export function BudgetAlertsPage() {
             <div className="panel-head"><div><h3>Notifikasi Aktif</h3><p>Notifikasi yang perlu ditindaklanjuti.</p></div><Button size="small" onClick={() => showToast('Filter: belum dibaca, peringatan, terlampaui.')}><AppIcon name="filter" /> Filter</Button></div>
             <div className="budget-alert-list large">
               {isLoading ? (
-                <p>Memuat notifikasi...</p>
+                <p className="panel-note">Memuat notifikasi...</p>
               ) : alerts.length > 0 ? (
                 alerts.map((alert) => <BudgetAlertItem key={alert.id} alert={alert} />)
               ) : (
-                <p>Tidak ada notifikasi aktif.</p>
+                <p className="panel-note">Tidak ada notifikasi aktif.</p>
               )}
             </div>
           </Card>
