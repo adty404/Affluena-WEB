@@ -54,7 +54,7 @@
 .cta-card { text-align: center; padding: 42px; }
 .cta-card .badge { margin-inline: auto; }
 
-.onboarding-shell { min-height: 100vh; display: grid; grid-template-columns: 420px 1fr; background: var(--bg); }
+.onboarding-shell { min-height: 100vh; min-height: 100dvh; display: grid; grid-template-columns: 420px 1fr; background: var(--bg); }
 .onboarding-side { padding: 32px; background: linear-gradient(135deg, var(--ink), var(--ink-2)); color: white; display: flex; flex-direction: column; justify-content: space-between; }
 .onboarding-side h1 { font-size: clamp(36px, 5vw, 58px); line-height: 1.02; letter-spacing: -.06em; margin: auto 0 14px; }
 .onboarding-side p { color: rgba(255,255,255,.72); line-height: 1.65; }
@@ -122,7 +122,8 @@
 }
 @media (max-width: 460px) {
   .hero-actions .btn, .app-hero-actions .btn { width: 100%; }
-  .form-row-between { align-items: flex-start; flex-direction: column; }
+  .form-row-between { align-items: stretch; flex-direction: column; }
+  .form-row-between .btn { width: 100%; }
 }
 
 /* Label/value rows (Aturan Dompet card, delete confirmations, detail meta, …)
@@ -138,6 +139,13 @@
   }
   .readiness-list span { font-size: 12px; font-weight: 800; color: var(--muted); }
   .readiness-list strong { font-size: 14px; }
+  /* Panel headers: title over full-width actions (matches modal-actions). */
+  .panel-head { flex-direction: column; align-items: stretch; gap: 10px; }
+  .panel-actions { width: 100%; }
+  /* Finance-card secondary meta: label over value so short right-values
+     (target, %, due-day, cycle) don't get squeezed by a long left label. */
+  .finance-overview-meta { flex-direction: column; align-items: flex-start; gap: 2px; }
+  .finance-overview-meta span { max-width: 100%; }
 }
 
 
@@ -148,6 +156,7 @@
 .mobile-dashboard-recent { display: none; }
 .dashboard-hero { min-height: 250px; }
 .dashboard-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(330px, .6fr); gap: 18px; align-items: start; }
+.dashboard-grid.two-col { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .dashboard-panel { padding: 20px; }
 .dashboard-stat.green small, .stat-card.green small { color: var(--success); }
 .dashboard-stat.blue small, .stat-card.blue small { color: var(--secondary); }
@@ -230,12 +239,13 @@
 .loading-state { padding: 20px; color: var(--muted); font-weight: 850; }
 .panel-note { padding: 1rem; margin: 0; color: var(--muted); line-height: 1.55; }
 .panel-note.danger { color: var(--danger); }
-.warning-note { padding: 14px; border: 1px solid rgba(184,123,46,.28); border-radius: 16px; background: var(--warning-soft); color: var(--warning); font-weight: 800; line-height: 1.5; }
+.warning-note { padding: 14px; border: 1px solid rgba(184,123,46,.28); border-radius: 16px; background: var(--warning-soft); color: var(--warning); font-weight: 800; line-height: 1.5; overflow-wrap: anywhere; }
+.warning-note.success { border-color: rgba(46,139,87,.28); background: var(--success-soft); color: var(--success); }
 .stat-grid.three { grid-template-columns: repeat(3, 1fr); }
 @media (max-width: 1100px) { .stat-grid.three { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 760px) { .stat-grid.three { grid-template-columns: 1fr; } }
 .badge.red { color: var(--danger); border-color: rgba(194,85,63,.18); background: rgba(249,236,232,.95); }
-@media (max-width: 1100px) { .dashboard-grid { grid-template-columns: 1fr; } .card-grid.two { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 1100px) { .dashboard-grid, .dashboard-grid.two-col { grid-template-columns: 1fr; } .card-grid.two { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 760px) { .transaction-row { grid-template-columns: 42px 1fr; } .transaction-row .amount { grid-column: 2; text-align: left; } .card-grid.two { grid-template-columns: 1fr; } .cashflow-chart svg { height: 220px; } .expense-list > div, .forecast-step > div { align-items: flex-start; flex-direction: column; } .skeleton-row { grid-template-columns: 1fr; } }
 
 
@@ -268,6 +278,10 @@
 .member-row { display: grid; grid-template-columns: 38px minmax(0,1fr) auto; gap: 10px; align-items: center; padding: 13px; border: 1px solid var(--line); background: var(--surface-soft); border-radius: 16px; }
 .member-row strong, .member-row span { display: block; }
 .member-row span { color: var(--muted); font-size: 12px; margin-top: 2px; }
+/* Truncate the text block (not the trailing Badge span) so long emails can't
+   blow out the row into body-level horizontal scroll. */
+.member-row > div { min-width: 0; }
+.member-row > div strong, .member-row > div span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .category-tree { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
 .category-tree.single { grid-template-columns: minmax(0, 1fr); }
 .category-tree-card { grid-column: 1 / -1; }
@@ -790,9 +804,13 @@
   text-overflow: clip;
 }
 
-.delta-cell-current {
+.delta-cell-current.is-down {
   background: var(--danger-soft);
   border-color: rgba(194,85,63,.18);
+}
+.delta-cell-current.is-up {
+  background: var(--success-soft);
+  border-color: rgba(46,139,87,.20);
 }
 
 /* Make the transaction form feel wider while the preview stacks before it gets cramped. */
@@ -1033,8 +1051,8 @@ input.form-control {
 .finance-overview-card {
   min-width: 0;
   height: 100%;
-  display: grid;
-  grid-template-rows: auto auto minmax(42px, auto) auto auto auto;
+  display: flex;
+  flex-direction: column;
   gap: 14px;
   padding: 18px;
   overflow: hidden;
@@ -1304,6 +1322,12 @@ input.form-control {
     padding: 11px 12px;
     border-radius: 14px;
     box-shadow: var(--mobile-card-shadow);
+  }
+  .report-filter-bar .report-meta-chip {
+    flex: 0 0 min(52vw, 200px);
+    scroll-snap-align: start;
+    padding: 11px 12px;
+    border-radius: 14px;
   }
 
   .filter-card span {
@@ -1780,7 +1804,7 @@ input.form-control {
     font-size: 12px;
   }
 
-  .stat-grid {
+  .stat-grid:not(.three) {
     display: flex;
     grid-template-columns: none;
     gap: var(--mobile-page-gap);
@@ -2037,10 +2061,6 @@ input.form-control {
     max-height: calc(100dvh - 82px - env(safe-area-inset-bottom));
     border-radius: 22px;
   }
-}
-
-.app-topbar .btn.mobile-sidebar-button {
-  display: none;
 }
 
 /* Item appearance (shared web+mobile color catalog) */

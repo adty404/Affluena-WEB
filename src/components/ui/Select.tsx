@@ -141,7 +141,6 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     const styles: StylesConfig<SelectOption> = {
       control: (base, state) => ({
         ...base,
-        minHeight: '40px',
         borderRadius: 'var(--radius-md, 8px)',
         borderColor: state.isFocused ? 'var(--primary, #17181a)' : 'var(--border, #e5e5e3)',
         boxShadow: state.isFocused ? '0 0 0 1px var(--primary, #17181a)' : 'none',

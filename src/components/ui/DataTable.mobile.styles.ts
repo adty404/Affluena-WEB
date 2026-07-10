@@ -21,7 +21,7 @@ export const mobileDataTableStyles = `
     .dt-wrapper .dt-layout-row:not(.dt-layout-table):has(.dt-search),
     .dt-wrapper .dt-layout-row:not(.dt-layout-table):has(.dt-length) {
       position: sticky;
-      top: calc(var(--mobile-topbar-offset, 56px) + env(safe-area-inset-top, 0px));
+      top: calc(var(--mobile-topbar-offset, 64px) + env(safe-area-inset-top, 0px));
       z-index: 8;
       order: 1;
       display: grid;
