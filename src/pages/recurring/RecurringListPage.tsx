@@ -14,7 +14,8 @@ import { itemAccentVars } from '../../components/finance/ColorPicker';
 import { useToast } from '../../components/ui/Toast';
 import { useRecurringRules, useDeleteRecurringRule } from '../../hooks/useRecurring';
 import { useWallets } from '../../hooks/useWallets';
-import { createNameById, walletPairLabel } from '../../lib/financeLabels';
+import { useCategories } from '../../hooks/useCategories';
+import { createNameById, walletPairLabel, categoryLabel } from '../../lib/financeLabels';
 import { formatDateID } from '../../lib/dates';
 import { NAV } from '../../lib/copy';
 import type { RecurringRule } from '../../types/recurring';
@@ -30,6 +31,7 @@ const iconTone = (type: RecurringRule['type'], status: RecurringRule['status']) 
 export function RecurringListPage() {
   const { data, isLoading, error } = useRecurringRules();
   const { data: walletsData } = useWallets();
+  const { data: categoriesData } = useCategories();
   const deleteMut = useDeleteRecurringRule();
   const { showToast } = useToast();
   const [target, setTarget] = useState<RecurringRule | null>(null);
@@ -39,6 +41,7 @@ export function RecurringListPage() {
 
   const rules = data?.recurring_transactions || [];
   const walletNameById = createNameById(walletsData?.wallets ?? []);
+  const categoryNameById = createNameById(categoriesData?.categories ?? []);
 
   const confirmDelete = () => {
     if (!target) return;
@@ -89,7 +92,7 @@ export function RecurringListPage() {
                   accentColor={rule.color}
                   description={rule.note}
                   metaLeft={walletPairLabel(walletNameById, rule.wallet_id, rule.to_wallet_id)}
-                  metaRight={rule.category_id ?? typeLabel(rule.type)}
+                  metaRight={categoryLabel(categoryNameById, rule.category_id, rule.type)}
                   actions={<><Button to={`/recurring/${rule.id}`} size="small">Detail</Button><Button to={`/recurring/${rule.id}/run`} size="small" variant="primary"><AppIcon name="run" /> Jalankan</Button><Button size="small" variant="danger" onClick={() => setTarget(rule)} aria-label={`Hapus aturan ${rule.name}`}><AppIcon name="delete" /> Hapus</Button></>}
                 />
               ))}

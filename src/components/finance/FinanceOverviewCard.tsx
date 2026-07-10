@@ -75,8 +75,8 @@ export function FinanceOverviewCard({
 
       {(metaLeft || metaRight) && (
         <div className="finance-overview-meta">
-          <span>{metaLeft}</span>
-          <span>{metaRight}</span>
+          {metaLeft && <span title={metaLeft}>{metaLeft}</span>}
+          {metaRight && <span title={metaRight}>{metaRight}</span>}
         </div>
       )}
 

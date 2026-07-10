@@ -44,7 +44,7 @@ export function SystemLogDetailPage() {
         <section className="app-hero-card dashboard-hero">
           <div>
             <Badge tone={statusTone(log.status_code)}>{log.method} · {log.status_code}</Badge>
-            <h2>{log.path}</h2>
+            <h2 className="log-path">{log.path}</h2>
             <p>{formatTimestamp(log.created_at)} · {relativeTime(log.created_at)}</p>
           </div>
           <div className="app-hero-actions">

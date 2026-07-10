@@ -16,7 +16,7 @@
 .public-footer nav a:hover { color: var(--ink); }
 .public-footer-bottom { display: flex; justify-content: space-between; gap: 18px; margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted-2); font-size: 12px; font-weight: 800; }
 
-.auth-page { min-height: 100vh; display: grid; place-items: center; padding: 28px; }
+.auth-page { min-height: 100vh; min-height: 100dvh; display: grid; place-items: center; padding: 28px; }
 .auth-shell { width: min(100%, 980px); display: grid; grid-template-columns: 1fr 450px; gap: 18px; align-items: stretch; }
 .auth-aside, .auth-card { background: rgba(255,255,255,.92); border: 1px solid var(--line); border-radius: var(--radius-xl); box-shadow: var(--shadow); padding: 32px; }
 .auth-aside { min-height: 560px; background: linear-gradient(135deg, var(--ink), var(--ink-2)); color: white; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
@@ -114,8 +114,12 @@
   .app-topbar p {
     display: none;
   }
+  /* The ≤720 topbar is z-index:70; lift the opened drawer + overlay above it so
+     the slide-in sidebar covers the topbar instead of tucking under it. */
+  .app-layout.sidebar-open .sidebar { z-index: 80; }
+  .app-layout.sidebar-open .mobile-overlay { z-index: 75; }
   .mobile-sidebar-button {
-    display: none;
+    display: inline-flex;
     width: var(--mobile-touch-target);
     min-height: var(--mobile-touch-target);
     border-radius: 14px;

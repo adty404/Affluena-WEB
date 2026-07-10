@@ -61,10 +61,10 @@ export function RecurringDetailPage() {
         </section>
 
         <section className="stat-grid">
-          <Card className="stat-card"><span>Jumlah</span><strong><Amount value={rule.amount_minor} type={rule.type === 'income' ? 'income' : 'expense'} /></strong><small>{typeLabel(rule.type)}</small></Card>
-          <Card className="stat-card blue"><span>Frekuensi</span><strong>{frequencyLabel(rule.frequency)}</strong><small>jadwal pengulangan</small></Card>
-          <Card className="stat-card orange"><span>Jadwal Berikutnya</span><strong>{formatDateID(rule.next_run_at)}</strong><small>tanggal eksekusi</small></Card>
-          <Card className="stat-card"><span>Status</span><strong>{statusLabel(rule.status)}</strong><small>{sourceWallet}</small></Card>
+          <Card className="stat-card"><span>Jumlah</span><strong><Amount value={rule.amount_minor} type={rule.type === 'income' ? 'income' : 'expense'} /></strong><small className="muted">{typeLabel(rule.type)}</small></Card>
+          <Card className="stat-card blue"><span>Frekuensi</span><strong>{frequencyLabel(rule.frequency)}</strong><small className="muted">jadwal pengulangan</small></Card>
+          <Card className="stat-card orange"><span>Jadwal Berikutnya</span><strong>{formatDateID(rule.next_run_at)}</strong><small className="muted">tanggal eksekusi</small></Card>
+          <Card className="stat-card"><span>Status</span><strong>{statusLabel(rule.status)}</strong><small className="muted">{sourceWallet}</small></Card>
         </section>
 
         <section className="form-detail-grid">

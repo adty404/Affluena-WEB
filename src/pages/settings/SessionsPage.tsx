@@ -37,14 +37,14 @@ export function SessionsPage() {
           <Button to="/settings/security"><AppIcon name="warning" /> Keamanan</Button>
         </SettingsHero>
 
-        <section className="stat-grid">
+        <section className="stat-grid three">
           <div className="stat-card"><span>Total sesi</span><strong>{sessions.length}</strong><small>Termasuk yang sudah kedaluwarsa/dicabut</small></div>
           <div className="stat-card"><span>Sesi aktif</span><strong>{sessions.filter((s) => !s.revoked_at).length}</strong><small>Belum dicabut</small></div>
           <div className="stat-card"><span>Sesi dicabut</span><strong>{sessions.filter((s) => s.revoked_at).length}</strong><small>Riwayat</small></div>
         </section>
 
         <section className="dashboard-grid">
-          <SettingsCard icon="history" title="Token Refresh" description="Daftar sesi masuk yang diterbitkan untuk akun ini.">
+          <SettingsCard icon="history" title="Daftar Sesi" description="Daftar sesi masuk yang diterbitkan untuk akun ini.">
             {isLoading ? (
               <div className="loading-state">Memuat...</div>
             ) : sessions.length === 0 ? (
@@ -79,7 +79,7 @@ export function SessionsPage() {
           </SettingsCard>
 
           <SettingsCard icon="list" title="Catatan" description="Cara kerja sesi masuk.">
-            <div className="settings-list">
+            <div className="settings-list compact">
               <div><span>Cabut sesi</span><strong>Perangkat itu langsung keluar dari akun</strong></div>
               <div><span>Ubah kata sandi</span><strong>Semua sesi lain ikut dicabut</strong></div>
               <div><span>Masa berlaku</span><strong>Sesi kedaluwarsa otomatis setelah 30 hari</strong></div>
