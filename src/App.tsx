@@ -6,6 +6,9 @@ import { Card } from './components/ui/Card';
 
 // Eagerly loaded: critical first-paint pages
 import { LandingPage } from './pages/landing/LandingPage';
+// Public compliance pages (lazy — rarely visited, but must stay reachable logged-out)
+const PrivacyPolicyPage = lazy(() => import('./pages/legal/PrivacyPolicyPage').then((m) => ({ default: m.PrivacyPolicyPage })));
+const AccountDeletionPage = lazy(() => import('./pages/legal/AccountDeletionPage').then((m) => ({ default: m.AccountDeletionPage })));
 import { LoginPage } from './pages/auth/LoginPage';
 import { RegisterPage } from './pages/auth/RegisterPage';
 import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
@@ -130,6 +133,10 @@ export function App() {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
+      {/* Public compliance pages — the Play Console privacy-policy and
+          account-deletion URLs. Must stay reachable logged-out (no guard). */}
+      <Route path="/privacy" element={<Suspense fallback={<PageLoader />}><PrivacyPolicyPage /></Suspense>} />
+      <Route path="/hapus-akun" element={<Suspense fallback={<PageLoader />}><AccountDeletionPage /></Suspense>} />
       <Route element={<PublicOnlyRoute><Outlet /></PublicOnlyRoute>}>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />

@@ -25,7 +25,7 @@ export function AuthLayout({ children, title, description, narrow }: AuthLayoutP
           {children}
           <footer className="auth-legal">
             <span>© 2026 Affluena</span>
-            <span>Data finansial tetap berada di akun pribadi kamu.</span>
+            <span>Data finansial tetap berada di akun pribadi kamu. <a href="/privacy">Kebijakan Privasi</a></span>
           </footer>
         </section>
       </section>
