@@ -293,3 +293,29 @@ Do not use:
 - placeholder action copy
 
 Input placeholders are allowed.
+
+## Responsive/mobile rules (from the 2026-07 responsive audit)
+
+- **The mobile sidebar drawer must stay reachable.** The `.mobile-sidebar-button`
+  hamburger is visible ≤960px and the opened drawer/overlay sit ABOVE the sticky
+  topbar (`.app-layout.sidebar-open .sidebar` z-index:80 / overlay 75 in the ≤720
+  block, over the topbar's 70). Never re-add a `display:none` on
+  `.mobile-sidebar-button` — every sidebar-only section (Anggaran, Cicilan,
+  Langganan, Berulang, Target, Wawasan, Kalender, Laporan) is otherwise
+  unreachable except via `/app-menu`.
+- **Shared stacking on phones (≤600px):** `.panel-head` and
+  `.finance-overview-meta` stack (title/label over full-width value/actions),
+  mirroring `.readiness-list`. `.finance-overview-card` is a **flex column** (not
+  a fixed 6-row grid) so absent rows reserve no space.
+- **Grid modifiers:** use `.stat-grid.three` / `.stat-grid.two` for 3-/2-up stat
+  rows (never a 4-col grid with empty columns) and `.dashboard-grid.two-col` for
+  a 2-up dashboard grid (both collapse to 1-col ≤1100px). The ≤820 stat-grid
+  carousel is scoped `:not(.three)` so 3-up money summaries collapse to 1-col.
+- **Overflow discipline:** unbreakable tokens (emails, IPs, endpoint paths,
+  wallet names) use `overflow-wrap: anywhere` or ellipsis + `min-width:0` on their
+  flex/grid parent so they never drive body-level horizontal scroll. `.member-row`
+  truncates its text block (not the trailing Badge).
+- **Touch + zoom:** `.react-select__control` matches the 46px `.form-control`
+  height (48px on ≤720) and its input is 16px on mobile (no iOS auto-zoom). Use
+  `100dvh` (with a `100vh` fallback) for full-height auth/onboarding/body.
+- **`.warning-note.success`** is the green variant of the amber form banner.
