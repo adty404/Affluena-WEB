@@ -25,6 +25,12 @@ Use this file to understand existing routes and avoid active-link/dynamic-route 
 - `/forgot-password`
 - `/reset-password`
 - `/onboarding`
+- `/privacy` — public privacy policy (`LegalLayout`); the URL submitted to the
+  Google Play Console. NO auth guard — must stay reachable logged-out.
+- `/hapus-akun` — public account-deletion instructions (Play Console
+  account-deletion URL). NO auth guard. The actual self-service deletion lives
+  at Pengaturan → Data (`/settings/data`, password-confirmed
+  `DELETE /api/v1/auth/account`).
 
 ## Dashboard
 

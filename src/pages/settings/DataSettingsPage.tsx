@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { AppLayout } from '../../layouts/AppLayout';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
-import { Select } from '../../components/ui/Input';
+import { Input, Select } from '../../components/ui/Input';
 import { Modal } from '../../components/ui/Modal';
 import { useToast } from '../../components/ui/Toast';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { SettingsCard, SettingsHero } from './SettingsShared';
 import { useExportCSV } from '../../hooks/useExports';
+import { deleteAccount } from '../../api/auth';
+import { useAuth } from '../../hooks/useAuth';
 import type { ApiError } from '../../api/types';
 
 function rangeToDates(range: string): { from?: string; to?: string } {
@@ -24,9 +26,42 @@ function rangeToDates(range: string): { from?: string; to?: string } {
 export function DataSettingsPage() {
   const { showToast } = useToast();
   const navigate = useNavigate();
+  const { logout } = useAuth();
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deletePassword, setDeletePassword] = useState('');
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [dateRange, setDateRange] = useState('all-time');
   const exportMut = useExportCSV();
+
+  function closeDeleteModal() {
+    if (isDeleting) return;
+    setDeleteOpen(false);
+    setDeletePassword('');
+    setDeleteError(null);
+  }
+
+  async function handleDeleteAccount(event: React.FormEvent) {
+    event.preventDefault();
+    if (!deletePassword) {
+      setDeleteError('Masukkan kata sandimu untuk konfirmasi.');
+      return;
+    }
+    setIsDeleting(true);
+    setDeleteError(null);
+    try {
+      await deleteAccount({ password: deletePassword });
+      // The account is gone server-side; drop local session + cached data and
+      // land on the login screen.
+      logout();
+      navigate('/login', { replace: true });
+      showToast('Akunmu sudah dihapus. Sampai jumpa lagi.');
+    } catch (err) {
+      const apiErr = err as ApiError;
+      setDeleteError(apiErr.error || 'Gagal menghapus akun. Periksa kata sandimu lalu coba lagi.');
+      setIsDeleting(false);
+    }
+  }
 
   async function handleExport(event: React.FormEvent) {
     event.preventDefault();
@@ -51,9 +86,9 @@ export function DataSettingsPage() {
   return (
     <AppLayout title="Data & Siklus Akun" description="Ekspor data pribadi, retensi data, dan hapus akun.">
       <div className="dashboard-page grid-stack">
-        <SettingsHero badge="Data" title="Alat data untuk ekspor dan siklus hidup akun." description="Kamu bisa membuat ekspor data pribadi dan mengajukan penutupan akun lewat dukungan.">
+        <SettingsHero badge="Data" title="Alat data untuk ekspor dan siklus hidup akun." description="Kamu bisa membuat ekspor data pribadi dan menghapus akunmu secara permanen kapan saja.">
           <Button to="/exports/new"><AppIcon name="export" /> Buat Ekspor</Button>
-          <Button variant="danger" onClick={() => setDeleteOpen(true)}><AppIcon name="delete" /> Tutup Akun</Button>
+          <Button variant="danger" onClick={() => setDeleteOpen(true)}><AppIcon name="delete" /> Hapus Akun</Button>
         </SettingsHero>
 
         <section className="dashboard-grid">
@@ -68,25 +103,38 @@ export function DataSettingsPage() {
             </form>
           </SettingsCard>
 
-          <SettingsCard icon="list" title="Kebijakan Retensi & Penghapusan" description="Aturan data ketika akun ditutup.">
+          <SettingsCard icon="list" title="Kebijakan Retensi & Penghapusan" description="Yang terjadi saat akunmu dihapus.">
             <div className="settings-list compact">
-              <div><span>Transaksi</span><strong>Disertakan dalam ekspor sebelum penghapusan</strong></div>
-              <div><span>Berbagi Dompet</span><strong>Dicabut otomatis</strong></div>
-              <div><span>Sesi masuk</span><strong>Langsung dicabut</strong></div>
-              <div><span>Riwayat aktivitas</span><strong>Dianonimkan setelah akun ditutup</strong></div>
-              <div><span>Masa pemulihan</span><strong>7 hari masa tunggu penghapusan</strong></div>
+              <div><span>Semua data finansial</span><strong>Dihapus permanen seketika</strong></div>
+              <div><span>Berbagi Dompet</span><strong>Dicabut otomatis (dua arah)</strong></div>
+              <div><span>Sesi masuk</span><strong>Langsung dicabut di semua perangkat</strong></div>
+              <div><span>Pemulihan</span><strong>Tidak ada — penghapusan tidak bisa dibatalkan</strong></div>
+              <div><span>Sebelum menghapus</span><strong>Ekspor dulu datamu bila masih diperlukan</strong></div>
             </div>
             <div className="modal-actions left-actions"><Button to="/exports/history"><AppIcon name="history" /> Riwayat Ekspor</Button></div>
           </SettingsCard>
         </section>
 
-        <Modal open={deleteOpen} title="Tutup Akun" description="Penutupan akun diproses lewat dukungan agar datamu aman." onClose={() => setDeleteOpen(false)}>
-          <div className="notice-card danger-note"><strong>Penting:</strong> saat akun ditutup, semua sesi masuk dicabut dan Berbagi Dompet dihentikan. Ekspor dulu datamu jika masih dibutuhkan.</div>
-          <p className="field-help">Ajukan penutupan lewat halaman Bantuan. Tim dukungan akan mengonfirmasi identitas sebelum menutup akun.</p>
-          <div className="modal-actions">
-            <Button onClick={() => setDeleteOpen(false)}>Batal</Button>
-            <Button variant="danger" onClick={() => { setDeleteOpen(false); navigate('/settings/help'); }}><AppIcon name="list" /> Hubungi Dukungan</Button>
-          </div>
+        <Modal open={deleteOpen} title="Hapus Akun" description="Akun dan seluruh datamu dihapus permanen — tidak bisa dibatalkan." onClose={closeDeleteModal}>
+          <div className="notice-card danger-note"><strong>Penting:</strong> semua dompet, transaksi, anggaran, target, dan data lainnya ikut terhapus seketika. Sesi masuk dicabut dan Berbagi Dompet dihentikan. Ekspor dulu datamu jika masih dibutuhkan.</div>
+          <form className="form-stack" onSubmit={handleDeleteAccount}>
+            <label>
+              <span>Konfirmasi kata sandi</span>
+              <Input
+                type="password"
+                autoComplete="current-password"
+                placeholder="Kata sandimu saat ini"
+                value={deletePassword}
+                onChange={(event) => setDeletePassword(event.target.value)}
+                disabled={isDeleting}
+              />
+              {deleteError && <span className="form-error">{deleteError}</span>}
+            </label>
+            <div className="modal-actions">
+              <Button type="button" onClick={closeDeleteModal} disabled={isDeleting}>Batal</Button>
+              <Button type="submit" variant="danger" disabled={isDeleting || !deletePassword}><AppIcon name="delete" /> {isDeleting ? 'Menghapus…' : 'Hapus Akun Permanen'}</Button>
+            </div>
+          </form>
         </Modal>
       </div>
     </AppLayout>

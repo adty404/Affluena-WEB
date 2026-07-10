@@ -2158,3 +2158,19 @@ input.form-control {
   .participant-row .amount { text-align: left; }
   .due-calendar-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); overflow-x: visible; }
 }
+
+/* ---------- Legal / compliance public pages (/privacy, /hapus-akun) ---------- */
+.legal-page { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; background: var(--bg); }
+.legal-head { padding: 22px clamp(18px, 5vw, 48px); border-bottom: 1px solid var(--line); }
+.legal-head a { display: inline-flex; text-decoration: none; color: inherit; }
+.legal-body { width: 100%; max-width: 720px; margin: 0 auto; padding: 34px clamp(18px, 5vw, 32px) 56px; flex: 1; }
+.legal-body h1 { font-size: clamp(24px, 4vw, 32px); letter-spacing: -0.02em; margin: 0 0 6px; text-wrap: balance; }
+.legal-updated { color: var(--muted); font-size: 13px; margin: 0 0 24px; }
+.legal-body h2 { font-size: 17px; letter-spacing: -0.01em; margin: 26px 0 8px; }
+.legal-body p, .legal-body li { font-size: 14.5px; line-height: 1.65; color: var(--ink); }
+.legal-body ul, .legal-body ol { padding-left: 22px; margin: 8px 0; display: grid; gap: 6px; }
+.legal-body a { color: var(--ink); font-weight: 600; text-underline-offset: 3px; }
+.legal-foot { border-top: 1px solid var(--line); padding: 18px clamp(18px, 5vw, 48px); display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; color: var(--muted); font-size: 13px; }
+.legal-foot nav { display: flex; gap: 16px; }
+.legal-foot a { color: var(--muted); font-weight: 600; text-decoration: none; }
+.legal-foot a:hover, .legal-foot a:focus-visible { color: var(--ink); text-decoration: underline; }
