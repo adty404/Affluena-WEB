@@ -523,6 +523,12 @@
 .sidebar-user-link { color: inherit; text-decoration: none; border-radius: 16px; padding: 8px; margin: -8px; transition: .18s ease; }
 .sidebar-user-link:hover { background: var(--primary-soft); }
 .field-help { display: block; color: var(--muted); font-size: 12px; line-height: 1.45; margin-top: 6px; }
+
+/* Foto profil (Pengaturan Akun): preview circle + pilih/hapus actions */
+.avatar-field-block { display: grid; gap: 8px; }
+.avatar-field-label { color: var(--ink-2); font-size: 13px; font-weight: 850; }
+.avatar-field { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.avatar-field-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 .finance-icon svg, .mini-icon svg, .nav-icon svg, .bottom-nav svg, .btn svg { width: 18px; height: 18px; flex: none; }
 .preview-icon svg { width: 30px; height: 30px; }
 @media (max-width: 760px) {
@@ -1749,6 +1755,25 @@ input.form-control {
 
   .mobile-balance-card small.amount {
     text-align: left;
+  }
+
+  .mobile-balance-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .mobile-balance-head span {
+    margin: 0;
+  }
+
+  .mobile-balance-head .balance-eye-toggle {
+    width: 36px;
+    height: 36px;
+    min-height: 36px;
+    border-radius: 12px;
+    flex: none;
   }
 
   .mobile-dashboard-actions {

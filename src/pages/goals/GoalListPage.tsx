@@ -10,14 +10,16 @@ import { Amount } from '../../components/finance/Amount';
 import { FinanceOverviewCard } from '../../components/finance/FinanceOverviewCard';
 import { itemAccentVars } from '../../components/finance/ColorPicker';
 import { useGoals } from '../../hooks/useGoals';
+import { useAmountVisibility } from '../../hooks/useAmountVisibility';
 import { goalStatusBadgeTone, goalStatusLabel, goalProgressTone } from '../../lib/goalStatus';
-import { formatIDR } from '../../lib/money';
+import { formatIDR, maskedIDR } from '../../lib/money';
 import { formatDateID } from '../../lib/dates';
 import { NAV } from '../../lib/copy';
 import type { Goal } from '../../types/goal';
 
 export function GoalListPage() {
   const { data: goals = [], isLoading, error } = useGoals();
+  const { amountsVisible } = useAmountVisibility();
 
   const totalTarget = goals.reduce((sum, g) => sum + g.target_amount_minor, 0);
   const totalSaved = goals.reduce((sum, g) => sum + g.collected_amount_minor, 0);
@@ -46,8 +48,8 @@ export function GoalListPage() {
         </section>
 
         <section className="stat-grid">
-          <Card className="stat-card"><span>Total Target</span><strong><Amount value={totalTarget} /></strong><small>Semua target</small></Card>
-          <Card className="stat-card"><span>Total Terkumpul</span><strong><Amount value={totalSaved} type="income" /></strong><small>{overallProgress}% tercapai</small></Card>
+          <Card className="stat-card"><span>Total Target</span><strong><Amount value={totalTarget} maskable /></strong><small>Semua target</small></Card>
+          <Card className="stat-card"><span>Total Terkumpul</span><strong><Amount value={totalSaved} type="income" maskable /></strong><small>{overallProgress}% tercapai</small></Card>
           <Card className="stat-card blue"><span>Target Aktif</span><strong>{activeGoals}</strong><small>Sedang berjalan</small></Card>
           <Card className="stat-card purple"><span>Target Bersama</span><strong>{sharedGoals}</strong><small>Dengan anggota</small></Card>
         </section>
@@ -77,8 +79,9 @@ export function GoalListPage() {
                     progress={progress}
                     progressTone={goalProgressTone(goal.status)}
                     accentColor={goal.color}
+                    amountMaskable
                     metaLeft={`${progress}% tercapai`}
-                    metaRight={`Target ${formatIDR(goal.target_amount_minor)}`}
+                    metaRight={`Target ${amountsVisible ? formatIDR(goal.target_amount_minor) : maskedIDR()}`}
                     actions={<><Button to={`/goals/${goal.id}`} size="small">Detail</Button><Button to={`/goals/${goal.id}/contribute`} size="small" variant="primary"><AppIcon name="pay" /> Setor</Button><Button to={`/goals/${goal.id}/members`} size="small"><AppIcon name="profile" /> Anggota</Button></>}
                   />
                 );
@@ -92,8 +95,8 @@ export function GoalListPage() {
                 getRowKey={(goal) => goal.id}
                 columns={[
                   { key: 'name', header: 'Nama', render: (goal) => { const accent = itemAccentVars(goal.color); return <div className="table-title"><span className={clsx('mini-icon', accent ? 'has-accent' : 'safe')} style={accent}><AppIcon name="goal" /></span><strong>{goal.name}</strong></div>; } },
-                  { key: 'target', header: 'Target', align: 'right', render: (goal) => <Amount value={goal.target_amount_minor} /> },
-                  { key: 'saved', header: 'Terkumpul', align: 'right', render: (goal) => <Amount value={goal.collected_amount_minor} type="income" /> },
+                  { key: 'target', header: 'Target', align: 'right', render: (goal) => <Amount value={goal.target_amount_minor} maskable /> },
+                  { key: 'saved', header: 'Terkumpul', align: 'right', render: (goal) => <Amount value={goal.collected_amount_minor} type="income" maskable /> },
                   { key: 'deadline', header: 'Batas Waktu', render: (goal) => formatDateID(goal.deadline) },
                   { key: 'visibility', header: 'Visibilitas', render: (goal) => <Badge tone={(goal.members?.length ?? 0) > 1 ? 'purple' : 'gray'}>{(goal.members?.length ?? 0) > 1 ? 'bersama' : 'pribadi'}</Badge> },
                   { key: 'status', header: 'Status', render: (goal) => <Badge tone={goalStatusBadgeTone(goal.status)}>{goalStatusLabel(goal.status)}</Badge> },

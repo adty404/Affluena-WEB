@@ -7,10 +7,14 @@ import { EmptyState } from '../../components/ui/EmptyState';
 import { AppIcon } from '../../components/ui/AppIcon';
 import { SettingRow, SettingsCard, SettingsHero, SettingsToggle } from './SettingsShared';
 import { useActivities } from '../../hooks/useActivities';
+import { useAmountVisibility } from '../../hooks/useAmountVisibility';
 import { humanizeAction, humanizeEntity, relativeTime } from '../../lib/auditLabels';
 
 export function PrivacyPage() {
-  const [maskAmounts, setMaskAmounts] = useState(false);
+  // Persisted global setting (shared with the Beranda eye toggle): while
+  // masked, balances/summaries render "Rp ••••••" — the ledger stays visible.
+  const { amountsVisible, toggleAmountsVisible } = useAmountVisibility();
+  const maskAmounts = !amountsVisible;
   const [shareAnalytics, setShareAnalytics] = useState(true);
   const [auditOpen, setAuditOpen] = useState(false);
   const { data: activitiesData, isLoading: activitiesLoading } = useActivities({ limit: 3 });
@@ -27,7 +31,7 @@ export function PrivacyPage() {
         <section className="dashboard-grid">
           <SettingsCard icon="health" title="Kontrol Privasi" description="Atur visibilitas data sensitif di layar dan laporan.">
             <div className="settings-list">
-              <SettingRow title="Samarkan nominal keuangan" description="Sembunyikan nominal di Beranda saat sedang presentasi atau layar dibagikan." aside={<SettingsToggle checked={maskAmounts} onChange={() => setMaskAmounts(!maskAmounts)} label="Aktifkan/nonaktifkan penyamaran nominal" />} />
+              <SettingRow title="Samarkan nominal keuangan" description="Sembunyikan saldo dan ringkasan di Beranda, Dompet, dan Target Tabungan saat layar dibagikan. Daftar transaksi tetap terlihat." aside={<SettingsToggle checked={maskAmounts} onChange={toggleAmountsVisible} label="Aktifkan/nonaktifkan penyamaran nominal" />} />
               <SettingRow title="Izinkan analitik produk" description="Kirim data pemakaian anonim untuk memperbaiki aplikasi tanpa menjual data kamu." aside={<SettingsToggle checked={shareAnalytics} onChange={() => setShareAnalytics(!shareAnalytics)} label="Aktifkan/nonaktifkan analitik produk" />} />
               <SettingRow title="Sertakan jejak audit" description="Sertakan riwayat aktivitas saat ekspor data pribadi." aside={<Badge tone="blue">Aktif</Badge>} />
               <SettingRow title="Retensi data" description="Riwayat aktivitas disimpan selama 12 bulan untuk kebutuhan audit kamu." aside={<Badge tone="gray">12 bulan</Badge>} />

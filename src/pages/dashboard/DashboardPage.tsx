@@ -14,8 +14,9 @@ import { useWallets } from '../../hooks/useWallets';
 import { categoryLabel, createNameById, walletPairLabel } from '../../lib/financeLabels';
 import { formatDateID } from '../../lib/dates';
 import { NAV } from '../../lib/copy';
-import { formatIDR } from '../../lib/money';
+import { formatIDR, maskedIDR } from '../../lib/money';
 import { buildNetWorthSeries } from '../../lib/netWorth';
+import { useAmountVisibility } from '../../hooks/useAmountVisibility';
 import type { DashboardStat, DashboardTransaction } from '../../types/dashboard';
 
 const mobileDashboardActions = [
@@ -28,7 +29,11 @@ const mobileDashboardActions = [
 
 export function DashboardPage() {
   const [quickOpen, setQuickOpen] = useState(false);
-  
+  // Penyamaran nominal (mobile parity): balances/summaries on Beranda render
+  // "Rp ••••••" while the recent-transactions ledger stays visible.
+  const { amountsVisible, toggleAmountsVisible } = useAmountVisibility();
+  const fmtBalance = (minor: number) => (amountsVisible ? formatIDR(minor) : maskedIDR());
+
   const { data: summary, error: summaryError, refetch: refetchSummary } = useDashboardSummary();
   const { data: txData } = useTransactions({ limit: 5 });
   const { data: walletsData } = useWallets();
@@ -39,10 +44,10 @@ export function DashboardPage() {
   const categoryNameById = createNameById(categoriesData?.categories ?? []);
 
   const stats: DashboardStat[] = summary ? [
-    { label: 'Kekayaan Bersih', value: formatIDR(summary.net_worth_minor), note: 'Total aset bersih', tone: 'blue' },
-    { label: 'Pemasukan Bulan Ini', value: formatIDR(summary.monthly_income_minor), note: 'Total uang masuk', tone: 'green' },
-    { label: 'Pengeluaran Bulan Ini', value: formatIDR(summary.monthly_expense_minor), note: 'Total uang keluar', tone: 'red' },
-    { label: 'Arus Kas', value: formatIDR(summary.monthly_cashflow_minor), note: 'Sisa uang bulan ini', tone: summary.monthly_cashflow_minor >= 0 ? 'green' : 'red' },
+    { label: 'Kekayaan Bersih', value: fmtBalance(summary.net_worth_minor), note: 'Total aset bersih', tone: 'blue' },
+    { label: 'Pemasukan Bulan Ini', value: fmtBalance(summary.monthly_income_minor), note: 'Total uang masuk', tone: 'green' },
+    { label: 'Pengeluaran Bulan Ini', value: fmtBalance(summary.monthly_expense_minor), note: 'Total uang keluar', tone: 'red' },
+    { label: 'Arus Kas', value: fmtBalance(summary.monthly_cashflow_minor), note: 'Sisa uang bulan ini', tone: summary.monthly_cashflow_minor >= 0 ? 'green' : 'red' },
   ] : [
     { label: 'Kekayaan Bersih', value: '...', note: 'Memuat...' },
     { label: 'Pemasukan Bulan Ini', value: '...', note: 'Memuat...' },
@@ -53,9 +58,11 @@ export function DashboardPage() {
   // Savings rate = monthly cashflow ÷ monthly income for the current month
   // (mirrors mobile's Beranda tile). Guard income == 0 → show "—" rather than
   // dividing by zero.
-  const savingsRate: string = summary && summary.monthly_income_minor > 0
-    ? `${Math.round((summary.monthly_cashflow_minor / summary.monthly_income_minor) * 100)}%`
-    : '—';
+  const savingsRate: string = !amountsVisible
+    ? '•••'
+    : summary && summary.monthly_income_minor > 0
+      ? `${Math.round((summary.monthly_cashflow_minor / summary.monthly_income_minor) * 100)}%`
+      : '—';
 
   // Net-worth trend: anchor at the current net worth, walk backward through the
   // cashflow trend, then clamp to the earliest OWNED wallet's created month so
@@ -89,11 +96,11 @@ export function DashboardPage() {
   const totalWalletBalance = walletList.reduce((sum, w) => sum + w.balance_minor, 0) || 1;
   const walletPortfolio = walletList.map(w => ({
     name: w.name,
-    value: formatIDR(w.balance_minor),
+    value: fmtBalance(w.balance_minor),
     percent: Math.round((w.balance_minor / totalWalletBalance) * 100),
   }));
-  const netWorthValue = summary ? formatIDR(summary.net_worth_minor) : '...';
-  const cashflowValue = summary ? formatIDR(summary.monthly_cashflow_minor) : '...';
+  const netWorthValue = summary ? fmtBalance(summary.net_worth_minor) : '...';
+  const cashflowValue = summary ? fmtBalance(summary.monthly_cashflow_minor) : '...';
   // Keep the balance-card cashflow tone neutral until data resolves so the
   // green "positive" styling doesn't flash on the '...' placeholder.
   const cashflowTone = !summary ? 'neutral' : summary.monthly_cashflow_minor < 0 ? 'expense' : 'income';
@@ -103,7 +110,18 @@ export function DashboardPage() {
       <div className="grid stack-lg dashboard-page">
         <section className="mobile-dashboard-home" aria-label="Ringkasan beranda">
           <div className="mobile-balance-card">
-            <span>Total Saldo</span>
+            <div className="mobile-balance-head">
+              <span>Total Saldo</span>
+              <Button
+                size="icon"
+                className="balance-eye-toggle"
+                onClick={toggleAmountsVisible}
+                aria-pressed={!amountsVisible}
+                aria-label={amountsVisible ? 'Samarkan nominal' : 'Tampilkan nominal'}
+              >
+                <AppIcon name={amountsVisible ? 'eye' : 'eyeOff'} />
+              </Button>
+            </div>
             <strong>{netWorthValue}</strong>
             <small className={`amount ${cashflowTone}`}>Arus kas bulan ini {cashflowValue}</small>
           </div>
@@ -130,6 +148,9 @@ export function DashboardPage() {
           <div className="app-hero-actions">
             <Button variant="primary" onClick={() => setQuickOpen(true)}><AppIcon name="add" /> Aksi Cepat</Button>
             <Button to="/dashboard/analytics"><AppIcon name="analytics" /> {NAV.analitik}</Button>
+            <Button onClick={toggleAmountsVisible} aria-pressed={!amountsVisible}>
+              <AppIcon name={amountsVisible ? 'eye' : 'eyeOff'} /> {amountsVisible ? 'Samarkan Nominal' : 'Tampilkan Nominal'}
+            </Button>
           </div>
         </section>
 
@@ -155,7 +176,7 @@ export function DashboardPage() {
               <strong>{savingsRate}</strong>
               <small>dari pemasukan bulan ini</small>
             </Card>
-            <NetWorthTrend series={netWorthSeries} loading={trendLoading || !summary} />
+            <NetWorthTrend series={netWorthSeries} loading={trendLoading || !summary} masked={!amountsVisible} />
           </section>
         )}
 

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../ui/Button';
 import { AppIcon } from '../ui/AppIcon';
+import { UserAvatar } from '../ui/UserAvatar';
 import { useAuth } from '../../hooks/useAuth';
 import { useMe } from '../../hooks/useMe';
 import { queryClient } from '../../lib/queryClient';
@@ -68,7 +69,7 @@ export function Topbar({ title, description, onMenuClick }: TopbarProps) {
           {profileOpen ? (
             <div className="profile-popover" role="menu" aria-label="Menu profil">
               <div className="profile-popover-head">
-                <div className="avatar large">{initials}</div>
+                <UserAvatar src={user?.avatar_url} fallback={initials} size="large" />
                 <div>
                   <h4>{user?.email ?? 'Pengguna'}</h4>
                   <p>{user?.email ?? '—'}</p>
