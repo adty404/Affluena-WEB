@@ -19,6 +19,15 @@ export function formatIDR(minor: number): string {
 }
 
 /**
+ * Masked rupiah for the "Penyamaran nominal" privacy setting (mirrors mobile:
+ * balances/summaries render `Rp ••••••` while the working ledger stays
+ * visible). Digit-free by design — never leaks magnitude.
+ */
+export function maskedIDR(): string {
+  return 'Rp ••••••'
+}
+
+/**
  * Ultra-compact rupiah for dense surfaces (calendar day cells), mirroring
  * mobile's `MoneyFormatter.compactIdr`: 950 → `950`, 25000 → `25rb`,
  * 1200000 → `1,2jt`, 2500000000 → `2,5M`. Uses the absolute value — callers

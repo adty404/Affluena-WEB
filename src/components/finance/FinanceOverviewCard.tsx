@@ -28,6 +28,8 @@ type FinanceOverviewCardProps = {
   actions: ReactNode;
   /** Item appearance color (`#RRGGBB`); tints the card + icon chip when set. */
   accentColor?: string;
+  /** Opt-in "Penyamaran nominal" masking for the main amount (goal cards). */
+  amountMaskable?: boolean;
 };
 
 export function FinanceOverviewCard({
@@ -46,6 +48,7 @@ export function FinanceOverviewCard({
   metaRight,
   actions,
   accentColor,
+  amountMaskable,
 }: FinanceOverviewCardProps) {
   const accentStyle = itemAccentVars(accentColor);
   return (
@@ -63,7 +66,7 @@ export function FinanceOverviewCard({
         <Badge tone={badgeTone}>{badge}</Badge>
       </header>
 
-      <div className="finance-overview-amount"><Amount value={amount} type={amountType} /></div>
+      <div className="finance-overview-amount"><Amount value={amount} type={amountType} maskable={amountMaskable} /></div>
 
       {description && <p className="finance-overview-desc">{description}</p>}
 

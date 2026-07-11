@@ -15,6 +15,7 @@ import { useCategories } from '../../hooks/useCategories';
 import { useTags } from '../../hooks/useTags';
 import { useToast } from '../../components/ui/Toast';
 import { formatDateID, formatDateTimeID } from '../../lib/dates';
+import { formatIDR } from '../../lib/money';
 import { NAV } from '../../lib/copy';
 
 export function TransactionDetailPage() {
@@ -99,6 +100,9 @@ export function TransactionDetailPage() {
             <div className="info-grid">
               <div><span>Tanggal</span><strong>{formatDateTimeID(transaction.transaction_at)}</strong></div>
               <div><span>Tipe</span><strong>{transactionTypeLabels[transaction.type]}</strong></div>
+              {transaction.type === 'transfer' && (transaction.fee_minor ?? 0) > 0 && (
+                <div><span>Biaya admin</span><strong>{formatIDR(transaction.fee_minor ?? 0)}</strong></div>
+              )}
               <div><span>Tag</span><strong>{tags.map((tag) => `#${tag.name}`).join(', ') || '—'}</strong></div>
             </div>
           </Card>

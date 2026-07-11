@@ -8,6 +8,13 @@ export type Transaction = {
   to_wallet_id?: string;
   category_id?: string;
   amount_minor: number;
+  /**
+   * Transfer admin fee (minor units, default 0). The source wallet is charged
+   * `amount_minor + fee_minor`; the destination receives `amount_minor`.
+   * Optional because rows cached before the field shipped may omit it —
+   * treat undefined as 0 at render sites.
+   */
+  fee_minor?: number;
   tag_ids: string[];
   transaction_at: string;
   note: string;
@@ -30,6 +37,12 @@ export type TransactionCreateRequest = {
   to_wallet_id?: string;
   category_id?: string;
   amount_minor: number;
+  /**
+   * Transfer-only optional admin fee (minor units, >= 0). The API rejects a
+   * negative fee or a fee on a non-transfer with 400 — only send it on
+   * transfers, and only when > 0.
+   */
+  fee_minor?: number;
   tag_ids?: string[];
   transaction_at: string;
   note?: string;

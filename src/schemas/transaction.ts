@@ -6,6 +6,13 @@ export const transactionSchema = z.object({
   to_wallet_id: z.string().optional(),
   category_id: z.string().optional(),
   amount_minor: z.number().int(),
+  // Transfer-only admin fee (Rp minor units). Optional and non-negative; the
+  // form omits it from the payload unless > 0.
+  fee_minor: z
+    .number({ invalid_type_error: 'Biaya admin harus berupa angka' })
+    .int('Biaya admin harus bilangan bulat')
+    .min(0, 'Biaya admin tidak boleh negatif')
+    .optional(),
   tag_ids: z.array(z.string()).optional(),
   transaction_at: z.string(),
   note: z.string().optional(),

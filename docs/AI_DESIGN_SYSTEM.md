@@ -88,6 +88,22 @@ existing tokens only — do not introduce new colour values:
   never a locale-less `toLocaleDateString()` or a raw ISO string.
 - Money always renders through `Amount` / `formatIDR` with the correct
   income/expense type — never a raw formatted string in a styled `<strong>`.
+- **Penyamaran nominal**: `Amount` has an opt-in `maskable` prop backed by the
+  persisted `AmountVisibilityProvider` setting (localStorage
+  `affluena.amounts_visible`; hook `useAmountVisibility`). While masked it
+  renders `Rp ••••••` (`maskedIDR()` in `src/lib/money.ts`). Scope mirrors
+  mobile: Beranda hero/stat/sparkline/portfolio amounts + savings tile, Dompet
+  balances (list, card, detail), Target Tabungan saved/target figures. The
+  transactions ledger/detail/reports are NEVER masked. Toggles: the Beranda eye
+  button (`eye`/`eyeOff` AppIcons) and the Pengaturan → Privasi switch flip the
+  same setting. New balance/summary surfaces should pass `maskable`; ledgers
+  should not.
+- `UserAvatar` (`src/components/ui/UserAvatar.tsx`) is the single profile-photo
+  circle: renders `avatar_url` (`data:image/...` upload from mobile/web, or a
+  legacy http(s) URL) as an `img`, with an initials fallback on the `.avatar`
+  ink gradient. Do not hand-render `<div className="avatar">` initials where a
+  user photo could exist. Photo uploads downscale via `src/lib/avatar.ts`
+  (≤256px JPEG, ~120KB cap) — never submit raw file data URLs.
 - `NetWorthTrend` (`src/components/finance/DashboardWidgets.tsx`) is the Beranda
   "Tren Kekayaan Bersih" sparkline — an inline SVG area+line (income-green
   `--success` stroke over `--success-soft` fill, emphasized endpoint dot). Its

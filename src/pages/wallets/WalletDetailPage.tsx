@@ -8,7 +8,6 @@ import { AppIcon } from '../../components/ui/AppIcon';
 import { Amount } from '../../components/finance/Amount';
 import { useWallet, useWalletAnalytics } from '../../hooks/useWallets';
 import { walletTypeLabels } from '../../schemas/wallet';
-import { formatIDR } from '../../lib/money';
 import { fromRFC3339, toYearMonth } from '../../lib/dates';
 import { canManageWallet } from '../../lib/wallet';
 
@@ -85,10 +84,10 @@ export function WalletDetailPage() {
         </section>
 
         <section className="stat-grid">
-          <Card className="stat-card"><span>Saldo</span><strong><Amount value={wallet.balance_minor} /></strong><small>{wallet.currency_code}</small></Card>
+          <Card className="stat-card"><span>Saldo</span><strong><Amount value={wallet.balance_minor} maskable /></strong><small>{wallet.currency_code}</small></Card>
           <Card className="stat-card blue"><span>Tipe</span><strong>{walletTypeLabels[wallet.type]}</strong><small>Warna: {wallet.color || 'bawaan'}</small></Card>
-          <Card className="stat-card green"><span>Uang Masuk ({month})</span><strong><Amount value={analytics?.inflow_minor ?? 0} /></strong><small>Bulan ini</small></Card>
-          <Card className="stat-card orange"><span>Uang Keluar ({month})</span><strong><Amount value={analytics?.outflow_minor ?? 0} variant="expense" /></strong><small>Bulan ini</small></Card>
+          <Card className="stat-card green"><span>Uang Masuk ({month})</span><strong><Amount value={analytics?.inflow_minor ?? 0} maskable /></strong><small>Bulan ini</small></Card>
+          <Card className="stat-card orange"><span>Uang Keluar ({month})</span><strong><Amount value={analytics?.outflow_minor ?? 0} variant="expense" maskable /></strong><small>Bulan ini</small></Card>
         </section>
 
         <section className="dashboard-grid">
@@ -103,16 +102,16 @@ export function WalletDetailPage() {
               <>
                 <div className="portfolio-list" style={{ marginBottom: 18 }}>
                   <div>
-                    <div className="portfolio-head"><span>Uang Masuk</span><Amount value={inflow} /></div>
+                    <div className="portfolio-head"><span>Uang Masuk</span><Amount value={inflow} maskable /></div>
                     <div className="progress-bar"><span style={{ width: `${inflowPct}%` }} /></div>
                   </div>
                   <div>
-                    <div className="portfolio-head"><span>Uang Keluar</span><Amount value={outflow} variant="expense" /></div>
+                    <div className="portfolio-head"><span>Uang Keluar</span><Amount value={outflow} variant="expense" maskable /></div>
                     <div className="progress-bar orange"><span style={{ width: `${outflowPct}%` }} /></div>
                   </div>
                 </div>
                 <div className="readiness-list">
-                  <div><span>Selisih bulan ini</span><Amount value={net} variant={net >= 0 ? 'income' : 'expense'} /></div>
+                  <div><span>Selisih bulan ini</span><Amount value={net} variant={net >= 0 ? 'income' : 'expense'} maskable /></div>
                   <div><span>Transaksi</span><strong>{transactionCount}</strong></div>
                   <div><span>Aktivitas terakhir</span><strong>{lastActivity}</strong></div>
                 </div>
@@ -127,7 +126,7 @@ export function WalletDetailPage() {
               <div><span>Tipe</span><strong>{walletTypeLabels[wallet.type]}</strong></div>
               <div><span>Mata Uang</span><strong>{wallet.currency_code}</strong></div>
               <div><span>Warna</span><strong>{wallet.color || 'bawaan'}</strong></div>
-              <div><span>Saldo</span><strong>{formatIDR(wallet.balance_minor)}</strong></div>
+              <div><span>Saldo</span><Amount value={wallet.balance_minor} maskable /></div>
             </div>
           </Card>
         </section>

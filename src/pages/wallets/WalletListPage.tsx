@@ -47,7 +47,7 @@ export function WalletListPage() {
       );
     } },
     { key: 'type', header: 'Tipe', render: (wallet: Wallet) => walletTypeLabels[wallet.type] },
-    { key: 'balance', header: 'Saldo', align: 'right' as const, render: (wallet: Wallet) => <Amount value={wallet.balance_minor} /> },
+    { key: 'balance', header: 'Saldo', align: 'right' as const, render: (wallet: Wallet) => <Amount value={wallet.balance_minor} maskable /> },
     { key: 'role', header: 'Akses', render: (wallet: Wallet) => (wallet.role ? walletRoleLabels[wallet.role] ?? wallet.role : '—') },
     { key: 'action', header: 'Aksi', render: (wallet: Wallet) => (
       <div className="inline-actions">
@@ -76,7 +76,7 @@ export function WalletListPage() {
         ) : null}
 
         <section className="stat-grid three">
-          <Card className="stat-card"><span>Total Saldo</span><strong>{isLoading ? '…' : <Amount value={totalBalance} />}</strong><small>Dari semua dompet</small></Card>
+          <Card className="stat-card"><span>Total Saldo</span><strong>{isLoading ? '…' : <Amount value={totalBalance} maskable />}</strong><small>Dari semua dompet</small></Card>
           <Card className="stat-card blue"><span>Jumlah Dompet</span><strong>{isLoading ? '…' : wallets.length}</strong><small>Dompet aktif</small></Card>
           <Card className="stat-card purple"><span>Dompet Bersama</span><strong>{isLoading ? '…' : sharedCount}</strong><small>Dibagikan denganmu</small></Card>
         </section>

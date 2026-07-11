@@ -2,6 +2,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom';
 import { Logo } from '../ui/Logo';
 import { Button } from '../ui/Button';
 import { AppIcon, type AppIconName } from '../ui/AppIcon';
+import { UserAvatar } from '../ui/UserAvatar';
 import { useMe } from '../../hooks/useMe';
 import { NAV, NAV_SECTIONS } from '../../lib/copy';
 
@@ -104,7 +105,7 @@ export function Sidebar({ onClose }: { onClose: () => void }) {
 
       <div className="sidebar-footer">
         <NavLink to="/settings/profile" onClick={onClose} className="sidebar-user sidebar-user-link">
-          <div className="avatar">{isLoading ? '…' : initials}</div>
+          <UserAvatar src={user?.avatar_url} fallback={isLoading ? '…' : initials} />
           <div>
             <strong>{isLoading ? 'Memuat…' : (user?.email ?? 'Tamu')}</strong>
             <span>Pengguna Affluena</span>

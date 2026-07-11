@@ -6,6 +6,7 @@ import { App } from './App';
 import { ToastProvider } from './components/ui/Toast';
 import { queryClient } from './lib/queryClient';
 import { AuthProvider } from './contexts/AuthProvider';
+import { AmountVisibilityProvider } from './contexts/AmountVisibilityProvider';
 import './styles/tokens.css';
 import './styles/globals.css';
 import './styles/layout.css';
@@ -16,11 +17,13 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <BrowserRouter>
-          <ToastProvider>
-            <App />
-          </ToastProvider>
-        </BrowserRouter>
+        <AmountVisibilityProvider>
+          <BrowserRouter>
+            <ToastProvider>
+              <App />
+            </ToastProvider>
+          </BrowserRouter>
+        </AmountVisibilityProvider>
       </AuthProvider>
     </QueryClientProvider>
   </React.StrictMode>,

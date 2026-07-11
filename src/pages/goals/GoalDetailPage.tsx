@@ -80,11 +80,11 @@ export function GoalDetailPage() {
         <section className="dashboard-grid">
           <Card className="panel-card goal-detail-card">
             <div className="panel-head"><div><h3>Ringkasan Progres</h3><p>Target, dana terkumpul, sisa, dan batas waktu.</p></div><Badge tone={goalStatusBadgeTone(goal.status)}>{goalStatusLabel(goal.status)}</Badge></div>
-            <div className="goal-progress-hero"><span className="preview-icon"><AppIcon name="goal" /></span><div><strong><Amount value={goal.collected_amount_minor} type="income" /></strong><small>dari target <Amount value={goal.target_amount_minor} /></small></div></div>
+            <div className="goal-progress-hero"><span className="preview-icon"><AppIcon name="goal" /></span><div><strong><Amount value={goal.collected_amount_minor} type="income" maskable /></strong><small>dari target <Amount value={goal.target_amount_minor} maskable /></small></div></div>
             <ProgressBar value={progress} tone={goalProgressTone(goal.status)} />
             <div className="metric-list compact-metrics">
               <div><span>Progres</span><strong>{progress}% tercapai</strong></div>
-              <div><span>Sisa</span><strong><Amount value={remaining} type="expense" /></strong></div>
+              <div><span>Sisa</span><strong><Amount value={remaining} type="expense" maskable /></strong></div>
               <div><span>Batas Waktu</span><strong>{formatDateID(goal.deadline)}</strong></div>
             </div>
             <div className="form-row-between goal-status-actions">

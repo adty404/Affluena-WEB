@@ -76,6 +76,13 @@ Use this file to understand existing routes and avoid active-link/dynamic-route 
 - `/transactions/:id`
 - `/transactions/:id/edit`
 
+> `/transactions/transfer` supports an optional transfer admin fee
+> (`fee_minor`, integer minor units): the source wallet is charged
+> `amount + fee`, the destination receives `amount` only. The form sends
+> `fee_minor` only when > 0 (the API 400s a negative fee or a fee on a
+> non-transfer), and `/transactions/:id` shows a "Biaya admin" row for
+> transfers with a fee.
+
 > `/transactions` supports a `search` URL param (debounced ~350ms, capped at 100
 > chars) alongside the existing `type`/`wallet_id`/`category_id`/`tag_id`/`from`/
 > `to` params. It maps to the API's `search` query on `GET /api/v1/transactions`,

@@ -6,7 +6,7 @@ import { AppIcon } from '../ui/AppIcon';
 import { EmptyState } from '../ui/EmptyState';
 import { Amount } from './Amount';
 import { ProgressBar } from './ProgressBar';
-import { formatIDR } from '../../lib/money';
+import { formatIDR, maskedIDR } from '../../lib/money';
 import type { DashboardStat, DashboardTransaction, ExpenseSlice, ForecastItem } from '../../types/dashboard';
 
 type StatGridProps = { stats: DashboardStat[]; className?: string };
@@ -97,7 +97,7 @@ export function CashflowChart({ trend }: { trend?: { month: string; income_minor
  * line. Falls back to a skeleton while loading and a muted note when there is
  * not enough data to draw a line.
  */
-export function NetWorthTrend({ series, loading }: { series: number[]; loading?: boolean }) {
+export function NetWorthTrend({ series, loading, masked }: { series: number[]; loading?: boolean; masked?: boolean }) {
   const latest = series.length > 0 ? series[series.length - 1] : 0;
 
   let body: ReactNode;
@@ -155,7 +155,7 @@ export function NetWorthTrend({ series, loading }: { series: number[]; loading?:
           <p>Perkiraan {series.length > 1 ? `${series.length} bulan terakhir` : '12 bulan terakhir'}.</p>
         </div>
         {!loading && series.length > 0 && (
-          <strong className="networth-latest">{formatIDR(latest)}</strong>
+          <strong className="networth-latest">{masked ? maskedIDR() : formatIDR(latest)}</strong>
         )}
       </div>
       {body}

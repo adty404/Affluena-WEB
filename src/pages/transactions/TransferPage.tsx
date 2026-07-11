@@ -30,9 +30,13 @@ export function TransferPage() {
   });
 
   const onSubmit = (data: TransactionFormData) => {
+    // Send fee_minor only when a positive fee was entered — the API treats a
+    // missing fee as 0 and 400s a fee on non-transfer types.
+    const { fee_minor, ...rest } = data;
     const payload = {
-      ...data,
+      ...rest,
       transaction_at: new Date(data.transaction_at).toISOString(),
+      ...(fee_minor && fee_minor > 0 ? { fee_minor } : {}),
     };
 
     createMutation.mutate(payload, {
@@ -47,8 +51,12 @@ export function TransferPage() {
   };
 
   const watchAmount = watch('amount_minor') || 0;
+  const watchFee = watch('fee_minor') || 0;
   const watchWalletId = watch('wallet_id');
   const watchToWalletId = watch('to_wallet_id');
+  // The source wallet is charged the transfer amount PLUS the admin fee; the
+  // destination only ever receives the transfer amount.
+  const sourceOutflow = watchAmount + watchFee;
 
   const sourceWallet = (walletsData?.wallets ?? []).find(w => w.id === watchWalletId);
   const destWallet = (walletsData?.wallets ?? []).find(w => w.id === watchToWalletId);
@@ -107,6 +115,19 @@ export function TransferPage() {
                 </label>
               </div>
               <label>
+                <span>Biaya admin (Rp, opsional)</span>
+                <Input
+                  type="number"
+                  min="0"
+                  placeholder="2500"
+                  {...register('fee_minor', {
+                    setValueAs: (value) => (value === '' || value === null || value === undefined ? undefined : Number(value)),
+                  })}
+                />
+                <small>Biaya transfer antar bank/e-wallet. Dompet asal terpotong jumlah transfer ditambah biaya ini; dompet tujuan menerima jumlah transfer saja.</small>
+                {errors.fee_minor && <span className="form-error">{errors.fee_minor.message}</span>}
+              </label>
+              <label>
                 <span>Catatan</span>
                 <Textarea {...register('note')} />
                 {errors.note && <span className="form-error">{errors.note.message}</span>}
@@ -123,9 +144,9 @@ export function TransferPage() {
             <BalanceDeltaPreview
               title="Dompet Asal"
               before={sourceBalance}
-              delta={-watchAmount}
-              after={sourceBalance - watchAmount}
-              description="Saldo dompet asal berkurang."
+              delta={-sourceOutflow}
+              after={sourceBalance - sourceOutflow}
+              description={watchFee > 0 ? 'Saldo dompet asal berkurang jumlah transfer + biaya admin.' : 'Saldo dompet asal berkurang.'}
             />
             <BalanceDeltaPreview
               title="Dompet Tujuan"

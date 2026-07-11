@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { minorToMajor, majorToMinor, formatIDR, formatIDRCompact } from './money'
+import { minorToMajor, majorToMinor, formatIDR, formatIDRCompact, maskedIDR } from './money'
 
 describe('money helpers', () => {
   it('formats ultra-compact rupiah identically to mobile compactIdr', () => {
@@ -13,6 +13,11 @@ describe('money helpers', () => {
 
   it('converts minor units to major decimal', () => {
     expect(minorToMajor(50000)).toBe(50000)
+  })
+
+  it('masks amounts as digit-free rupiah bullets (mobile parity)', () => {
+    expect(maskedIDR()).toBe('Rp ••••••')
+    expect(maskedIDR()).not.toMatch(/\d/)
   })
 
   it('parses formatted string back to minor units', () => {

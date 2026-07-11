@@ -10,7 +10,8 @@ export type AppIconName =
   | 'save' | 'back' | 'edit' | 'delete' | 'export'
   | 'warning' | 'success' | 'food' | 'transport' | 'shopping' | 'bills'
   | 'health' | 'empty' | 'close' | 'profile' | 'settings' | 'copy' | 'download'
-  | 'arrow-up' | 'arrow-down' | 'arrow-up-down';
+  | 'arrow-up' | 'arrow-down' | 'arrow-up-down'
+  | 'eye' | 'eyeOff';
 
 type AppIconProps = {
   name: AppIconName;
@@ -82,6 +83,8 @@ const paths: Record<AppIconName, string[]> = {
   'arrow-up': ['M12 19V5', 'M5 12l7-7 7 7'],
   'arrow-down': ['M12 5v14', 'M19 12l-7 7-7-7'],
   'arrow-up-down': ['M7 15l5 5 5-5', 'M7 9l5-5 5 5'],
+  eye: ['M2.5 12S6 5 12 5s9.5 7 9.5 7-3.5 7-9.5 7-9.5-7-9.5-7Z', 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z'],
+  eyeOff: ['M4 4l16 16', 'M10.6 5.2A8.8 8.8 0 0 1 12 5c6 0 9.5 7 9.5 7a16.6 16.6 0 0 1-2.8 3.8', 'M6.3 6.3A15.7 15.7 0 0 0 2.5 12s3.5 7 9.5 7a9 9 0 0 0 4.2-1.1', 'M9.9 9.9a3 3 0 0 0 4.2 4.2'],
 };
 
 export function AppIcon({ name, className, decorative = true, size }: AppIconProps) {

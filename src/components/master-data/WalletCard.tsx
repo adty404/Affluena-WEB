@@ -70,7 +70,7 @@ export function WalletCard({ wallet }: WalletCardProps) {
         </div>
         <Badge tone={shared ? 'purple' : 'green'}>{shared ? 'Bersama' : 'Pribadi'}</Badge>
       </div>
-      <div className="wallet-balance"><Amount value={wallet.balance_minor} /></div>
+      <div className="wallet-balance"><Amount value={wallet.balance_minor} maskable /></div>
       <p className="wallet-description">
         {wallet.description || `${wallet.currency_code} · dibuat ${new Date(wallet.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}`}
       </p>
